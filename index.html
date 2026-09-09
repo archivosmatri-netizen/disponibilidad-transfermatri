@@ -1693,6 +1693,7 @@
 
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
 
+
         /*
         ==================================================
         FUNCIONES DE UTILIDAD
@@ -1932,19 +1933,30 @@
 
         /*
         ==================================================
-        GUARDAR Y VER
+        GUARDAR Y VER - CORREGIDO
         ==================================================
         */
 
         function guardarYVer() {
-            if (placaSelect.value === "") { alert("Seleccione una placa."); return; }
-            if (conductorSelect.value === "") { alert("Seleccione un conductor."); return; }
+            // Verificar que haya una placa seleccionada
+            if (placaSelect.value === "") {
+                alert("⚠️ Seleccione una placa.");
+                return;
+            }
 
+            // Verificar que haya un conductor seleccionado
+            if (conductorSelect.value === "") {
+                alert("⚠️ Seleccione un conductor.");
+                return;
+            }
+
+            // Obtener los datos del conductor
             const conductoresFiltrados = obtenerConductoresPorPlaca(placaSelect.value);
             const indice = parseInt(conductorSelect.value);
             const nombreConductor = conductoresFiltrados[indice].nombre;
             const clave = nombreConductor + "_" + placaSelect.value + "_" + mesSelect.value;
 
+            // Crear el registro
             const registro = {
                 conductor: nombreConductor,
                 placa: placaSelect.value,
@@ -1953,20 +1965,65 @@
                 noche: Array.from(noche)
             };
 
+            // 1. Guardar en localStorage (siempre)
             let registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
             registros[clave] = registro;
             localStorage.setItem("disponibilidades", JSON.stringify(registros));
+            console.log('✅ Guardado en localStorage:', registro);
 
+            // 2. Preparar datos para Google Sheets
+            const data = {
+                placa: placaSelect.value,
+                conductor: nombreConductor,
+                mes: MESES[String(mesSelect.value)] + ' 2026',
+                diurno: Array.from(diurno).sort((a, b) => a - b).join(', '),
+                noche: Array.from(noche).sort((a, b) => a - b).join(', '),
+                total: diurno.size + noche.size
+            };
+
+            // 3. Mostrar estado en el botón
             const btn = document.getElementById('btnGuardarYVer');
             const textoOriginal = btn.innerHTML;
-            btn.innerHTML = '✅ ¡GUARDADO!';
-            btn.style.backgroundColor = '#27ae60';
-            setTimeout(function() {
-                btn.innerHTML = textoOriginal;
-                btn.style.backgroundColor = '';
-            }, 2000);
+            btn.innerHTML = '⏳ Guardando...';
+            btn.disabled = true;
 
-            abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value);
+            // 4. Enviar a Google Sheets
+            const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
+
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(function() {
+                console.log('✅ Registro enviado a Google Sheets');
+                btn.innerHTML = '✅ ¡GUARDADO!';
+                btn.style.backgroundColor = '#27ae60';
+                
+                setTimeout(function() {
+                    btn.innerHTML = textoOriginal;
+                    btn.style.backgroundColor = '';
+                    btn.disabled = false;
+                }, 2000);
+                
+                // 5. Abrir el detalle del conductor
+                abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value);
+            })
+            .catch(function(error) {
+                console.error('❌ Error al enviar a Google Sheets:', error);
+                btn.innerHTML = '⚠️ Error al guardar';
+                btn.style.backgroundColor = '#e74c3c';
+                
+                setTimeout(function() {
+                    btn.innerHTML = textoOriginal;
+                    btn.style.backgroundColor = '';
+                    btn.disabled = false;
+                }, 3000);
+                
+                // Aún así mostrar el detalle (guardado local)
+                abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value);
+            });
         }
 
 
@@ -2903,7 +2960,7 @@
 
         /*
         ==================================================
-        CARGAR VISUALIZACIÓN DESDE GOOGLE SHEETS (CORREGIDO)
+        CARGAR VISUALIZACIÓN DESDE GOOGLE SHEETS
         ==================================================
         */
 
@@ -2938,19 +2995,15 @@
                         
                         if (!placa || !conductor) continue;
 
-                        // ✅ CORREGIDO: Verificar que diurnoStr y nocheStr sean strings
                         let diurnoStr = row[3] || '';
                         let nocheStr = row[4] || '';
                         
-                        // Si son arrays, convertirlos a string
                         if (Array.isArray(diurnoStr)) diurnoStr = diurnoStr.join(', ');
                         if (Array.isArray(nocheStr)) nocheStr = nocheStr.join(', ');
                         
-                        // Convertir strings de días a arrays
                         const diurno = String(diurnoStr).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
                         const noche = String(nocheStr).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
 
-                        // Extraer el número del mes del string "Septiembre 2026" -> "8"
                         let mesNumero = "8";
                         if (mes.includes('Septiembre')) mesNumero = "8";
                         else if (mes.includes('Octubre')) mesNumero = "9";
@@ -2968,7 +3021,6 @@
                     }
                 }
 
-                // También cargar datos del localStorage (para casos donde no hay conexión)
                 const localRegistros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
                 for (const clave in localRegistros) {
                     if (!registros[clave]) {

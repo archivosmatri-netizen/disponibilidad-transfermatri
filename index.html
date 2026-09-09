@@ -2929,22 +2929,27 @@
                 // Convertir los datos de Google Sheets a registros
                 const registros = {};
                 if (Array.isArray(data) && data.length > 1) {
-                    // Saltar la primera fila (encabezados)
                     for (let i = 1; i < data.length; i++) {
                         const row = data[i];
-                        if (row.length < 7) continue;
+                        if (!row || row.length < 7) continue;
 
-                        const placa = row[0] || '';
-                        const conductor = row[1] || '';
-                        const mes = row[2] || '';
-                        const diurnoStr = row[3] || '';
-                        const nocheStr = row[4] || '';
-
+                        const placa = String(row[0] || '').trim();
+                        const conductor = String(row[1] || '').trim();
+                        const mes = String(row[2] || '').trim();
+                        
                         if (!placa || !conductor) continue;
 
+                        // ✅ CORREGIDO: Verificar que diurnoStr y nocheStr sean strings
+                        let diurnoStr = row[3] || '';
+                        let nocheStr = row[4] || '';
+                        
+                        // Si son arrays, convertirlos a string
+                        if (Array.isArray(diurnoStr)) diurnoStr = diurnoStr.join(', ');
+                        if (Array.isArray(nocheStr)) nocheStr = nocheStr.join(', ');
+                        
                         // Convertir strings de días a arrays
-                        const diurno = diurnoStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-                        const noche = nocheStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                        const diurno = String(diurnoStr).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                        const noche = String(nocheStr).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
 
                         // Extraer el número del mes del string "Septiembre 2026" -> "8"
                         let mesNumero = "8";
@@ -3095,9 +3100,9 @@
                 contenedor.innerHTML = `
             <div style="text-align:center; padding:40px; color:#e74c3c;">
                 <h3>⚠️ Error al cargar los datos</h3>
-                <p>No se pudo conectar con Google Sheets.</p>
+                <p>${error.message}</p>
                 <p style="font-size:12px; color:#999; margin-top:10px;">
-                    ${error.message}
+                    💡 Si el problema persiste, verifica la conexión a Google Sheets.
                 </p>
                 <button class="btn-ver-detalle" onclick="cargarVisualizacion()" style="background-color:#2980b9; padding:10px 20px; margin-top:15px;">
                     🔄 Reintentar

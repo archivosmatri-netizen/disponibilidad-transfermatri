@@ -2904,6 +2904,292 @@
 
         /*
         ==================================================
+        CARGAR VISUALIZACIÓN DESDE GOOGLE SHEETS (CORREGIDO)
+        ==================================================
+        */
+
+        async function cargarVisualizacion() {
+            if (rolActual !== 'admin') return;
+
+            const contenedor = document.getElementById('contenedorVisualizacion');
+            const filtroPlaca = document.getElementById('filtroPlaca').value;
+            const filtroConductor = document.getElementById('filtroConductor').value;
+            const filtroMes = document.getElementById('filtroMes').value;
+
+            // Mostrar loading
+            contenedor.innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando datos desde Google Sheets...</p>';
+
+            try {
+                // =============================================
+                // 1. CARGAR DATOS DESDE GOOGLE SHEETS
+                // =============================================
+                const response = await fetch(GOOGLE_SHEETS_URL);
+                const data = await response.json();
+
+                // Convertir los datos de Google Sheets a registros
+                const registros = {};
+                if (Array.isArray(data) && data.length > 1) {
+                    // Saltar la primera fila (encabezados)
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        if (row.length < 7) continue;
+
+                        const placa = row[0] || '';
+                        const conductor = row[1] || '';
+                        const mes = row[2] || '';
+                        const diurnoStr = row[3] || '';
+                        const nocheStr = row[4] || '';
+
+                        if (!placa || !conductor) continue;
+
+                        // Convertir strings de días a arrays
+                        const diurno = diurnoStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                        const noche = nocheStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+
+                        // Extraer el número del mes del string "Septiembre 2026" -> "8"
+                        let mesNumero = "8";
+                        if (mes.includes('Septiembre')) mesNumero = "8";
+                        else if (mes.includes('Octubre')) mesNumero = "9";
+                        else if (mes.includes('Noviembre')) mesNumero = "10";
+                        else if (mes.includes('Diciembre')) mesNumero = "11";
+
+                        const clave = conductor + "_" + placa + "_" + mesNumero;
+                        registros[clave] = {
+                            conductor: conductor,
+                            placa: placa,
+                            mes: mesNumero,
+                            diurno: diurno,
+                            noche: noche
+                        };
+                    }
+                }
+
+                // También cargar datos del localStorage (para casos donde no hay conexión)
+                const localRegistros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+                for (const clave in localRegistros) {
+                    if (!registros[clave]) {
+                        registros[clave] = localRegistros[clave];
+                    }
+                }
+
+                console.log('📊 Registros cargados:', Object.keys(registros).length);
+
+                // =============================================
+                // 2. FILTRAR REGISTROS
+                // =============================================
+                let registrosFiltrados = [];
+                for (const clave in registros) {
+                    const registro = registros[clave];
+                    let incluir = true;
+
+                    const mesRegistro = String(registro.mes);
+                    const mesFiltro = String(filtroMes);
+
+                    if (filtroPlaca && registro.placa !== filtroPlaca) incluir = false;
+
+                    if (filtroConductor && filtroConductor.trim() !== "") {
+                        const conductorRegistro = registro.conductor.toUpperCase();
+                        const conductorBusqueda = filtroConductor.toUpperCase().trim();
+                        if (!conductorRegistro.includes(conductorBusqueda)) incluir = false;
+                    }
+
+                    if (mesRegistro !== mesFiltro) incluir = false;
+
+                    if (incluir) {
+                        registrosFiltrados.push(registro);
+                    }
+                }
+
+                registrosFiltrados.sort(function(a, b) {
+                    if (a.placa !== b.placa) return a.placa.localeCompare(b.placa);
+                    return a.conductor.localeCompare(b.conductor);
+                });
+
+                if (registrosFiltrados.length === 0) {
+                    contenedor.innerHTML = `
+                <div style="text-align:center; padding:40px; color:#666;">
+                    <h3>📭 No hay disponibilidades registradas</h3>
+                    <p>Para el mes y filtros seleccionados, no se encontraron registros.</p>
+                    <p style="font-size:12px; color:#999; margin-top:10px;">
+                        💡 Si acabas de registrar, espera unos segundos y actualiza.
+                    </p>
+                    <button class="btn-ver-detalle" onclick="cambiarTab('registrar')" style="background-color:#27ae60; padding:10px 20px; margin-top:15px;">
+                        📝 Ir a Registrar
+                    </button>
+                    <button class="btn-ver-detalle" onclick="sincronizarDatos()" style="background-color:#2980b9; padding:10px 20px; margin-top:15px; margin-left:10px;">
+                        🔄 Sincronizar
+                    </button>
+                </div>
+                `;
+                    return;
+                }
+
+                // =============================================
+                // 3. MOSTRAR TABLA
+                // =============================================
+                let html = `
+            <div class="contenedor-tabla">
+                <table class="tabla-disponibilidad">
+                    <thead>
+                        <tr>
+                            <th>🚗 Placa</th>
+                            <th>👤 Conductor</th>
+                            <th>📅 Mes</th>
+                            <th>☀️ Días Diurno</th>
+                            <th>🌙 Días Noche</th>
+                            <th>📊 Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+
+                registrosFiltrados.forEach(function(registro) {
+                    const diurnoStr = registro.diurno && registro.diurno.length > 0 ?
+                        registro.diurno.sort((a, b) => a - b).map(d => `<span class="disponible-tag">${d}</span>`).join(' ') :
+                        '<span class="sin-disponibilidad">Ninguno</span>';
+
+                    const nocheStr = registro.noche && registro.noche.length > 0 ?
+                        registro.noche.sort((a, b) => a - b).map(d => `<span class="disponible-tag">${d}</span>`).join(' ') :
+                        '<span class="sin-disponibilidad">Ninguno</span>';
+
+                    const total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
+
+                    const mesNumero = parseInt(registro.mes);
+                    let nombreMes = MESES[String(mesNumero)] || 'Mes ' + registro.mes;
+                    nombreMes = nombreMes + ' 2026';
+
+                    html += `
+                <tr>
+                    <td><strong>${registro.placa}</strong></td>
+                    <td>${registro.conductor}</td>
+                    <td>${nombreMes}</td>
+                    <td>${diurnoStr}</td>
+                    <td>${nocheStr}</td>
+                    <td>${total} días</td>
+                    <td>
+                        <button class="btn-ver-detalle" onclick="abrirDetalleConductor('${registro.placa}', '${registro.conductor}', '${registro.mes}')">
+                            📋 Ver
+                        </button>
+                    </td>
+                </tr>
+                `;
+                });
+
+                html += `
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">
+                Total registros: <strong>${registrosFiltrados.length}</strong>
+                <span style="margin-left:15px; font-size:12px; color:#999;">
+                    (Datos cargados desde Google Sheets)
+                </span>
+            </div>
+            `;
+
+                contenedor.innerHTML = html;
+
+            } catch (error) {
+                console.error('❌ Error al cargar datos:', error);
+                contenedor.innerHTML = `
+            <div style="text-align:center; padding:40px; color:#e74c3c;">
+                <h3>⚠️ Error al cargar los datos</h3>
+                <p>No se pudo conectar con Google Sheets.</p>
+                <p style="font-size:12px; color:#999; margin-top:10px;">
+                    ${error.message}
+                </p>
+                <button class="btn-ver-detalle" onclick="cargarVisualizacion()" style="background-color:#2980b9; padding:10px 20px; margin-top:15px;">
+                    🔄 Reintentar
+                </button>
+            </div>
+            `;
+            }
+        }
+
+
+        /*
+        ==================================================
+        SINCRONIZAR DATOS DESDE GOOGLE SHEETS
+        ==================================================
+        */
+
+        async function sincronizarDatos() {
+            const btn = document.querySelector('.btn-ver-detalle[onclick*="sincronizar"]') || event?.target;
+            if (btn) {
+                const textoOriginal = btn.innerHTML;
+                btn.innerHTML = '⏳ Sincronizando...';
+                btn.disabled = true;
+            }
+
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL);
+                const data = await response.json();
+
+                const registros = {};
+                if (Array.isArray(data) && data.length > 1) {
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        if (row.length < 7) continue;
+
+                        const placa = row[0] || '';
+                        const conductor = row[1] || '';
+                        const mes = row[2] || '';
+                        const diurnoStr = row[3] || '';
+                        const nocheStr = row[4] || '';
+
+                        if (!placa || !conductor) continue;
+
+                        const diurno = diurnoStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                        const noche = nocheStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+
+                        let mesNumero = "8";
+                        if (mes.includes('Septiembre')) mesNumero = "8";
+                        else if (mes.includes('Octubre')) mesNumero = "9";
+                        else if (mes.includes('Noviembre')) mesNumero = "10";
+                        else if (mes.includes('Diciembre')) mesNumero = "11";
+
+                        const clave = conductor + "_" + placa + "_" + mesNumero;
+                        registros[clave] = {
+                            conductor: conductor,
+                            placa: placa,
+                            mes: mesNumero,
+                            diurno: diurno,
+                            noche: noche
+                        };
+                    }
+                }
+
+                localStorage.setItem("disponibilidades", JSON.stringify(registros));
+                console.log('✅ Datos sincronizados:', Object.keys(registros).length);
+
+                if (btn) {
+                    btn.innerHTML = '✅ Sincronizado!';
+                    btn.style.background = '#27ae60';
+                    setTimeout(function() {
+                        btn.innerHTML = '🔄 Sincronizar';
+                        btn.style.background = '#2980b9';
+                        btn.disabled = false;
+                    }, 2000);
+                }
+
+                cargarVisualizacion();
+
+            } catch (error) {
+                console.error('❌ Error al sincronizar:', error);
+                if (btn) {
+                    btn.innerHTML = '❌ Error';
+                    setTimeout(function() {
+                        btn.innerHTML = '🔄 Sincronizar';
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            }
+        }
+
+
+        /*
+        ==================================================
         TOGGLE CALENDARIO
         ==================================================
         */
@@ -3044,7 +3330,7 @@
                     ' .logo-operativo-container');
                 if (container) {
                     container.querySelector('.click-indicator').innerHTML =
-                    '<span class="icono">▼</span> Click para mostrar';
+                        '<span class="icono">▼</span> Click para mostrar';
                 }
             });
         }
@@ -3097,7 +3383,7 @@
                     ' .logo-operativo-container');
                 if (container) {
                     container.querySelector('.click-indicator').innerHTML =
-                    '<span class="icono">▼</span> Click para mostrar';
+                        '<span class="icono">▼</span> Click para mostrar';
                 }
             });
 
@@ -3287,11 +3573,11 @@
 
         /*
         ==================================================
-        CARGAR VISUALIZACIÓN (TABLA)
+        CARGAR VISUALIZACIÓN (TABLA) - VERSIÓN ORIGINAL (respaldo)
         ==================================================
         */
 
-        function cargarVisualizacion() {
+        function cargarVisualizacionOriginal() {
             if (rolActual !== 'admin') return;
 
             const contenedor = document.getElementById('contenedorVisualizacion');
@@ -3383,7 +3669,7 @@
                     '<span class="sin-disponibilidad">Ninguno</span>';
 
                 const total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length :
-                0);
+                    0);
 
                 const mesNumero = parseInt(registro.mes);
                 let nombreMes = MESES[String(mesNumero)] || 'Mes ' + registro.mes;

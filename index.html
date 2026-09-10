@@ -96,6 +96,10 @@
         margin-top: 20px; padding: 12px; background-color: #e8f0fa;
         color: #17365d; border-radius: 7px; font-weight: bold; font-size: 16px;
     }
+    .identificacion.con-registro {
+        background-color: #d9ead3;
+        color: #1a7a3a;
+    }
 
     .turno { margin-top: 25px; }
     .logo-operativo-container {
@@ -168,6 +172,23 @@
     }
     .btn-guardar:hover { background-color: #0f2745; }
     .btn-guardar:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    .btn-borrar-registro {
+        margin-top: 10px;
+        margin-left: 10px;
+        padding: 13px 25px;
+        border: none;
+        border-radius: 7px;
+        background-color: #e74c3c;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background-color 0.3s ease;
+        display: none;
+    }
+    .btn-borrar-registro.visible { display: inline-block; }
+    .btn-borrar-registro:hover { background-color: #c0392b; }
 
     .pantalla-login {
         display: flex; justify-content: center; align-items: center;
@@ -388,18 +409,38 @@
         color: #999; font-style: italic;
     }
 
+    .acciones-celda {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
     .btn-eliminar {
         background-color: #e74c3c; color: white; border: none;
-        padding: 5px 12px; border-radius: 5px;
+        padding: 6px 12px; border-radius: 5px;
         cursor: pointer; font-size: 12px;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+        white-space: nowrap;
     }
     .btn-eliminar:hover { background-color: #c0392b; }
 
+    .btn-editar {
+        background-color: #f39c12; color: white; border: none;
+        padding: 6px 12px; border-radius: 5px;
+        cursor: pointer; font-size: 12px;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+        white-space: nowrap;
+    }
+    .btn-editar:hover { background-color: #d68910; }
+
     .btn-ver-detalle {
         background-color: #2980b9; color: white; border: none;
-        padding: 5px 14px; border-radius: 5px; cursor: pointer;
+        padding: 6px 12px; border-radius: 5px; cursor: pointer;
         font-size: 12px; font-weight: bold;
         transition: background-color 0.2s ease;
+        white-space: nowrap;
     }
     .btn-ver-detalle:hover { background-color: #1a5276; }
 
@@ -412,8 +453,7 @@
     .vista-calendario.activo { display: block; }
 
     /* ============================================ */
-    /* CALENDARIO MENSUAL - DISEÑO COMPACTO          */
-    /* Optimizado para 40+ conductores               */
+    /* CALENDARIO MENSUAL                            */
     /* ============================================ */
 
     .calendario-mensual {
@@ -462,7 +502,6 @@
         transform: translateY(-2px);
     }
 
-    /* Barra superior de color según tipo de turno */
     .calendario-mensual .celda-dia .barra-turno {
         height: 5px;
         background: #e8e8e8;
@@ -478,7 +517,6 @@
         background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
     }
 
-    /* Contenido interior */
     .calendario-mensual .celda-dia .contenido-dia {
         padding: 5px 7px;
         display: flex;
@@ -496,7 +534,6 @@
         line-height: 1;
     }
 
-    /* Contadores del día */
     .calendario-mensual .celda-dia .contadores {
         display: flex;
         flex-direction: column;
@@ -526,18 +563,8 @@
         color: #1a5276;
     }
 
-    /* Indicador de "ver más" */
-    .calendario-mensual .celda-dia .ver-mas {
-        font-size: 9px;
-        color: #999;
-        text-align: right;
-        width: 100%;
-        margin-top: 2px;
-    }
-
     /* ============================================ */
     /* PANEL DE DETALLE DEL DÍA                       */
-    /* Optimizado para 40 conductores                 */
     /* ============================================ */
 
     .panel-detalle-dia {
@@ -605,7 +632,6 @@
         background: rgba(255,255,255,0.3);
     }
 
-    /* Barra de búsqueda dentro del panel */
     .panel-busqueda {
         padding: 10px 15px;
         background: #f7f9fb;
@@ -700,7 +726,6 @@
         font-size: 14px;
     }
 
-    /* Leyenda del calendario */
     .leyenda-calendario {
         display: flex; gap: 20px; margin: 15px 0;
         flex-wrap: wrap; font-size: 12px; justify-content: center;
@@ -830,10 +855,12 @@
         .resumen { grid-template-columns: 1fr; }
 
         .btn-ingresar, .btn-guardar, .btn-ver-detalle, .btn-eliminar,
-        .btn-salir, .btn-reporte, .btn-google-sheets { min-height: 44px; }
+        .btn-editar, .btn-salir, .btn-reporte, .btn-google-sheets,
+        .btn-borrar-registro { min-height: 44px; }
 
         .btn-guardar { width: 100%; padding: 15px; font-size: 15px; }
         .btn-ingresar { width: 100%; padding: 14px; }
+        .btn-borrar-registro { margin-left: 0; width: 100%; }
 
         .tabs {
             flex-wrap: nowrap; overflow-x: auto;
@@ -894,41 +921,28 @@
         .contenedor-tabla {
             overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 60vh;
         }
-        .tabla-disponibilidad { font-size: 12px; min-width: 700px; }
+        .tabla-disponibilidad { font-size: 12px; min-width: 750px; }
         .tabla-disponibilidad th, .tabla-disponibilidad td {
             padding: 8px 6px; white-space: nowrap;
         }
         .tabla-disponibilidad .disponible-tag { font-size: 10px; padding: 1px 5px; }
 
-        /* Calendario mensual en móvil: celdas más compactas */
-        .calendario-mensual { gap: 3px; }
-        .calendario-mensual .header-dia {
-            font-size: 10px; padding: 6px 2px;
+        .acciones-celda {
+            flex-direction: column;
+            gap: 4px;
         }
-        .calendario-mensual .celda-dia {
-            min-height: 62px;
-            border-radius: 6px;
-        }
-        .calendario-mensual .celda-dia .contenido-dia {
-            padding: 4px 5px;
-            gap: 2px;
-        }
-        .calendario-mensual .celda-dia .numero { font-size: 13px; }
-        .calendario-mensual .celda-dia .contador {
-            font-size: 9px;
-            padding: 1px 4px;
-        }
-        .calendario-mensual .celda-dia .barra-turno { height: 4px; }
-        .calendario-mensual .celda-dia .ver-mas { display: none; }
 
-        /* Panel detalle en móvil */
-        .panel-detalle-dia {
-            padding: 0;
-            align-items: flex-end;
-        }
+        .calendario-mensual { gap: 3px; }
+        .calendario-mensual .header-dia { font-size: 10px; padding: 6px 2px; }
+        .calendario-mensual .celda-dia { min-height: 62px; border-radius: 6px; }
+        .calendario-mensual .celda-dia .contenido-dia { padding: 4px 5px; gap: 2px; }
+        .calendario-mensual .celda-dia .numero { font-size: 13px; }
+        .calendario-mensual .celda-dia .contador { font-size: 9px; padding: 1px 4px; }
+        .calendario-mensual .celda-dia .barra-turno { height: 4px; }
+
+        .panel-detalle-dia { padding: 0; align-items: flex-end; }
         .panel-detalle-content {
-            max-width: 100%;
-            max-height: 90vh;
+            max-width: 100%; max-height: 90vh;
             border-radius: 14px 14px 0 0;
         }
         .panel-detalle-header h3 { font-size: 15px; }
@@ -975,7 +989,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v2.3</div>
+        <div class="version">Sistema de Disponibilidad v2.4</div>
     </div>
 </header>
 
@@ -1084,7 +1098,6 @@
 </div>
 
 
-<!-- Panel de detalle del día (para calendario mensual) -->
 <div class="panel-detalle-dia" id="panelDetalleDia">
     <div class="panel-detalle-content">
         <div class="panel-detalle-header">
@@ -1097,9 +1110,7 @@
         <div class="panel-busqueda">
             <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." oninput="filtrarPanelDetalle()">
         </div>
-        <div class="panel-detalle-body" id="panelDetalleBody">
-            <!-- Contenido dinámico -->
-        </div>
+        <div class="panel-detalle-body" id="panelDetalleBody"></div>
     </div>
 </div>
 
@@ -1192,9 +1203,14 @@
                     <p id="resumenNoche">Ningún día seleccionado</p>
                 </div>
             </div>
-            <button class="btn-guardar" id="btnGuardarYVer" onclick="guardarYVer()">
-                💾 GUARDAR Y VER DISPONIBILIDAD
-            </button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button class="btn-guardar" id="btnGuardarYVer" onclick="guardarYVer()">
+                    💾 GUARDAR Y VER DISPONIBILIDAD
+                </button>
+                <button class="btn-borrar-registro" id="btnBorrarRegistro" onclick="borrarMiRegistro()">
+                    🗑️ BORRAR MI REGISTRO
+                </button>
+            </div>
         </div>
 
     </div>
@@ -1376,6 +1392,7 @@ const conductorSelect = $("conductor");
 const mesSelect = $("mes");
 const btnIngresar = $("btnIngresar");
 const btnGuardarYVer = $("btnGuardarYVer");
+const btnBorrarRegistro = $("btnBorrarRegistro");
 
 
 /* ============================================================
@@ -1405,6 +1422,23 @@ function diasDelMes(año, mes) {
 function posicionInicial(año, mes) {
     const primerDia = new Date(año, mes, 1);
     return (primerDia.getDay() + 6) % 7;
+}
+
+function obtenerRegistroLocal(placa, conductor, mes) {
+    const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    const clave = conductor + "_" + placa + "_" + mes;
+    return registros[clave] || null;
+}
+
+function eliminarRegistroLocal(placa, conductor, mes) {
+    const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    const clave = conductor + "_" + placa + "_" + mes;
+    if (registros[clave]) {
+        delete registros[clave];
+        localStorage.setItem("disponibilidades", JSON.stringify(registros));
+        return true;
+    }
+    return false;
 }
 
 
@@ -1576,9 +1610,18 @@ function iniciarSesionUsuario(nombre, placa) {
     btnIngresar.disabled = false;
     btnGuardarYVer.disabled = false;
 
-    $("identificacion").textContent = "🚗 " + placa + " — 👤 " + nombre + " (Sesión iniciada)";
+    actualizarIdentificacion();
     $('tabVisualizarBtn').style.display = 'none';
     cambiarTab('registrar');
+
+    // Auto-ingresar: cargar calendario si ya tiene registro guardado
+    setTimeout(() => {
+        const registro = obtenerRegistroLocal(placa, nombre, mesSelect.value);
+        if (registro) {
+            ingresar();
+            mostrarToast('👋 Ya tienes un registro guardado. Puedes editarlo.', 'info', 4000);
+        }
+    }, 300);
 }
 
 function iniciarSesionAdmin() {
@@ -1621,6 +1664,28 @@ function actualizarBarraRol(nombre, placa) {
     }
 }
 
+function actualizarIdentificacion() {
+    const id = $('identificacion');
+    if (rolActual !== 'usuario' || !placaSelect.value || conductorSelect.value === '') {
+        id.textContent = "👋 Seleccione una placa y un conductor, luego presione INGRESAR";
+        id.classList.remove('con-registro');
+        return;
+    }
+
+    const lista = obtenerConductoresPorPlaca(placaSelect.value);
+    const conductor = lista[parseInt(conductorSelect.value)]?.nombre;
+    const registro = obtenerRegistroLocal(placaSelect.value, conductor, mesSelect.value);
+
+    if (registro) {
+        const totalDias = (registro.diurno?.length || 0) + (registro.noche?.length || 0);
+        id.textContent = `🚗 ${placaSelect.value} — 👤 ${conductor} — 📋 Ya registrado (${totalDias} días)`;
+        id.classList.add('con-registro');
+    } else {
+        id.textContent = `🚗 ${placaSelect.value} — 👤 ${conductor} — 🆕 Sin registro previo`;
+        id.classList.remove('con-registro');
+    }
+}
+
 function cerrarSesion() {
     mostrarConfirm('¿Está seguro de cerrar sesión?', (ok) => {
         if (!ok) return;
@@ -1639,6 +1704,7 @@ function cerrarSesion() {
         conductorSelect.innerHTML = '<option value="">Seleccione un conductor</option>';
         btnIngresar.disabled = true;
         btnGuardarYVer.disabled = true;
+        actualizarIdentificacion();
     }, 'Cerrar Sesión');
 }
 
@@ -1667,6 +1733,20 @@ function guardarYVer() {
         return;
     }
 
+    // Detectar si está sobreescribiendo
+    const lista = obtenerConductoresPorPlaca(placaSelect.value);
+    const nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
+    const registroExistente = obtenerRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
+
+    if (registroExistente) {
+        mostrarConfirm(
+            'Ya tienes un registro para este mes. ¿Deseas reemplazarlo con la nueva selección?',
+            ok => { if (ok) _guardarYVerInterno(); },
+            'Sobrescribir registro'
+        );
+        return;
+    }
+
     _guardarYVerInterno();
 }
 
@@ -1685,8 +1765,8 @@ function _guardarYVerInterno() {
         conductor: nombreConductor,
         placa: placaSelect.value,
         mes: mesSelect.value,
-        diurno: Array.from(diurno),
-        noche: Array.from(noche)
+        diurno: Array.from(diurno).sort((a,b)=>a-b),
+        noche: Array.from(noche).sort((a,b)=>a-b)
     };
 
     const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -1712,6 +1792,8 @@ function _guardarYVerInterno() {
         btn.style.backgroundColor = '';
         btn.disabled = false;
         _guardandoEnProgreso = false;
+        actualizarIdentificacion();
+        actualizarBotonBorrar();
     };
 
     fetch(GOOGLE_SHEETS_URL, {
@@ -1735,6 +1817,167 @@ function _guardarYVerInterno() {
         setTimeout(restaurar, 3000);
         setTimeout(() => abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value), 300);
     });
+}
+
+
+/* ============================================================
+   BORRAR REGISTRO PROPIO (Conductor)
+   ============================================================ */
+
+function borrarMiRegistro() {
+    if (placaSelect.value === "" || conductorSelect.value === "") {
+        mostrarToast("No hay registro seleccionado", 'warning');
+        return;
+    }
+
+    const lista = obtenerConductoresPorPlaca(placaSelect.value);
+    const nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
+
+    mostrarConfirm(
+        `¿Estás seguro de borrar tu registro de ${MESES[String(mesSelect.value)]}? Esta acción no se puede deshacer.`,
+        (ok) => {
+            if (!ok) return;
+
+            const eliminado = eliminarRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
+
+            if (eliminado) {
+                // Enviar POST con total=0 para sobrescribir en Sheets
+                const data = {
+                    placa: placaSelect.value,
+                    conductor: nombreConductor,
+                    mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
+                    diurno: '',
+                    noche: '',
+                    total: 0
+                };
+
+                fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).then(() => {
+                    mostrarToast('🗑️ Registro borrado correctamente', 'success');
+                }).catch(() => {
+                    mostrarToast('🗑️ Borrado localmente (sin conexión)', 'warning');
+                });
+
+                // Limpiar calendario y estado
+                diurno.clear();
+                noche.clear();
+                crearCalendarios();
+                actualizarResumen();
+                actualizarIdentificacion();
+                actualizarBotonBorrar();
+            } else {
+                mostrarToast('No se encontró el registro', 'error');
+            }
+        },
+        'Borrar mi registro'
+    );
+}
+
+function actualizarBotonBorrar() {
+    if (rolActual !== 'usuario') {
+        btnBorrarRegistro.classList.remove('visible');
+        return;
+    }
+    if (placaSelect.value === "" || conductorSelect.value === "") {
+        btnBorrarRegistro.classList.remove('visible');
+        return;
+    }
+    const lista = obtenerConductoresPorPlaca(placaSelect.value);
+    const nombreConductor = lista[parseInt(conductorSelect.value)]?.nombre;
+    if (!nombreConductor) {
+        btnBorrarRegistro.classList.remove('visible');
+        return;
+    }
+    const registro = obtenerRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
+    if (registro) {
+        btnBorrarRegistro.classList.add('visible');
+    } else {
+        btnBorrarRegistro.classList.remove('visible');
+    }
+}
+
+
+/* ============================================================
+   BORRAR REGISTRO (Admin)
+   ============================================================ */
+
+function borrarRegistroAdmin(placa, conductor, mes) {
+    const nombreMes = MESES[String(mes)] || 'Mes ' + mes;
+
+    mostrarConfirm(
+        `¿Borrar el registro de "${conductor}" (${placa}) para ${nombreMes}? Esta acción no se puede deshacer.`,
+        (ok) => {
+            if (!ok) return;
+
+            const eliminado = eliminarRegistroLocal(placa, conductor, mes);
+
+            if (!eliminado) {
+                mostrarToast('No se encontró el registro local', 'error');
+                return;
+            }
+
+            // Enviar POST con total=0 para sobrescribir en Sheets
+            const data = {
+                placa: placa,
+                conductor: conductor,
+                mes: nombreMes + ' ' + AÑO,
+                diurno: '',
+                noche: '',
+                total: 0
+            };
+
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                mostrarToast('🗑️ Registro borrado', 'success');
+            }).catch(() => {
+                mostrarToast('🗑️ Borrado localmente', 'warning');
+            });
+
+            // Refrescar vistas
+            cargarVisualizacion();
+            if (vistaActual === 'calendario') cargarCalendarioMensual();
+        },
+        'Borrar registro'
+    );
+}
+
+
+/* ============================================================
+   EDITAR REGISTRO (Admin) — Carga en pestaña Registrar
+   ============================================================ */
+
+function editarRegistroAdmin(placa, conductor, mes) {
+    // Cambiar a rol admin (por si acaso), luego cargar datos
+    const lista = obtenerConductoresPorPlaca(placa);
+    const indice = lista.findIndex(c => c.nombre === conductor);
+
+    if (indice === -1) {
+        mostrarToast('Conductor no encontrado', 'error');
+        return;
+    }
+
+    // Setear los selects
+    placaSelect.value = placa;
+    cargarConductoresPorPlaca(placa);
+    conductorSelect.value = indice;
+    mesSelect.value = mes;
+
+    // Cambiar a la pestaña Registrar
+    cambiarTab('registrar');
+
+    // Cargar calendario
+    setTimeout(() => {
+        ingresar();
+        mostrarToast('✏️ Editando registro. Modifica los días y guarda para actualizar.', 'info', 4000);
+    }, 200);
 }
 
 
@@ -1933,7 +2176,6 @@ async function cargarVisualizacion() {
 
         const registros = {};
         if (Array.isArray(data)) {
-            // ✅ Saltar la primera fila (encabezados)
             const filas = data.slice(1);
 
             filas.forEach(row => {
@@ -1953,6 +2195,10 @@ async function cargarVisualizacion() {
                     .split(',').map(s => parseInt(s.trim()))
                     .filter(n => !isNaN(n));
 
+                // Ignorar registros con total=0 (fueron borrados)
+                const total = (row[5] !== undefined) ? Number(row[5]) : (d.length + n.length);
+                if (total === 0 && d.length === 0 && n.length === 0) return;
+
                 let mesNum = "8";
                 if (mes.includes('Septiembre')) mesNum = "8";
                 else if (mes.includes('Octubre')) mesNum = "9";
@@ -1964,11 +2210,10 @@ async function cargarVisualizacion() {
             });
         }
 
-        // Fusionar con locales
+        // Fusionar con locales (los locales tienen prioridad)
         const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-        for (const k in locales) if (!registros[k]) registros[k] = locales[k];
+        for (const k in locales) registros[k] = locales[k];
 
-        // Filtrar
         let filtrados = [];
         for (const k in registros) {
             const r = registros[k];
@@ -2021,9 +2266,22 @@ async function cargarVisualizacion() {
                 <td>${dStr}</td>
                 <td>${nStr}</td>
                 <td>${total} días</td>
-                <td><button class="btn-ver-detalle"
-                    onclick="abrirDetalleConductor('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
-                    📋 Ver</button></td>
+                <td>
+                    <div class="acciones-celda">
+                        <button class="btn-ver-detalle"
+                            onclick="abrirDetalleConductor('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                            📋 Ver
+                        </button>
+                        <button class="btn-editar"
+                            onclick="editarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-eliminar"
+                            onclick="borrarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                            🗑️ Borrar
+                        </button>
+                    </div>
+                </td>
             </tr>`;
         });
 
@@ -2074,9 +2332,22 @@ async function cargarVisualizacion() {
                     <td>${dStr}</td>
                     <td>${nStr}</td>
                     <td>${total} días</td>
-                    <td><button class="btn-ver-detalle"
-                        onclick="abrirDetalleConductor('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
-                        📋 Ver</button></td>
+                    <td>
+                        <div class="acciones-celda">
+                            <button class="btn-ver-detalle"
+                                onclick="abrirDetalleConductor('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                                📋 Ver
+                            </button>
+                            <button class="btn-editar"
+                                onclick="editarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                                ✏️ Editar
+                            </button>
+                            <button class="btn-eliminar"
+                                onclick="borrarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                                🗑️ Borrar
+                            </button>
+                        </div>
+                    </td>
                 </tr>`;
             });
 
@@ -2103,7 +2374,7 @@ async function cargarVisualizacion() {
 
 
 /* ============================================================
-   CALENDARIO MENSUAL - REDISEÑADO PARA 40 CONDUCTORES
+   CALENDARIO MENSUAL
    ============================================================ */
 
 function cargarCalendarioMensual() {
@@ -2114,7 +2385,6 @@ function cargarCalendarioMensual() {
     const filtroConductor = $('filtroConductor').value;
     const filtroMes = $('filtroMes').value;
 
-    // Usar datos locales + fusionar con los que ya cargó cargarVisualizacion
     const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     const mesNum = parseInt(filtroMes);
     const diasMes = diasDelMes(AÑO, mesNum);
@@ -2138,7 +2408,6 @@ function cargarCalendarioMensual() {
         return;
     }
 
-    // Construir mapa de días: { 1: [{diurno:[], noche:[]}, ...], 2: ... }
     const diasMap = {};
     for (let d = 1; d <= diasMes; d++) {
         diasMap[d] = { diurno: [], noche: [] };
@@ -2156,7 +2425,7 @@ function cargarCalendarioMensual() {
     let html = `
         <div style="text-align:center; margin-bottom:15px;">
             <h3 style="color:#17365d;">📅 ${MESES[String(mesNum)]} ${AÑO}</h3>
-            <span style="font-size:13px; color:#888;">${filtrados.length} conductores registrados • ${DIAS_SEMANA.length} días/semana</span>
+            <span style="font-size:13px; color:#888;">${filtrados.length} conductores registrados</span>
         </div>
         <div class="leyenda-calendario">
             <span class="item"><span class="color diurno"></span> Diurno</span>
@@ -2205,7 +2474,6 @@ function cargarCalendarioMensual() {
     html += `</div>`;
     contenedor.innerHTML = html;
 
-    // Guardar referencia para el panel de detalle
     window._diasMapActual = diasMap;
     window._mesActualCalendario = mesNum;
 }
@@ -2220,7 +2488,6 @@ function abrirPanelDetalleDia(dia) {
     const mesNum = window._mesActualCalendario || 8;
     const info = diasMap[dia] || { diurno: [], noche: [] };
 
-    // Ordenar alfabéticamente
     const diurnoOrdenado = info.diurno.slice().sort((a,b)=>a.localeCompare(b));
     const nocheOrdenado = info.noche.slice().sort((a,b)=>a.localeCompare(b));
 
@@ -2246,7 +2513,7 @@ function abrirPanelDetalleDia(dia) {
 }
 
 function renderPanelDetalle() {
-    const { diurno: diurnoLista, noche: nocheLista, dia } = _detalleDiaActual;
+    const { diurno: diurnoLista, noche: nocheLista } = _detalleDiaActual;
     const body = $('panelDetalleBody');
 
     let html = '';
@@ -2282,7 +2549,6 @@ function renderPanelDetalle() {
     }
 
     body.innerHTML = html;
-    // Re-aplicar filtro si hay texto
     filtrarPanelDetalle();
 }
 
@@ -2295,7 +2561,6 @@ function filtrarPanelDetalle() {
         li.style.display = (!query || nombre.includes(query)) ? '' : 'none';
     });
 
-    // Ocultar grupos vacíos
     document.querySelectorAll('#panelDetalleBody .grupo-turno').forEach(grupo => {
         const visibles = grupo.querySelectorAll('li:not([style*="display: none"])').length;
         grupo.style.display = visibles > 0 ? '' : 'none';
@@ -2690,6 +2955,7 @@ function ocultarCalendario() {
     $("contenedorCalendario").style.display = "none";
     $("contenedorResumen").classList.remove("visible");
     $("contenedorResumen").style.display = "none";
+    btnBorrarRegistro.classList.remove('visible');
 
     ['diurno', 'noche'].forEach(tipo => {
         const wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
@@ -2730,6 +2996,8 @@ function ingresar() {
     cargarDisponibilidadGuardada();
     crearCalendarios();
     actualizarResumen();
+    actualizarBotonBorrar();
+    actualizarIdentificacion();
 
     ['diurno', 'noche'].forEach(tipo => {
         const wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
@@ -2884,32 +3152,40 @@ placaSelect.addEventListener("change", function() {
         cargarConductoresPorPlaca(this.value);
         conductorSelect.value = "";
         btnIngresar.disabled = (this.value === "" || conductorSelect.value === "");
-        $("identificacion").textContent = this.value === ""
-            ? "👋 Seleccione una placa y un conductor, luego presione INGRESAR"
-            : "👤 Seleccione un conductor para la placa " + this.value;
+        actualizarIdentificacion();
         ocultarCalendario();
+        actualizarBotonBorrar();
     }
 });
 
 conductorSelect.addEventListener("change", function() {
     if (rolActual === 'admin') {
         btnIngresar.disabled = (placaSelect.value === "" || this.value === "");
-        if (placaSelect.value !== "" && this.value !== "") {
-            const lista = obtenerConductoresPorPlaca(placaSelect.value);
-            $("identificacion").textContent = "🚗 " + placaSelect.value + " — 👤 " + lista[parseInt(this.value)].nombre;
-        }
+        actualizarIdentificacion();
         ocultarCalendario();
+        actualizarBotonBorrar();
+    } else {
+        actualizarBotonBorrar();
     }
 });
 
-mesSelect.addEventListener("change", ocultarCalendario);
+mesSelect.addEventListener("change", function() {
+    ocultarCalendario();
+    actualizarIdentificacion();
+    actualizarBotonBorrar();
+    // Auto-recargar si es conductor y ya tiene registro en ese mes
+    if (rolActual === 'usuario' && conductorLogueado) {
+        const registro = obtenerRegistroLocal(placaSelect.value, conductorLogueado, this.value);
+        if (registro) {
+            ingresar();
+        }
+    }
+});
 
-// Cerrar panel de detalle al hacer click en el fondo
 $('panelDetalleDia').addEventListener('click', function(e) {
     if (e.target === this) cerrarPanelDetalle();
 });
 
-// Cerrar con Escape
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         if ($('panelDetalleDia').classList.contains('active')) cerrarPanelDetalle();
@@ -2931,6 +3207,7 @@ function iniciar() {
 
     $('tabVisualizarBtn').style.display = 'none';
     btnGuardarYVer.disabled = true;
+    btnBorrarRegistro.classList.remove('visible');
 
     verificarUrlAdmin();
 
@@ -2969,6 +3246,9 @@ window.cerrarConfirm = cerrarConfirm;
 window.abrirPanelDetalleDia = abrirPanelDetalleDia;
 window.cerrarPanelDetalle = cerrarPanelDetalle;
 window.filtrarPanelDetalle = filtrarPanelDetalle;
+window.borrarMiRegistro = borrarMiRegistro;
+window.borrarRegistroAdmin = borrarRegistroAdmin;
+window.editarRegistroAdmin = editarRegistroAdmin;
 
 
 /* ============================================================

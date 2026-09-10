@@ -28,7 +28,7 @@
 
     input, select, textarea { font-size: 16px; }
 
-    button, .dia, .logo-operativo-container, .tab-vista-btn, .tab-btn, .btn-rol {
+    button, .dia, .logo-operativo-container, .tab-vista-btn, .tab-btn, .btn-rol, .celda-dia {
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
     }
@@ -411,34 +411,296 @@
     .vista-calendario { display: none; }
     .vista-calendario.activo { display: block; }
 
+    /* ============================================ */
+    /* CALENDARIO MENSUAL - DISEÑO COMPACTO          */
+    /* Optimizado para 40+ conductores               */
+    /* ============================================ */
+
     .calendario-mensual {
-        display: grid; grid-template-columns: repeat(7, 1fr);
-        gap: 5px; margin-top: 15px;
-    }
-    .calendario-mensual .header-dia {
-        text-align: center; font-weight: bold; padding: 8px;
-        background: #17365d; color: white; border-radius: 6px; font-size: 12px;
-    }
-    .calendario-mensual .celda-dia {
-        min-height: 60px; border: 1px solid #ddd; border-radius: 6px;
-        padding: 4px; background: white; font-size: 12px; position: relative;
-    }
-    .calendario-mensual .celda-dia .numero {
-        font-weight: bold; font-size: 13px; text-align: center;
-    }
-    .calendario-mensual .celda-dia .conductores { font-size: 9px; margin-top: 2px; }
-    .calendario-mensual .celda-dia .conductor-item {
-        display: block; padding: 1px 4px; border-radius: 3px;
-        margin: 1px 0; font-size: 8px; white-space: nowrap;
-        overflow: hidden; text-overflow: ellipsis;
-    }
-    .calendario-mensual .celda-dia .conductor-item.diurno {
-        background: #d9ead3; color: #1a7a3a;
-    }
-    .calendario-mensual .celda-dia .conductor-item.noche {
-        background: #d4e6f1; color: #1a5276;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        margin-top: 15px;
     }
 
+    .calendario-mensual .header-dia {
+        text-align: center;
+        font-weight: bold;
+        padding: 10px 4px;
+        background: #17365d;
+        color: white;
+        border-radius: 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .calendario-mensual .celda-dia {
+        min-height: 78px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background: white;
+        font-size: 12px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .calendario-mensual .celda-dia.vacia {
+        background: #fafafa;
+        border-color: #f0f0f0;
+    }
+
+    .calendario-mensual .celda-dia.con-conductores {
+        cursor: pointer;
+    }
+
+    .calendario-mensual .celda-dia.con-conductores:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    /* Barra superior de color según tipo de turno */
+    .calendario-mensual .celda-dia .barra-turno {
+        height: 5px;
+        background: #e8e8e8;
+        border-radius: 8px 8px 0 0;
+    }
+    .calendario-mensual .celda-dia .barra-turno.diurno {
+        background: linear-gradient(90deg, #27ae60, #52c07a);
+    }
+    .calendario-mensual .celda-dia .barra-turno.noche {
+        background: linear-gradient(90deg, #2980b9, #4fa8dd);
+    }
+    .calendario-mensual .celda-dia .barra-turno.ambos {
+        background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
+    }
+
+    /* Contenido interior */
+    .calendario-mensual .celda-dia .contenido-dia {
+        padding: 5px 7px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex: 1;
+        gap: 3px;
+    }
+
+    .calendario-mensual .celda-dia .numero {
+        font-weight: bold;
+        font-size: 15px;
+        color: #17365d;
+        line-height: 1;
+    }
+
+    /* Contadores del día */
+    .calendario-mensual .celda-dia .contadores {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 100%;
+        margin-top: auto;
+    }
+
+    .calendario-mensual .celda-dia .contador {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 10px;
+        white-space: nowrap;
+        line-height: 1.2;
+        width: fit-content;
+    }
+    .calendario-mensual .celda-dia .contador.diurno {
+        background: #d9ead3;
+        color: #1a7a3a;
+    }
+    .calendario-mensual .celda-dia .contador.noche {
+        background: #d4e6f1;
+        color: #1a5276;
+    }
+
+    /* Indicador de "ver más" */
+    .calendario-mensual .celda-dia .ver-mas {
+        font-size: 9px;
+        color: #999;
+        text-align: right;
+        width: 100%;
+        margin-top: 2px;
+    }
+
+    /* ============================================ */
+    /* PANEL DE DETALLE DEL DÍA                       */
+    /* Optimizado para 40 conductores                 */
+    /* ============================================ */
+
+    .panel-detalle-dia {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 5000;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+    }
+    .panel-detalle-dia.active { display: flex; }
+
+    .panel-detalle-content {
+        background: white;
+        border-radius: 14px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        animation: modalFadeIn 0.25s ease;
+        overflow: hidden;
+    }
+
+    .panel-detalle-header {
+        background: linear-gradient(135deg, #17365d 0%, #1a4a7a 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .panel-detalle-header h3 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.3;
+    }
+    .panel-detalle-header .subtitulo-panel {
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 3px;
+        font-weight: normal;
+    }
+    .panel-detalle-header .btn-cerrar-panel {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+    .panel-detalle-header .btn-cerrar-panel:hover {
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* Barra de búsqueda dentro del panel */
+    .panel-busqueda {
+        padding: 10px 15px;
+        background: #f7f9fb;
+        border-bottom: 1px solid #e0e0e0;
+        flex-shrink: 0;
+    }
+    .panel-busqueda input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        background: white;
+    }
+    .panel-busqueda input:focus {
+        outline: none;
+        border-color: #17365d;
+    }
+
+    .panel-detalle-body {
+        padding: 15px;
+        overflow-y: auto;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .panel-detalle-body .grupo-turno {
+        margin-bottom: 18px;
+    }
+    .panel-detalle-body .grupo-turno:last-child {
+        margin-bottom: 0;
+    }
+
+    .panel-detalle-body .grupo-turno .titulo-grupo {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 0 8px 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .panel-detalle-body .grupo-turno.diurno .titulo-grupo {
+        background: #d9ead3;
+        color: #1a7a3a;
+    }
+    .panel-detalle-body .grupo-turno.noche .titulo-grupo {
+        background: #d4e6f1;
+        color: #1a5276;
+    }
+    .panel-detalle-body .grupo-turno .titulo-grupo .count {
+        background: rgba(255,255,255,0.6);
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+    }
+
+    .panel-detalle-body ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .panel-detalle-body ul li {
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        line-height: 1.3;
+    }
+    .panel-detalle-body .grupo-turno.diurno ul li {
+        background: #f1f8ed;
+        color: #1a5a2a;
+        border-left: 3px solid #27ae60;
+    }
+    .panel-detalle-body .grupo-turno.noche ul li {
+        background: #eef5fb;
+        color: #1a4a6e;
+        border-left: 3px solid #2980b9;
+    }
+
+    .panel-detalle-body .sin-datos {
+        text-align: center;
+        padding: 30px 15px;
+        color: #999;
+        font-style: italic;
+        font-size: 14px;
+    }
+
+    /* Leyenda del calendario */
     .leyenda-calendario {
         display: flex; gap: 20px; margin: 15px 0;
         flex-wrap: wrap; font-size: 12px; justify-content: center;
@@ -447,10 +709,10 @@
     .leyenda-calendario .color {
         width: 20px; height: 20px; border-radius: 4px; border: 1px solid #ccc;
     }
-    .leyenda-calendario .color.diurno { background: #d9ead3; }
-    .leyenda-calendario .color.noche { background: #d4e6f1; }
+    .leyenda-calendario .color.diurno { background: #27ae60; }
+    .leyenda-calendario .color.noche { background: #2980b9; }
     .leyenda-calendario .color.ambos {
-        background: linear-gradient(135deg, #d9ead3 50%, #d4e6f1 50%);
+        background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
     }
 
     .btn-reporte {
@@ -638,13 +900,39 @@
         }
         .tabla-disponibilidad .disponible-tag { font-size: 10px; padding: 1px 5px; }
 
+        /* Calendario mensual en móvil: celdas más compactas */
         .calendario-mensual { gap: 3px; }
-        .calendario-mensual .header-dia { font-size: 10px; padding: 5px 2px; }
-        .calendario-mensual .celda-dia {
-            min-height: 45px; padding: 3px; font-size: 10px;
+        .calendario-mensual .header-dia {
+            font-size: 10px; padding: 6px 2px;
         }
-        .calendario-mensual .celda-dia .numero { font-size: 12px; }
-        .calendario-mensual .celda-dia .conductores { display: none; }
+        .calendario-mensual .celda-dia {
+            min-height: 62px;
+            border-radius: 6px;
+        }
+        .calendario-mensual .celda-dia .contenido-dia {
+            padding: 4px 5px;
+            gap: 2px;
+        }
+        .calendario-mensual .celda-dia .numero { font-size: 13px; }
+        .calendario-mensual .celda-dia .contador {
+            font-size: 9px;
+            padding: 1px 4px;
+        }
+        .calendario-mensual .celda-dia .barra-turno { height: 4px; }
+        .calendario-mensual .celda-dia .ver-mas { display: none; }
+
+        /* Panel detalle en móvil */
+        .panel-detalle-dia {
+            padding: 0;
+            align-items: flex-end;
+        }
+        .panel-detalle-content {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 14px 14px 0 0;
+        }
+        .panel-detalle-header h3 { font-size: 15px; }
+        .panel-detalle-body ul li { font-size: 12px; padding: 7px 10px; }
 
         .leyenda-calendario { gap: 10px; font-size: 11px; }
         .leyenda-calendario .color { width: 16px; height: 16px; }
@@ -664,6 +952,8 @@
         .dia .numero { font-size: 13px; }
         .nombre-dia { font-size: 10px; }
         .tab-btn, .tab-vista-btn { font-size: 11px; padding: 8px 12px; }
+        .calendario-mensual .celda-dia { min-height: 55px; }
+        .calendario-mensual .celda-dia .numero { font-size: 12px; }
     }
 </style>
 
@@ -685,7 +975,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v2.2</div>
+        <div class="version">Sistema de Disponibilidad v2.3</div>
     </div>
 </header>
 
@@ -789,6 +1079,26 @@
         <div class="confirm-botones">
             <button class="btn-cancelar-confirm" onclick="cerrarConfirm(false)">Cancelar</button>
             <button class="btn-aceptar-confirm" onclick="cerrarConfirm(true)">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Panel de detalle del día (para calendario mensual) -->
+<div class="panel-detalle-dia" id="panelDetalleDia">
+    <div class="panel-detalle-content">
+        <div class="panel-detalle-header">
+            <div>
+                <h3 id="panelTitulo">Día 1</h3>
+                <div class="subtitulo-panel" id="panelSubtitulo">Detalle de disponibilidad</div>
+            </div>
+            <button class="btn-cerrar-panel" onclick="cerrarPanelDetalle()">✕</button>
+        </div>
+        <div class="panel-busqueda">
+            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." oninput="filtrarPanelDetalle()">
+        </div>
+        <div class="panel-detalle-body" id="panelDetalleBody">
+            <!-- Contenido dinámico -->
         </div>
     </div>
 </div>
@@ -1057,6 +1367,7 @@ let calendarioVisible = false;
 let vistaActual = 'tabla';
 let _guardandoEnProgreso = false;
 let _confirmCallback = null;
+let _detalleDiaActual = { dia: null, diurno: [], noche: [] };
 
 const $ = (id) => document.getElementById(id);
 
@@ -1792,7 +2103,7 @@ async function cargarVisualizacion() {
 
 
 /* ============================================================
-   CALENDARIO MENSUAL
+   CALENDARIO MENSUAL - REDISEÑADO PARA 40 CONDUCTORES
    ============================================================ */
 
 function cargarCalendarioMensual() {
@@ -1803,6 +2114,7 @@ function cargarCalendarioMensual() {
     const filtroConductor = $('filtroConductor').value;
     const filtroMes = $('filtroMes').value;
 
+    // Usar datos locales + fusionar con los que ya cargó cargarVisualizacion
     const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     const mesNum = parseInt(filtroMes);
     const diasMes = diasDelMes(AÑO, mesNum);
@@ -1826,60 +2138,173 @@ function cargarCalendarioMensual() {
         return;
     }
 
+    // Construir mapa de días: { 1: [{diurno:[], noche:[]}, ...], 2: ... }
     const diasMap = {};
-    for (let d = 1; d <= diasMes; d++) diasMap[d] = [];
+    for (let d = 1; d <= diasMes; d++) {
+        diasMap[d] = { diurno: [], noche: [] };
+    }
 
     filtrados.forEach(r => {
-        (r.diurno || []).forEach(d => { if (diasMap[d]) diasMap[d].push({ nombre: r.conductor, tipo: 'diurno' }); });
-        (r.noche || []).forEach(d => { if (diasMap[d]) diasMap[d].push({ nombre: r.conductor, tipo: 'noche' }); });
+        (r.diurno || []).forEach(d => {
+            if (diasMap[d]) diasMap[d].diurno.push(r.conductor);
+        });
+        (r.noche || []).forEach(d => {
+            if (diasMap[d]) diasMap[d].noche.push(r.conductor);
+        });
     });
 
     let html = `
         <div style="text-align:center; margin-bottom:15px;">
             <h3 style="color:#17365d;">📅 ${MESES[String(mesNum)]} ${AÑO}</h3>
-            <span style="font-size:13px; color:#888;">${filtrados.length} conductores registrados</span>
+            <span style="font-size:13px; color:#888;">${filtrados.length} conductores registrados • ${DIAS_SEMANA.length} días/semana</span>
         </div>
         <div class="leyenda-calendario">
             <span class="item"><span class="color diurno"></span> Diurno</span>
             <span class="item"><span class="color noche"></span> Noche</span>
-            <span class="item"><span class="color ambos"></span> Ambos</span>
+            <span class="item"><span class="color ambos"></span> Ambos turnos</span>
         </div>
         <div class="calendario-mensual">`;
 
     DIAS_SEMANA.forEach(d => { html += `<div class="header-dia">${d}</div>`; });
-    for (let i = 0; i < posIni; i++) html += `<div style="background:#f5f5f5; border-radius:6px;"></div>`;
+    for (let i = 0; i < posIni; i++) {
+        html += `<div class="celda-dia vacia"></div>`;
+    }
 
     for (let dia = 1; dia <= diasMes; dia++) {
-        const listaDia = diasMap[dia] || [];
-        let clase = '';
-        if (listaDia.length > 0) {
-            const tD = listaDia.some(c => c.tipo === 'diurno');
-            const tN = listaDia.some(c => c.tipo === 'noche');
-            if (tD && tN) clase = 'ambos';
-            else if (tD) clase = 'diurno';
-            else if (tN) clase = 'noche';
+        const info = diasMap[dia];
+        const tieneD = info.diurno.length > 0;
+        const tieneN = info.noche.length > 0;
+        const totalConductores = info.diurno.length + info.noche.length;
+
+        let claseBarra = '';
+        if (tieneD && tieneN) claseBarra = 'ambos';
+        else if (tieneD) claseBarra = 'diurno';
+        else if (tieneN) claseBarra = 'noche';
+
+        const clickable = totalConductores > 0 ? 'con-conductores' : '';
+        const onclick = totalConductores > 0 ? `onclick="abrirPanelDetalleDia(${dia})"` : '';
+
+        let contadoresHTML = '';
+        if (tieneD) {
+            contadoresHTML += `<span class="contador diurno">☀️ ${info.diurno.length}</span>`;
+        }
+        if (tieneN) {
+            contadoresHTML += `<span class="contador noche">🌙 ${info.noche.length}</span>`;
         }
 
-        let ch = '';
-        if (listaDia.length > 0) {
-            listaDia.slice(0, 3).forEach(c => {
-                ch += `<span class="conductor-item ${c.tipo}">${escapeHtml(c.nombre.substring(0, 15))}</span>`;
-            });
-            if (listaDia.length > 3) ch += `<span class="conductor-item" style="background:#eee;color:#666;">+${listaDia.length - 3} más</span>`;
-        }
-
-        const bg = clase === 'diurno' ? '#d9ead380' :
-                   clase === 'noche' ? '#d4e6f180' :
-                   clase === 'ambos' ? 'linear-gradient(135deg,#d9ead380 50%,#d4e6f180 50%)' : '';
-
-        html += `<div class="celda-dia" style="${bg ? 'background:' + bg : ''}">
-            <div class="numero">${dia}</div>
-            <div class="conductores">${ch}</div>
-        </div>`;
+        html += `
+            <div class="celda-dia ${clickable}" ${onclick}>
+                <div class="barra-turno ${claseBarra}"></div>
+                <div class="contenido-dia">
+                    <div class="numero">${dia}</div>
+                    <div class="contadores">${contadoresHTML}</div>
+                </div>
+            </div>`;
     }
 
     html += `</div>`;
     contenedor.innerHTML = html;
+
+    // Guardar referencia para el panel de detalle
+    window._diasMapActual = diasMap;
+    window._mesActualCalendario = mesNum;
+}
+
+
+/* ============================================================
+   PANEL DE DETALLE DEL DÍA
+   ============================================================ */
+
+function abrirPanelDetalleDia(dia) {
+    const diasMap = window._diasMapActual || {};
+    const mesNum = window._mesActualCalendario || 8;
+    const info = diasMap[dia] || { diurno: [], noche: [] };
+
+    // Ordenar alfabéticamente
+    const diurnoOrdenado = info.diurno.slice().sort((a,b)=>a.localeCompare(b));
+    const nocheOrdenado = info.noche.slice().sort((a,b)=>a.localeCompare(b));
+
+    _detalleDiaActual = {
+        dia: dia,
+        diurno: diurnoOrdenado,
+        noche: nocheOrdenado,
+        mesNum: mesNum
+    };
+
+    const nombreMes = MESES[String(mesNum)] + ' ' + AÑO;
+    const totalDiurno = diurnoOrdenado.length;
+    const totalNoche = nocheOrdenado.length;
+
+    $('panelTitulo').textContent = `📅 ${dia} de ${MESES[String(mesNum)]}`;
+    $('panelSubtitulo').textContent = `${nombreMes} • ${totalDiurno + totalNoche} conductor(es)`;
+
+    renderPanelDetalle();
+
+    $('panelBusqueda').value = '';
+    $('panelDetalleDia').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function renderPanelDetalle() {
+    const { diurno: diurnoLista, noche: nocheLista, dia } = _detalleDiaActual;
+    const body = $('panelDetalleBody');
+
+    let html = '';
+
+    if (diurnoLista.length === 0 && nocheLista.length === 0) {
+        html = '<div class="sin-datos">📭 No hay conductores disponibles este día</div>';
+    } else {
+        if (diurnoLista.length > 0) {
+            html += `<div class="grupo-turno diurno">
+                <div class="titulo-grupo">
+                    <span>☀️ Turno Diurno</span>
+                    <span class="count">${diurnoLista.length}</span>
+                </div>
+                <ul>`;
+            diurnoLista.forEach(nombre => {
+                html += `<li data-nombre="${escapeHtml(nombre.toLowerCase())}">${escapeHtml(nombre)}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+
+        if (nocheLista.length > 0) {
+            html += `<div class="grupo-turno noche">
+                <div class="titulo-grupo">
+                    <span>🌙 Turno Noche</span>
+                    <span class="count">${nocheLista.length}</span>
+                </div>
+                <ul>`;
+            nocheLista.forEach(nombre => {
+                html += `<li data-nombre="${escapeHtml(nombre.toLowerCase())}">${escapeHtml(nombre)}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+    }
+
+    body.innerHTML = html;
+    // Re-aplicar filtro si hay texto
+    filtrarPanelDetalle();
+}
+
+function filtrarPanelDetalle() {
+    const query = $('panelBusqueda').value.toLowerCase().trim();
+    const items = document.querySelectorAll('#panelDetalleBody li');
+
+    items.forEach(li => {
+        const nombre = li.dataset.nombre || '';
+        li.style.display = (!query || nombre.includes(query)) ? '' : 'none';
+    });
+
+    // Ocultar grupos vacíos
+    document.querySelectorAll('#panelDetalleBody .grupo-turno').forEach(grupo => {
+        const visibles = grupo.querySelectorAll('li:not([style*="display: none"])').length;
+        grupo.style.display = visibles > 0 ? '' : 'none';
+    });
+}
+
+function cerrarPanelDetalle() {
+    $('panelDetalleDia').classList.remove('active');
+    document.body.style.overflow = '';
 }
 
 
@@ -2479,6 +2904,18 @@ conductorSelect.addEventListener("change", function() {
 
 mesSelect.addEventListener("change", ocultarCalendario);
 
+// Cerrar panel de detalle al hacer click en el fondo
+$('panelDetalleDia').addEventListener('click', function(e) {
+    if (e.target === this) cerrarPanelDetalle();
+});
+
+// Cerrar con Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if ($('panelDetalleDia').classList.contains('active')) cerrarPanelDetalle();
+    }
+});
+
 
 /* ============================================================
    INICIAR
@@ -2529,6 +2966,9 @@ window.exportarExcel = exportarExcel;
 window.exportarPDF = exportarPDF;
 window.subirAGoogleSheets = subirAGoogleSheets;
 window.cerrarConfirm = cerrarConfirm;
+window.abrirPanelDetalleDia = abrirPanelDetalleDia;
+window.cerrarPanelDetalle = cerrarPanelDetalle;
+window.filtrarPanelDetalle = filtrarPanelDetalle;
 
 
 /* ============================================================

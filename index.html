@@ -12,18 +12,14 @@
 <!-- ============================================ -->
 <!-- LIBRERÍAS PARA PDF - jsPDF + autoTable       -->
 <!-- ============================================ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
 <!-- ============================================ -->
 <!-- LIBRERÍAS PARA EXCEL PROFESIONAL - ExcelJS   -->
 <!-- ============================================ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js">
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <style>
     * {
@@ -1263,7 +1259,7 @@
 
         <div class="header-derecha">
             <div class="fecha-actual" id="fechaActual"></div>
-            <div class="version">Sistema de Disponibilidad v2.0</div>
+            <div class="version">Sistema de Disponibilidad v2.1</div>
         </div>
 
     </header>
@@ -1517,15 +1513,16 @@
                 <!-- 3 OPCIONES DE VISUALIZACIÓN -->
                 <div style="margin-top:20px;">
                     <div class="tabs-visualizacion">
-                        <button class="tab-vista-btn activo" onclick="cambiarVista('tabla')">
+                        <!-- ✅ CORREGIDO: se añadió data-vista para identificación robusta -->
+                        <button class="tab-vista-btn activo" data-vista="tabla" onclick="cambiarVista('tabla')">
                             📋 TABLA
                             <span class="badge">Resumen</span>
                         </button>
-                        <button class="tab-vista-btn" onclick="cambiarVista('calendario')">
+                        <button class="tab-vista-btn" data-vista="calendario" onclick="cambiarVista('calendario')">
                             📅 CALENDARIO
                             <span class="badge">Mensual</span>
                         </button>
-                        <button class="tab-vista-btn" onclick="cambiarVista('reporte')">
+                        <button class="tab-vista-btn" data-vista="reporte" onclick="cambiarVista('reporte')">
                             📊 REPORTE
                             <span class="badge">Descargar</span>
                         </button>
@@ -1650,6 +1647,9 @@
 
         const CLAVE_ADMIN = "ADMIN2026";
 
+        // ✅ CORREGIDO: Año centralizado para evitar hardcodeo disperso
+        const AÑO = 2026;
+
 
         /*
         ==================================================
@@ -1689,6 +1689,7 @@
 
         // =============================================
         // CONFIGURACIÓN DE GOOGLE SHEETS
+        // ✅ CORREGIDO: única declaración global (se eliminó la duplicada en guardarYVer)
         // =============================================
 
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
@@ -1712,6 +1713,13 @@
             return conductores.filter(function(item) {
                 return item.placa === placaSeleccionada;
             });
+        }
+
+        // ✅ CORREGIDO: helper para escapar HTML y evitar inyecciones en nombres
+        function escapeHtml(texto) {
+            const div = document.createElement('div');
+            div.textContent = String(texto == null ? '' : texto);
+            return div.innerHTML;
         }
 
 
@@ -1938,25 +1946,21 @@
         */
 
         function guardarYVer() {
-            // Verificar que haya una placa seleccionada
             if (placaSelect.value === "") {
                 alert("⚠️ Seleccione una placa.");
                 return;
             }
 
-            // Verificar que haya un conductor seleccionado
             if (conductorSelect.value === "") {
                 alert("⚠️ Seleccione un conductor.");
                 return;
             }
 
-            // Obtener los datos del conductor
             const conductoresFiltrados = obtenerConductoresPorPlaca(placaSelect.value);
             const indice = parseInt(conductorSelect.value);
             const nombreConductor = conductoresFiltrados[indice].nombre;
             const clave = nombreConductor + "_" + placaSelect.value + "_" + mesSelect.value;
 
-            // Crear el registro
             const registro = {
                 conductor: nombreConductor,
                 placa: placaSelect.value,
@@ -1965,31 +1969,33 @@
                 noche: Array.from(noche)
             };
 
-            // 1. Guardar en localStorage (siempre)
             let registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
             registros[clave] = registro;
             localStorage.setItem("disponibilidades", JSON.stringify(registros));
             console.log('✅ Guardado en localStorage:', registro);
 
-            // 2. Preparar datos para Google Sheets
             const data = {
                 placa: placaSelect.value,
                 conductor: nombreConductor,
-                mes: MESES[String(mesSelect.value)] + ' 2026',
+                mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
                 diurno: Array.from(diurno).sort((a, b) => a - b).join(', '),
                 noche: Array.from(noche).sort((a, b) => a - b).join(', '),
                 total: diurno.size + noche.size
             };
 
-            // 3. Mostrar estado en el botón
             const btn = document.getElementById('btnGuardarYVer');
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = '⏳ Guardando...';
             btn.disabled = true;
 
-            // 4. Enviar a Google Sheets
-            const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
+            // ✅ CORREGIDO: helper para restaurar el botón (evita duplicación y garantiza disabled=false)
+            function restaurarBoton() {
+                btn.innerHTML = textoOriginal;
+                btn.style.backgroundColor = '';
+                btn.disabled = false;
+            }
 
+            // ✅ CORREGIDO: se usa la constante global GOOGLE_SHEETS_URL (sin redeclarar)
             fetch(GOOGLE_SHEETS_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -2000,28 +2006,18 @@
                 console.log('✅ Registro enviado a Google Sheets');
                 btn.innerHTML = '✅ ¡GUARDADO!';
                 btn.style.backgroundColor = '#27ae60';
-                
-                setTimeout(function() {
-                    btn.innerHTML = textoOriginal;
-                    btn.style.backgroundColor = '';
-                    btn.disabled = false;
-                }, 2000);
-                
-                // 5. Abrir el detalle del conductor
+
+                setTimeout(restaurarBoton, 2000);
+
                 abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value);
             })
             .catch(function(error) {
                 console.error('❌ Error al enviar a Google Sheets:', error);
                 btn.innerHTML = '⚠️ Error al guardar';
                 btn.style.backgroundColor = '#e74c3c';
-                
-                setTimeout(function() {
-                    btn.innerHTML = textoOriginal;
-                    btn.style.backgroundColor = '';
-                    btn.disabled = false;
-                }, 3000);
-                
-                // Aún así mostrar el detalle (guardado local)
+
+                setTimeout(restaurarBoton, 3000);
+
                 abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value);
             });
         }
@@ -2044,20 +2040,19 @@
             }
 
             const diurnoStr = registro.diurno && registro.diurno.length > 0 ?
-                registro.diurno.sort((a, b) => a - b).join(', ') : 'Ninguno';
+                registro.diurno.slice().sort((a, b) => a - b).join(', ') : 'Ninguno';
 
             const nocheStr = registro.noche && registro.noche.length > 0 ?
-                registro.noche.sort((a, b) => a - b).join(', ') : 'Ninguno';
+                registro.noche.slice().sort((a, b) => a - b).join(', ') : 'Ninguno';
 
             const total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
 
             const mesNumero = parseInt(registro.mes);
             let nombreMes = MESES[String(mesNumero)] || 'Mes ' + registro.mes;
-            nombreMes = nombreMes + ' 2026';
+            nombreMes = nombreMes + ' ' + AÑO;
 
-            // Calendario visual
-            const diasDelMes = new Date(2026, mesNumero + 1, 0).getDate();
-            const primerDia = new Date(2026, mesNumero, 1);
+            const diasDelMes = new Date(AÑO, mesNumero + 1, 0).getDate();
+            const primerDia = new Date(AÑO, mesNumero, 1);
             const posicionInicial = (primerDia.getDay() + 6) % 7;
 
             let calendarioHTML =
@@ -2101,7 +2096,7 @@
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Detalle - ${conductor}</title>
+                        <title>Detalle - ${escapeHtml(conductor)}</title>
                         <style>
                             * { box-sizing: border-box; }
                             body {
@@ -2214,18 +2209,18 @@
                         <div class="tarjeta">
                             <h2 style="text-align:center; margin-top:0; color:#17365d;">📋 Detalle de Disponibilidad</h2>
                             <div class="info-conductor">
-                                <div><div class="label">🚗 Placa</div><div class="valor">${registro.placa}</div></div>
-                                <div><div class="label">👤 Conductor</div><div class="valor">${registro.conductor}</div></div>
-                                <div><div class="label">📅 Mes</div><div class="valor">${nombreMes}</div></div>
+                                <div><div class="label">🚗 Placa</div><div class="valor">${escapeHtml(registro.placa)}</div></div>
+                                <div><div class="label">👤 Conductor</div><div class="valor">${escapeHtml(registro.conductor)}</div></div>
+                                <div><div class="label">📅 Mes</div><div class="valor">${escapeHtml(nombreMes)}</div></div>
                             </div>
                             <div class="resumen-dias">
                                 <div class="box diurno">
                                     <div class="titulo">☀️ DIURNO</div>
-                                    <div class="dias ${diurnoStr === 'Ninguno' ? 'sin' : ''}">${diurnoStr}</div>
+                                    <div class="dias ${diurnoStr === 'Ninguno' ? 'sin' : ''}">${escapeHtml(diurnoStr)}</div>
                                 </div>
                                 <div class="box noche">
                                     <div class="titulo">🌙 NOCHE</div>
-                                    <div class="dias ${nocheStr === 'Ninguno' ? 'sin' : ''}">${nocheStr}</div>
+                                    <div class="dias ${nocheStr === 'Ninguno' ? 'sin' : ''}">${escapeHtml(nocheStr)}</div>
                                 </div>
                             </div>
                             <div class="total-dias">📊 Total: <span style="color:#27ae60;">${total} días</span></div>
@@ -2242,32 +2237,32 @@
                     </html>
                 `;
 
-            const nuevaVentana = window.open('', '_blank');
-            nuevaVentana.document.write(contenido);
-            nuevaVentana.document.close();
+            // ✅ CORREGIDO: usar Blob + URL.createObjectURL en lugar de document.write
+            const blob = new Blob([contenido], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const nuevaVentana = window.open(url, '_blank');
+            if (!nuevaVentana) {
+                alert("⚠️ No se pudo abrir la ventana. Permita las ventanas emergentes en su navegador.");
+                URL.revokeObjectURL(url);
+                return;
+            }
+            // Liberar el Blob cuando la ventana se cierre o tras un tiempo prudente
+            setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
         }
 
 
         /*
         ==================================================
-        CAMBIAR VISTA (3 OPCIONES)
+        CAMBIAR VISTA (3 OPCIONES) - ✅ CORREGIDO
         ==================================================
         */
 
         function cambiarVista(vista) {
             vistaActual = vista;
 
-            // Actualizar botones
+            // ✅ CORREGIDO: uso de data-vista (comparación robusta, sin depender del texto)
             document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
-                btn.classList.remove('activo');
-            });
-            document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
-                if (btn.textContent.trim().includes(vista.toUpperCase()) ||
-                    btn.textContent.trim().includes(vista === 'tabla' ? 'TABLA' : '') ||
-                    btn.textContent.trim().includes(vista === 'calendario' ? 'CALENDARIO' : '') ||
-                    btn.textContent.trim().includes(vista === 'reporte' ? 'REPORTE' : '')) {
-                    btn.classList.add('activo');
-                }
+                btn.classList.toggle('activo', btn.dataset.vista === vista);
             });
 
             // Ocultar todas las vistas
@@ -2304,15 +2299,14 @@
 
             const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
             const mesNumero = parseInt(filtroMes);
-            const diasDelMes = new Date(2026, mesNumero + 1, 0).getDate();
-            const primerDia = new Date(2026, mesNumero, 1);
+            const diasDelMes = new Date(AÑO, mesNumero + 1, 0).getDate();
+            const primerDia = new Date(AÑO, mesNumero, 1);
             const posicionInicial = (primerDia.getDay() + 6) % 7;
 
-            // Filtrar registros
             let registrosFiltrados = [];
             for (const clave in registros) {
                 const registro = registros[clave];
-                if (registro.mes != filtroMes) continue;
+                if (String(registro.mes) !== String(filtroMes)) continue;
                 if (filtroPlaca && registro.placa !== filtroPlaca) continue;
                 if (filtroConductor && !registro.conductor.toUpperCase().includes(filtroConductor.toUpperCase()))
                 continue;
@@ -2329,7 +2323,6 @@
                 return;
             }
 
-            // Crear mapa de días
             const diasMap = {};
             for (let d = 1; d <= diasDelMes; d++) {
                 diasMap[d] = [];
@@ -2352,7 +2345,7 @@
 
             let html = `
                     <div style="text-align:center; margin-bottom:15px;">
-                        <h3 style="color:#17365d;">📅 ${MESES[String(mesNumero)]} 2026</h3>
+                        <h3 style="color:#17365d;">📅 ${MESES[String(mesNumero)]} ${AÑO}</h3>
                         <span style="font-size:13px; color:#888;">${registrosFiltrados.length} conductores registrados</span>
                     </div>
                     <div class="leyenda-calendario">
@@ -2386,8 +2379,8 @@
                 let conductoresHTML = '';
                 if (conductoresDia.length > 0) {
                     conductoresDia.slice(0, 3).forEach(function(c) {
-                        const clase = c.tipo === 'diurno' ? 'diurno' : 'noche';
-                        conductoresHTML += `<span class="conductor-item ${clase}">${c.nombre.substring(0, 15)}</span>`;
+                        const claseItem = c.tipo === 'diurno' ? 'diurno' : 'noche';
+                        conductoresHTML += `<span class="conductor-item ${claseItem}">${escapeHtml(c.nombre.substring(0, 15))}</span>`;
                     });
                     if (conductoresDia.length > 3) {
                         conductoresHTML +=
@@ -2418,16 +2411,13 @@
             const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
             const filtroMes = document.getElementById('filtroMes').value;
 
-            // =============================================
-            // 1. RECOPILAR DATOS
-            // =============================================
             const data = [];
             let totalDiurno = 0;
             let totalNoche = 0;
 
             for (const clave in registros) {
                 const r = registros[clave];
-                if (r.mes != filtroMes) continue;
+                if (String(r.mes) !== String(filtroMes)) continue;
 
                 const diurnoCount = r.diurno ? r.diurno.length : 0;
                 const nocheCount = r.noche ? r.noche.length : 0;
@@ -2437,9 +2427,9 @@
                 data.push({
                     placa: r.placa,
                     conductor: r.conductor,
-                    mes: MESES[String(r.mes)] + ' 2026',
-                    diurno: (r.diurno || []).sort((a, b) => a - b).join(', ') || 'Ninguno',
-                    noche: (r.noche || []).sort((a, b) => a - b).join(', ') || 'Ninguno',
+                    mes: MESES[String(r.mes)] + ' ' + AÑO,
+                    diurno: (r.diurno || []).slice().sort((a, b) => a - b).join(', ') || 'Ninguno',
+                    noche: (r.noche || []).slice().sort((a, b) => a - b).join(', ') || 'Ninguno',
                     total: diurnoCount + nocheCount
                 });
             }
@@ -2449,22 +2439,15 @@
                 return;
             }
 
-            // =============================================
-            // 2. CREAR LIBRO DE EXCEL
-            // =============================================
             const workbook = new ExcelJS.Workbook();
             workbook.creator = 'TRANSFERMATRI S.A.';
             workbook.created = new Date();
 
-            // =============================================
-            // 3. HOJA PRINCIPAL - DISPONIBILIDAD
-            // =============================================
             const ws = workbook.addWorksheet('Disponibilidad', {
                 properties: { tabColor: { argb: 'FF17365D' } },
                 pageSetup: { orientation: 'landscape', fitToPage: true }
             });
 
-            // --- TÍTULO ---
             ws.addRow(['TRANSFERMATRI S.A.']).getCell(1).font = {
                 name: 'Arial',
                 size: 16,
@@ -2484,7 +2467,7 @@
             ws.getRow(2).height = 25;
             ws.getRow(2).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            ws.addRow([]); // Espacio
+            ws.addRow([]);
 
             ws.addRow(['REPORTE DE DISPONIBILIDAD DE CONDUCTORES']).getCell(1).font = {
                 name: 'Arial',
@@ -2496,26 +2479,24 @@
             ws.getRow(4).height = 25;
             ws.getRow(4).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            ws.addRow([]); // Espacio
+            ws.addRow([]);
 
-            // --- INFORMACIÓN DEL REPORTE ---
             const infoRow = ws.addRow([
-                'Mes:', MESES[String(filtroMes)] + ' 2026',
+                'Mes:', MESES[String(filtroMes)] + ' ' + AÑO,
                 'Fecha:', new Date().toLocaleDateString('es-ES'),
                 'Hora:', new Date().toLocaleTimeString('es-ES')
             ]);
             infoRow.eachCell(function(cell, colNumber) {
-                if (colNumber % 2 === 0) { // Valores
+                if (colNumber % 2 === 0) {
                     cell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF17365D' } };
-                } else { // Etiquetas
+                } else {
                     cell.font = { name: 'Arial', size: 10, color: { argb: 'FF666666' } };
                 }
             });
             ws.getRow(6).height = 20;
 
-            ws.addRow([]); // Espacio
+            ws.addRow([]);
 
-            // --- ENCABEZADOS DE TABLA ---
             const headerRow = ws.addRow(['PLACA', 'CONDUCTOR', 'MES', 'DIAS DIURNO', 'DIAS NOCHE', 'TOTAL']);
             headerRow.eachCell(function(cell) {
                 cell.font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
@@ -2530,8 +2511,6 @@
             });
             ws.getRow(8).height = 25;
 
-            // --- DATOS ---
-            const startRow = 9;
             data.forEach(function(item, index) {
                 const row = ws.addRow([
                     item.placa,
@@ -2542,7 +2521,6 @@
                     item.total
                 ]);
 
-                // Color de fondo alternado
                 const fillColor = index % 2 === 0 ? 'FFF5F7FA' : 'FFFFFFFF';
 
                 row.eachCell(function(cell) {
@@ -2557,7 +2535,6 @@
                     };
                 });
 
-                // Resaltar columna TOTAL
                 const totalCell = row.getCell(6);
                 if (item.total === 0) {
                     totalCell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFC0392B' } };
@@ -2568,27 +2545,21 @@
                 }
                 totalCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-                // Placa en negrita y centrada
                 row.getCell(1).font = { name: 'Arial', size: 10, bold: true };
                 row.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
             });
 
-            // --- AJUSTAR ANCHOS DE COLUMNA ---
-            ws.getColumn(1).width = 15; // PLACA
-            ws.getColumn(2).width = 35; // CONDUCTOR
-            ws.getColumn(3).width = 20; // MES
-            ws.getColumn(4).width = 30; // DIAS DIURNO
-            ws.getColumn(5).width = 30; // DIAS NOCHE
-            ws.getColumn(6).width = 12; // TOTAL
+            ws.getColumn(1).width = 15;
+            ws.getColumn(2).width = 35;
+            ws.getColumn(3).width = 20;
+            ws.getColumn(4).width = 30;
+            ws.getColumn(5).width = 30;
+            ws.getColumn(6).width = 12;
 
-            // =============================================
-            // 4. HOJA DE RESUMEN
-            // =============================================
             const wsResumen = workbook.addWorksheet('Resumen', {
                 properties: { tabColor: { argb: 'FF27AE60' } }
             });
 
-            // Título
             wsResumen.addRow(['TRANSFERMATRI S.A.']).getCell(1).font = {
                 name: 'Arial',
                 size: 18,
@@ -2621,9 +2592,8 @@
 
             wsResumen.addRow([]);
 
-            // Información
             const infoData = [
-                ['Mes:', MESES[String(filtroMes)] + ' 2026'],
+                ['Mes:', MESES[String(filtroMes)] + ' ' + AÑO],
                 ['Fecha:', new Date().toLocaleDateString('es-ES')],
                 ['Hora:', new Date().toLocaleTimeString('es-ES')]
             ];
@@ -2636,7 +2606,6 @@
 
             wsResumen.addRow([]);
 
-            // Resumen
             const resumenRow = wsResumen.addRow(['RESUMEN GENERAL']);
             wsResumen.mergeCells('A8:B8');
             resumenRow.getCell(1).font = {
@@ -2661,9 +2630,7 @@
 
             resumenData.forEach(function(rowData, index) {
                 const row = wsResumen.addRow(rowData);
-                const rowNumber = 10 + index;
 
-                // Columna 1 (Concepto)
                 row.getCell(1).font = { name: 'Arial', size: 11 };
                 row.getCell(1).fill = {
                     type: 'pattern',
@@ -2671,7 +2638,6 @@
                     fgColor: { argb: index % 2 === 0 ? 'FFF5F7FA' : 'FFFFFFFF' }
                 };
 
-                // Columna 2 (Cantidad)
                 row.getCell(2).font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF17365D' } };
                 row.getCell(2).fill = {
                     type: 'pattern',
@@ -2682,14 +2648,10 @@
                 row.height = 20;
             });
 
-            // Ajustar anchos
             wsResumen.getColumn(1).width = 35;
             wsResumen.getColumn(2).width = 20;
 
-            // =============================================
-            // 5. DESCARGAR
-            // =============================================
-            const nombreArchivo = 'Disponibilidad_' + MESES[String(filtroMes)] + '_2026.xlsx';
+            const nombreArchivo = 'Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.xlsx';
 
             workbook.xlsx.writeBuffer().then(function(buffer) {
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -2711,9 +2673,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape', 'mm', 'a4');
 
-            // =============================================
-            // 1. ENCABEZADO DE LA EMPRESA
-            // =============================================
             const pageWidth = doc.internal.pageSize.getWidth();
 
             doc.setFontSize(22);
@@ -2728,9 +2687,6 @@
             doc.setLineWidth(0.5);
             doc.line(14, 30, pageWidth - 14, 30);
 
-            // =============================================
-            // 2. TÍTULO DEL REPORTE
-            // =============================================
             doc.setFontSize(16);
             doc.setTextColor(23, 54, 93);
             doc.text('INFORME DE DISPONIBILIDAD DE CONDUCTORES', pageWidth / 2, 38, { align: 'center' });
@@ -2738,14 +2694,11 @@
             doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
             const filtroMes = document.getElementById('filtroMes').value;
-            const mesTexto = MESES[filtroMes] + ' 2026';
+            const mesTexto = MESES[String(filtroMes)] + ' ' + AÑO;
             doc.text('Mes: ' + mesTexto, 14, 46);
             doc.text('Generado: ' + new Date().toLocaleDateString('es-ES') + ' ' + new Date().toLocaleTimeString('es-ES'),
                 pageWidth - 14, 46, { align: 'right' });
 
-            // =============================================
-            // 3. RECOPILAR TODOS LOS DATOS
-            // =============================================
             const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
 
             const data = [];
@@ -2756,7 +2709,7 @@
 
             for (const clave in registros) {
                 const r = registros[clave];
-                if (r.mes != filtroMes) continue;
+                if (String(r.mes) !== String(filtroMes)) continue;
 
                 const diurnoCount = r.diurno ? r.diurno.length : 0;
                 const nocheCount = r.noche ? r.noche.length : 0;
@@ -2768,8 +2721,8 @@
 
                 if (total === 0) conductoresSinDisponibilidad++;
 
-                const diurnoStr = (r.diurno || []).sort((a, b) => a - b).join(', ') || '--';
-                const nocheStr = (r.noche || []).sort((a, b) => a - b).join(', ') || '--';
+                const diurnoStr = (r.diurno || []).slice().sort((a, b) => a - b).join(', ') || '--';
+                const nocheStr = (r.noche || []).slice().sort((a, b) => a - b).join(', ') || '--';
 
                 data.push([
                     r.placa,
@@ -2787,9 +2740,6 @@
                 return;
             }
 
-            // =============================================
-            // 4. CREAR TABLA CON TODOS LOS DATOS
-            // =============================================
             doc.autoTable({
                 head: [
                     ['PLACA', 'CONDUCTOR', 'DIAS DIURNO', 'DIAS NOCHE', 'TOTAL']
@@ -2832,9 +2782,6 @@
                 }
             });
 
-            // =============================================
-            // 5. RESUMEN GENERAL
-            // =============================================
             let finalY = doc.lastAutoTable.finalY + 10;
 
             doc.setDrawColor(200, 200, 200);
@@ -2862,9 +2809,6 @@
             doc.text('Total dias noche: ' + totalNoche, col2x, rowY);
             doc.text('Total general: ' + (totalDiurno + totalNoche), col3x, rowY);
 
-            // =============================================
-            // 6. PIE DE PÁGINA
-            // =============================================
             const pageHeight = doc.internal.pageSize.getHeight();
             doc.setFontSize(8);
             doc.setTextColor(150, 150, 150);
@@ -2878,9 +2822,6 @@
             doc.text('TRANSFERMATRI S.A. - Reporte generado: ' + fechaHora, pageWidth / 2, pageHeight - 8,
             { align: 'center' });
 
-            // =============================================
-            // 7. GUARDAR PDF
-            // =============================================
             const nombreArchivo = 'Disponibilidad_' + mesTexto.replace(' ', '_') + '_' + new Date().toISOString().slice(0, 10) +
                 '.pdf';
             doc.save(nombreArchivo);
@@ -2897,7 +2838,6 @@
             const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
             const filtroMes = document.getElementById('filtroMes').value;
 
-            // Mostrar loading
             const btn = document.querySelector('.btn-google-sheets');
             if (!btn) return;
 
@@ -2910,15 +2850,15 @@
 
             for (const clave in registros) {
                 const r = registros[clave];
-                if (r.mes != filtroMes) continue;
+                if (String(r.mes) !== String(filtroMes)) continue;
                 totalRegistros++;
 
                 const data = {
                     placa: r.placa,
                     conductor: r.conductor,
-                    mes: MESES[String(r.mes)] + ' 2026',
-                    diurno: (r.diurno || []).sort((a, b) => a - b).join(', '),
-                    noche: (r.noche || []).sort((a, b) => a - b).join(', '),
+                    mes: MESES[String(r.mes)] + ' ' + AÑO,
+                    diurno: (r.diurno || []).slice().sort((a, b) => a - b).join(', '),
+                    noche: (r.noche || []).slice().sort((a, b) => a - b).join(', '),
                     total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)
                 };
 
@@ -2972,17 +2912,21 @@
             const filtroConductor = document.getElementById('filtroConductor').value;
             const filtroMes = document.getElementById('filtroMes').value;
 
-            // Mostrar loading
             contenedor.innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando datos desde Google Sheets...</p>';
 
             try {
                 // =============================================
                 // 1. CARGAR DATOS DESDE GOOGLE SHEETS
+                // ✅ CORREGIDO: se añade timeout para no colgar si falla la red
                 // =============================================
-                const response = await fetch(GOOGLE_SHEETS_URL);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                const response = await fetch(GOOGLE_SHEETS_URL, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
                 const data = await response.json();
 
-                // Convertir los datos de Google Sheets a registros
                 const registros = {};
                 if (Array.isArray(data) && data.length > 1) {
                     for (let i = 1; i < data.length; i++) {
@@ -2992,15 +2936,15 @@
                         const placa = String(row[0] || '').trim();
                         const conductor = String(row[1] || '').trim();
                         const mes = String(row[2] || '').trim();
-                        
+
                         if (!placa || !conductor) continue;
 
                         let diurnoStr = row[3] || '';
                         let nocheStr = row[4] || '';
-                        
+
                         if (Array.isArray(diurnoStr)) diurnoStr = diurnoStr.join(', ');
                         if (Array.isArray(nocheStr)) nocheStr = nocheStr.join(', ');
-                        
+
                         const diurno = String(diurnoStr).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
                         const noche = String(nocheStr).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
 
@@ -3072,7 +3016,7 @@
                     <button class="btn-ver-detalle" onclick="cambiarTab('registrar')" style="background-color:#27ae60; padding:10px 20px; margin-top:15px;">
                         📝 Ir a Registrar
                     </button>
-                    <button class="btn-ver-detalle" onclick="sincronizarDatos()" style="background-color:#2980b9; padding:10px 20px; margin-top:15px; margin-left:10px;">
+                    <button class="btn-ver-detalle" onclick="sincronizarDatos(this)" style="background-color:#2980b9; padding:10px 20px; margin-top:15px; margin-left:10px;">
                         🔄 Sincronizar
                     </button>
                 </div>
@@ -3082,6 +3026,7 @@
 
                 // =============================================
                 // 3. MOSTRAR TABLA
+                // ✅ CORREGIDO: nombres y placas escapados con escapeHtml
                 // =============================================
                 let html = `
             <div class="contenedor-tabla">
@@ -3102,29 +3047,29 @@
 
                 registrosFiltrados.forEach(function(registro) {
                     const diurnoStr = registro.diurno && registro.diurno.length > 0 ?
-                        registro.diurno.sort((a, b) => a - b).map(d => `<span class="disponible-tag">${d}</span>`).join(' ') :
+                        registro.diurno.slice().sort((a, b) => a - b).map(d => `<span class="disponible-tag">${d}</span>`).join(' ') :
                         '<span class="sin-disponibilidad">Ninguno</span>';
 
                     const nocheStr = registro.noche && registro.noche.length > 0 ?
-                        registro.noche.sort((a, b) => a - b).map(d => `<span class="disponible-tag">${d}</span>`).join(' ') :
+                        registro.noche.slice().sort((a, b) => a - b).map(d => `<span class="disponible-tag">${d}</span>`).join(' ') :
                         '<span class="sin-disponibilidad">Ninguno</span>';
 
                     const total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
 
                     const mesNumero = parseInt(registro.mes);
                     let nombreMes = MESES[String(mesNumero)] || 'Mes ' + registro.mes;
-                    nombreMes = nombreMes + ' 2026';
+                    nombreMes = nombreMes + ' ' + AÑO;
 
                     html += `
                 <tr>
-                    <td><strong>${registro.placa}</strong></td>
-                    <td>${registro.conductor}</td>
-                    <td>${nombreMes}</td>
+                    <td><strong>${escapeHtml(registro.placa)}</strong></td>
+                    <td>${escapeHtml(registro.conductor)}</td>
+                    <td>${escapeHtml(nombreMes)}</td>
                     <td>${diurnoStr}</td>
                     <td>${nocheStr}</td>
                     <td>${total} días</td>
                     <td>
-                        <button class="btn-ver-detalle" onclick="abrirDetalleConductor('${registro.placa}', '${registro.conductor}', '${registro.mes}')">
+                        <button class="btn-ver-detalle" onclick="abrirDetalleConductor('${escapeHtml(registro.placa)}', '${escapeHtml(registro.conductor)}', '${escapeHtml(registro.mes)}')">
                             📋 Ver
                         </button>
                     </td>
@@ -3148,51 +3093,113 @@
 
             } catch (error) {
                 console.error('❌ Error al cargar datos:', error);
-                contenedor.innerHTML = `
-            <div style="text-align:center; padding:40px; color:#e74c3c;">
-                <h3>⚠️ Error al cargar los datos</h3>
-                <p>${error.message}</p>
-                <p style="font-size:12px; color:#999; margin-top:10px;">
-                    💡 Si el problema persiste, verifica la conexión a Google Sheets.
-                </p>
-                <button class="btn-ver-detalle" onclick="cargarVisualizacion()" style="background-color:#2980b9; padding:10px 20px; margin-top:15px;">
-                    🔄 Reintentar
-                </button>
-            </div>
-            `;
+                // ✅ CORREGIDO: si Google Sheets falla, mostrar datos locales como respaldo
+                const localRegistros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+                let fallback = [];
+                for (const clave in localRegistros) {
+                    const r = localRegistros[clave];
+                    if (String(r.mes) !== String(filtroMes)) continue;
+                    if (filtroPlaca && r.placa !== filtroPlaca) continue;
+                    if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase())) continue;
+                    fallback.push(r);
+                }
+
+                if (fallback.length > 0) {
+                    let htmlFallback = `
+                <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:10px 15px; border-radius:8px; margin-bottom:15px; font-size:13px;">
+                    ⚠️ No se pudo conectar con Google Sheets. Mostrando datos locales (${fallback.length} registros).
+                </div>
+                <div class="contenedor-tabla">
+                    <table class="tabla-disponibilidad">
+                        <thead>
+                            <tr>
+                                <th>🚗 Placa</th>
+                                <th>👤 Conductor</th>
+                                <th>📅 Mes</th>
+                                <th>☀️ Días Diurno</th>
+                                <th>🌙 Días Noche</th>
+                                <th>📊 Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    fallback.forEach(function(registro) {
+                        const diurnoStr = (registro.diurno || []).slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ') || '<span class="sin-disponibilidad">Ninguno</span>';
+                        const nocheStr = (registro.noche || []).slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ') || '<span class="sin-disponibilidad">Ninguno</span>';
+                        const total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
+                        const nombreMes = (MESES[String(registro.mes)] || 'Mes ' + registro.mes) + ' ' + AÑO;
+                        htmlFallback += `
+                            <tr>
+                                <td><strong>${escapeHtml(registro.placa)}</strong></td>
+                                <td>${escapeHtml(registro.conductor)}</td>
+                                <td>${escapeHtml(nombreMes)}</td>
+                                <td>${diurnoStr}</td>
+                                <td>${nocheStr}</td>
+                                <td>${total} días</td>
+                                <td>
+                                    <button class="btn-ver-detalle" onclick="abrirDetalleConductor('${escapeHtml(registro.placa)}', '${escapeHtml(registro.conductor)}', '${escapeHtml(registro.mes)}')">📋 Ver</button>
+                                </td>
+                            </tr>`;
+                    });
+                    htmlFallback += `</tbody></table></div>
+                        <div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">
+                            Total registros (local): <strong>${fallback.length}</strong>
+                            <button class="btn-ver-detalle" onclick="sincronizarDatos(this)" style="background-color:#2980b9; padding:6px 14px; margin-left:15px;">🔄 Reintentar conexión</button>
+                        </div>`;
+                    contenedor.innerHTML = htmlFallback;
+                } else {
+                    contenedor.innerHTML = `
+                <div style="text-align:center; padding:40px; color:#e74c3c;">
+                    <h3>⚠️ Error al cargar los datos</h3>
+                    <p>${escapeHtml(error.message)}</p>
+                    <p style="font-size:12px; color:#999; margin-top:10px;">
+                        💡 Si el problema persiste, verifica la conexión a Google Sheets.
+                    </p>
+                    <button class="btn-ver-detalle" onclick="cargarVisualizacion()" style="background-color:#2980b9; padding:10px 20px; margin-top:15px;">
+                        🔄 Reintentar
+                    </button>
+                </div>
+                `;
+                }
             }
         }
 
 
         /*
         ==================================================
-        SINCRONIZAR DATOS DESDE GOOGLE SHEETS
+        SINCRONIZAR DATOS DESDE GOOGLE SHEETS - ✅ CORREGIDO
         ==================================================
         */
 
-        async function sincronizarDatos() {
-            const btn = document.querySelector('.btn-ver-detalle[onclick*="sincronizar"]') || event?.target;
+        // ✅ CORREGIDO: se recibe el botón como parámetro (antes usaba event implícito)
+        async function sincronizarDatos(btn) {
+            const textoOriginal = btn ? btn.innerHTML : '';
+
             if (btn) {
-                const textoOriginal = btn.innerHTML;
                 btn.innerHTML = '⏳ Sincronizando...';
                 btn.disabled = true;
             }
 
             try {
-                const response = await fetch(GOOGLE_SHEETS_URL);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                const response = await fetch(GOOGLE_SHEETS_URL, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
                 const data = await response.json();
 
                 const registros = {};
                 if (Array.isArray(data) && data.length > 1) {
                     for (let i = 1; i < data.length; i++) {
                         const row = data[i];
-                        if (row.length < 7) continue;
+                        if (!row || row.length < 7) continue;
 
-                        const placa = row[0] || '';
-                        const conductor = row[1] || '';
-                        const mes = row[2] || '';
-                        const diurnoStr = row[3] || '';
-                        const nocheStr = row[4] || '';
+                        const placa = String(row[0] || '').trim();
+                        const conductor = String(row[1] || '').trim();
+                        const mes = String(row[2] || '').trim();
+                        const diurnoStr = String(row[3] || '');
+                        const nocheStr = String(row[4] || '');
 
                         if (!placa || !conductor) continue;
 
@@ -3223,7 +3230,7 @@
                     btn.innerHTML = '✅ Sincronizado!';
                     btn.style.background = '#27ae60';
                     setTimeout(function() {
-                        btn.innerHTML = '🔄 Sincronizar';
+                        btn.innerHTML = textoOriginal || '🔄 Sincronizar';
                         btn.style.background = '#2980b9';
                         btn.disabled = false;
                     }, 2000);
@@ -3236,7 +3243,7 @@
                 if (btn) {
                     btn.innerHTML = '❌ Error';
                     setTimeout(function() {
-                        btn.innerHTML = '🔄 Sincronizar';
+                        btn.innerHTML = textoOriginal || '🔄 Sincronizar';
                         btn.disabled = false;
                     }, 2000);
                 }
@@ -3486,7 +3493,8 @@
                 elemento.appendChild(elementoDia);
             });
 
-            const año = 2026;
+            // ✅ CORREGIDO: se usa la constante global AÑO
+            const año = AÑO;
             const numeroMes = Number(mesSelect.value);
 
             const primerDia = new Date(año, numeroMes, 1);
@@ -3511,7 +3519,7 @@
                 for (const clave in registros) {
                     const registro = registros[clave];
                     if (registro.placa === placaSelect.value &&
-                        registro.mes === mesSelect.value &&
+                        String(registro.mes) === String(mesSelect.value) &&
                         registro.conductor !== nombreActual) {
 
                         const diasOcupados = tipo === 'diurno' ? registro.diurno : registro.noche;
@@ -3629,143 +3637,6 @@
 
         /*
         ==================================================
-        CARGAR VISUALIZACIÓN (TABLA) - VERSIÓN ORIGINAL (respaldo)
-        ==================================================
-        */
-
-        function cargarVisualizacionOriginal() {
-            if (rolActual !== 'admin') return;
-
-            const contenedor = document.getElementById('contenedorVisualizacion');
-            const filtroPlaca = document.getElementById('filtroPlaca').value;
-            const filtroConductor = document.getElementById('filtroConductor').value;
-            const filtroMes = document.getElementById('filtroMes').value;
-
-            const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-
-            let registrosFiltrados = [];
-            for (const clave in registros) {
-                const registro = registros[clave];
-                let incluir = true;
-
-                const mesRegistro = String(registro.mes);
-                const mesFiltro = String(filtroMes);
-
-                if (filtroPlaca && registro.placa !== filtroPlaca) incluir = false;
-
-                if (filtroConductor && filtroConductor.trim() !== "") {
-                    const conductorRegistro = registro.conductor.toUpperCase();
-                    const conductorBusqueda = filtroConductor.toUpperCase().trim();
-
-                    const palabrasBusqueda = conductorBusqueda.split(' ');
-                    let coincide = false;
-
-                    for (let i = 0; i < palabrasBusqueda.length; i++) {
-                        const palabra = palabrasBusqueda[i];
-                        if (palabra.length > 0 && conductorRegistro.includes(palabra)) {
-                            coincide = true;
-                            break;
-                        }
-                    }
-
-                    if (!coincide) incluir = false;
-                }
-
-                if (mesRegistro !== mesFiltro) incluir = false;
-
-                if (incluir) {
-                    registrosFiltrados.push(registro);
-                }
-            }
-
-            registrosFiltrados.sort(function(a, b) {
-                if (a.placa !== b.placa) return a.placa.localeCompare(b.placa);
-                return a.conductor.localeCompare(b.conductor);
-            });
-
-            if (registrosFiltrados.length === 0) {
-                contenedor.innerHTML = `
-                        <div style="text-align:center; padding:40px; color:#666;">
-                            <h3>📭 No hay disponibilidades registradas</h3>
-                            <p>Para el mes y filtros seleccionados, no se encontraron registros.</p>
-                            <button class="btn-ver-detalle" onclick="cambiarTab('registrar')" style="background-color:#27ae60; padding:10px 20px;">
-                                📝 Ir a Registrar
-                            </button>
-                        </div>
-                    `;
-                return;
-            }
-
-            let html = `
-                    <div class="contenedor-tabla">
-                        <table class="tabla-disponibilidad">
-                            <thead>
-                                <tr>
-                                    <th>🚗 Placa</th>
-                                    <th>👤 Conductor</th>
-                                    <th>📅 Mes</th>
-                                    <th>☀️ Días Diurno</th>
-                                    <th>🌙 Días Noche</th>
-                                    <th>📊 Total</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-            registrosFiltrados.forEach(function(registro) {
-                const diurnoStr = registro.diurno && registro.diurno.length > 0 ?
-                    registro.diurno.sort((a, b) => a - b).map(d =>
-                        `<span class="disponible-tag">${d}</span>`).join(' ') :
-                    '<span class="sin-disponibilidad">Ninguno</span>';
-
-                const nocheStr = registro.noche && registro.noche.length > 0 ?
-                    registro.noche.sort((a, b) => a - b).map(d =>
-                        `<span class="disponible-tag">${d}</span>`).join(' ') :
-                    '<span class="sin-disponibilidad">Ninguno</span>';
-
-                const total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length :
-                    0);
-
-                const mesNumero = parseInt(registro.mes);
-                let nombreMes = MESES[String(mesNumero)] || 'Mes ' + registro.mes;
-                nombreMes = nombreMes + ' 2026';
-
-                html += `
-                        <tr>
-                            <td><strong>${registro.placa}</strong></td>
-                            <td>${registro.conductor}</td>
-                            <td>${nombreMes}</td>
-                            <td>${diurnoStr}</td>
-                            <td>${nocheStr}</td>
-                            <td>${total} días</td>
-                            <td>
-                                <button class="btn-ver-detalle" onclick="abrirDetalleConductor('${registro.placa}', '${registro.conductor}', '${registro.mes}')">
-                                    📋 Ver
-                                </button>
-                                <button class="btn-eliminar" onclick="eliminarRegistro('${registro.conductor}_${registro.placa}_${registro.mes}')">
-                                    🗑️
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-            });
-
-            html += `
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">
-                        Total registros: <strong>${registrosFiltrados.length}</strong>
-                    </div>
-                `;
-
-            contenedor.innerHTML = html;
-        }
-
-
-        /*
-        ==================================================
         ELIMINAR REGISTRO
         ==================================================
         */
@@ -3830,7 +3701,6 @@
                 document.getElementById('pantallaLogin').style.display = 'block';
             }
 
-            // Inicializar vista por defecto
             cambiarVista('tabla');
         }
 

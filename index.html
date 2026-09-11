@@ -240,10 +240,6 @@
         border-color: #1a5276; background: #eaf2f8;
     }
 
-    /* ============================================ */
-    /* MODALES                                        */
-    /* ============================================ */
-
     .modal-conductor,
     .modal-admin,
     .modal-confirm,
@@ -295,7 +291,6 @@
         font-size: 18px;
     }
 
-    /* Modal tipo de días (Descanso/Mantenimiento) */
     .modal-tipo-dias-content .dias-lista {
         background: #fff3cd;
         color: #856404;
@@ -516,10 +511,6 @@
         padding: 1px 8px; border-radius: 12px; font-size: 11px;
     }
 
-    /* ============================================ */
-    /* TABLA CON BLOQUES DE DÍAS                     */
-    /* ============================================ */
-
     .tabla-disponibilidad {
         width: 100%; border-collapse: collapse; font-size: 13px;
     }
@@ -546,70 +537,39 @@
         white-space: nowrap;
         line-height: 1.3;
     }
-    .bloque-dias.noche {
-        background-color: #d4e6f1;
-        color: #1a5276;
-    }
-    .bloque-dias.descanso {
-        background-color: #fce4d6;
-        color: #b85c00;
-    }
-    .bloque-dias.mantenimiento {
-        background-color: #fadbd8;
-        color: #922b21;
-    }
+    .bloque-dias.noche { background-color: #d4e6f1; color: #1a5276; }
+    .bloque-dias.descanso { background-color: #fce4d6; color: #b85c00; }
+    .bloque-dias.mantenimiento { background-color: #fadbd8; color: #922b21; }
     .bloque-vacio {
-        color: #999;
-        font-style: italic;
-        font-size: 11px;
-    }
-
-    .contador-tipo {
-        display: inline-block;
-        background: #f0f0f0;
-        color: #333;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: bold;
-        margin-right: 5px;
+        color: #999; font-style: italic; font-size: 11px;
     }
 
     .acciones-celda {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
+        display: flex; gap: 5px; flex-wrap: wrap;
     }
 
     .btn-eliminar {
         background-color: #e74c3c; color: white; border: none;
         padding: 5px 10px; border-radius: 5px;
-        cursor: pointer; font-size: 11px;
-        font-weight: bold;
-        white-space: nowrap;
-        font-family: inherit;
+        cursor: pointer; font-size: 11px; font-weight: bold;
+        white-space: nowrap; font-family: inherit;
     }
     .btn-editar {
         background-color: #f39c12; color: white; border: none;
         padding: 5px 10px; border-radius: 5px;
-        cursor: pointer; font-size: 11px;
-        font-weight: bold;
-        white-space: nowrap;
-        font-family: inherit;
+        cursor: pointer; font-size: 11px; font-weight: bold;
+        white-space: nowrap; font-family: inherit;
     }
     .btn-ver-detalle {
         background-color: #2980b9; color: white; border: none;
         padding: 5px 10px; border-radius: 5px; cursor: pointer;
         font-size: 11px; font-weight: bold;
-        white-space: nowrap;
-        font-family: inherit;
+        white-space: nowrap; font-family: inherit;
     }
 
     .contenedor-tabla {
-        max-height: 600px;
-        overflow: auto;
-        border: 1px solid #ddd;
-        border-radius: 8px;
+        max-height: 600px; overflow: auto;
+        border: 1px solid #ddd; border-radius: 8px;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -617,10 +577,8 @@
     .vista-calendario.activo { display: block; }
 
     .calendario-mensual {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 5px;
-        margin-top: 15px;
+        display: grid; grid-template-columns: repeat(7, 1fr);
+        gap: 5px; margin-top: 15px;
     }
     .calendario-mensual .header-dia {
         text-align: center; font-weight: bold; padding: 10px 4px;
@@ -716,18 +674,10 @@
         padding: 8px 12px; border-radius: 6px; margin-bottom: 4px;
         font-size: 13px; display: flex; align-items: center; gap: 8px;
     }
-    .panel-detalle-body .grupo-turno.diurno ul li {
-        background: #f1f8ed; color: #1a5a2a; border-left: 3px solid #27ae60;
-    }
-    .panel-detalle-body .grupo-turno.noche ul li {
-        background: #eef5fb; color: #1a4a6e; border-left: 3px solid #2980b9;
-    }
-    .panel-detalle-body .grupo-turno.descanso ul li {
-        background: #fef5e7; color: #7e5109; border-left: 3px solid #f39c12;
-    }
-    .panel-detalle-body .grupo-turno.mantenimiento ul li {
-        background: #fdedec; color: #7b241c; border-left: 3px solid #e74c3c;
-    }
+    .panel-detalle-body .grupo-turno.diurno ul li { background: #f1f8ed; color: #1a5a2a; border-left: 3px solid #27ae60; }
+    .panel-detalle-body .grupo-turno.noche ul li { background: #eef5fb; color: #1a4a6e; border-left: 3px solid #2980b9; }
+    .panel-detalle-body .grupo-turno.descanso ul li { background: #fef5e7; color: #7e5109; border-left: 3px solid #f39c12; }
+    .panel-detalle-body .grupo-turno.mantenimiento ul li { background: #fdedec; color: #7b241c; border-left: 3px solid #e74c3c; }
 
     .leyenda-calendario {
         display: flex; gap: 15px; margin: 15px 0;
@@ -741,9 +691,6 @@
     .leyenda-calendario .color.noche { background: #2980b9; }
     .leyenda-calendario .color.descanso { background: #f39c12; }
     .leyenda-calendario .color.mantenimiento { background: #e74c3c; }
-    .leyenda-calendario .color.ambos {
-        background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
-    }
 
     .btn-reporte {
         padding: 12px 25px; border: none; border-radius: 7px;
@@ -760,7 +707,6 @@
         padding: 12px 25px; border-radius: 7px; cursor: pointer;
         font-weight: bold; font-size: 14px;
         display: inline-flex; align-items: center; gap: 8px;
-        transition: all 0.3s ease;
         font-family: inherit;
     }
 
@@ -922,7 +868,6 @@
 </style>
 
 </head>
-
 
 <body>
 
@@ -1289,6 +1234,7 @@
 
 </div>
 
+
 <script>
 /* ============================================================
    CAPTURA GLOBAL DE ERRORES
@@ -1306,19 +1252,13 @@ window.addEventListener('error', function(e) {
 
 
 /* ============================================================
-   PARTE 2 - NÚCLEO DE LA APLICACIÓN
+   PARTE 2 — NÚCLEO (global, sin IIFE para que todo sea accesible)
    ============================================================ */
 
-(function() {
-'use strict';
-
-/* ============================================================
-   CONSTANTES GLOBALES
-   ============================================================ */
-
+// ============ CONSTANTES ============
 var AÑO = 2026;
 var CLAVE_ADMIN = "ADMIN2026";
-var GOOGLE_SHEETS_URL = https://script.google.com/macros/s/AKfycbwc4a5SBXXMu5-1lDyhplLxDy9aUmHSvAW_CfM4TJsSgGhnv_UHHmBOPvaUsp_TYv7ynQ/exec
+var GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwc4a5SBXXMu5-1lDyhplLxDy9aUmHSvAW_CfM4TJsSgGhnv_UHHmBOPvaUsp_TYv7ynQ/exec";
 var IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 var IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -1375,10 +1315,7 @@ var CONDUCTORES = [
 ];
 
 
-/* ============================================================
-   ESTADO GLOBAL
-   ============================================================ */
-
+// ============ ESTADO ============
 var rolActual = 'usuario';
 var conductorLogueado = null;
 var placaLogueada = null;
@@ -1390,18 +1327,13 @@ var _guardandoEnProgreso = false;
 var _confirmCallback = null;
 var _registrosCache = {};
 var _borradosRecientes = new Set();
-
-// Estado del modal de tipo de días
 var _diasPendientes = [];
 var _registroPendiente = null;
 
-var $ = function(id) { return document.getElementById(id); };
+function $(id) { return document.getElementById(id); }
 
 
-/* ============================================================
-   UTILIDADES
-   ============================================================ */
-
+// ============ UTILIDADES ============
 function escapeHtml(texto) {
     var div = document.createElement('div');
     div.textContent = String(texto == null ? '' : texto);
@@ -1457,7 +1389,6 @@ function enviarASheets(data) {
     }).catch(function(err) { console.warn('POST warning:', err); });
 }
 
-// Convierte array de días [1,2,3,5,6,7,10] → "1-3, 5-7, 10"
 function agruparDias(dias) {
     if (!dias || dias.length === 0) return '';
     var ordenados = dias.slice().sort(function(a,b) { return a - b; });
@@ -1481,15 +1412,9 @@ function agruparDias(dias) {
 function log() {
     console.log.apply(console, ['[app]'].concat(Array.prototype.slice.call(arguments)));
 }
-function logErr() {
-    console.error.apply(console, ['[app ERROR]'].concat(Array.prototype.slice.call(arguments)));
-}
 
 
-/* ============================================================
-   TOAST / CONFIRM
-   ============================================================ */
-
+// ============ TOAST / CONFIRM ============
 function mostrarToast(mensaje, tipo, duracion) {
     tipo = tipo || 'info';
     duracion = duracion || 3000;
@@ -1525,10 +1450,7 @@ function cerrarConfirm(aceptar) {
 }
 
 
-/* ============================================================
-   FECHA ACTUAL
-   ============================================================ */
-
+// ============ FECHA ============
 function mostrarFechaActual() {
     var ahora = new Date();
     var opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1536,10 +1458,7 @@ function mostrarFechaActual() {
 }
 
 
-/* ============================================================
-   LOGIN
-   ============================================================ */
-
+// ============ LOGIN ============
 function cargarPlacasLogin() {
     var select = $('loginPlaca');
     select.innerHTML = '<option value="">-- Seleccione una placa --</option>';
@@ -1770,12 +1689,9 @@ function cerrarSesion() {
 }
 
 
-/* ============================================================
-   INGRESAR (cargar calendario)
-   ============================================================ */
-
+// ============ INGRESAR ============
 function ingresar() {
-    log('ingresar() ejecutado');
+    log('ingresar()');
 
     var placaSelect = $("placa");
     var conductorSelect = $("conductor");
@@ -1826,9 +1742,8 @@ function ingresar() {
         } catch (e) {
             $("contenedorCalendario").scrollIntoView(true);
         }
-
     } catch (err) {
-        logErr('Error en ingresar():', err);
+        console.error('Error en ingresar():', err);
         mostrarToast('Error: ' + err.message, 'error', 5000);
     }
 }
@@ -1846,10 +1761,7 @@ function cargarDisponibilidadGuardada() {
 }
 
 
-/* ============================================================
-   CALENDARIO DE REGISTRO
-   ============================================================ */
-
+// ============ CALENDARIO REGISTRO ============
 function toggleCalendario(tipo) {
     if (!calendarioVisible) return;
 
@@ -1897,7 +1809,6 @@ function crearCalendario(elemento, seleccionados, tipo) {
             var celda = document.createElement("div");
             celda.className = "dia";
 
-            // Verificar si otro conductor ya marcó ese día en este turno
             var ocupadoPor = null;
             for (var k in registros) {
                 var r = registros[k];
@@ -1914,17 +1825,15 @@ function crearCalendario(elemento, seleccionados, tipo) {
                 celda.title = "Ocupado por: " + ocupadoPor;
             }
 
-            // Aplicar clase según el turno
             if (seleccionados.has(dia)) {
                 if (tipo === 'diurno') celda.classList.add("seleccionado");
                 else celda.classList.add("seleccionado-noche");
             }
 
-            var label = tipo === 'diurno' ? '✓ Disponible' : '✓ Disponible';
             var claseLabel = tipo === 'diurno' ? 'disponible' : 'disponible-noche';
 
             celda.innerHTML = '<div class="numero">' + dia + '</div>' +
-                (seleccionados.has(dia) ? '<div class="' + claseLabel + '">' + label + '</div>' : '') +
+                (seleccionados.has(dia) ? '<div class="' + claseLabel + '">✓ Disponible</div>' : '') +
                 (ocupadoPor ? '<div class="ocupado-texto">🚫 Ocupado</div>' : '');
 
             celda.addEventListener("click", function() {
@@ -1933,11 +1842,9 @@ function crearCalendario(elemento, seleccionados, tipo) {
                     return;
                 }
 
-                // Toggle: si ya está en este turno, quitarlo
                 if (seleccionados.has(dia)) {
                     seleccionados.delete(dia);
                 } else {
-                    // Regla: un día NO puede estar en diurno Y noche a la vez
                     if (tipo === 'diurno' && noche.has(dia)) {
                         noche.delete(dia);
                         mostrarToast("Día movido de Noche a Diurno", 'info', 1500);
@@ -1970,10 +1877,7 @@ function actualizarResumen() {
 }
 
 
-/* ============================================================
-   GUARDAR — con detección de días blancos
-   ============================================================ */
-
+// ============ GUARDAR con modal tipo días ============
 function guardarYVer() {
     var placaSelect = $("placa");
     var conductorSelect = $("conductor");
@@ -1982,7 +1886,6 @@ function guardarYVer() {
     if (placaSelect.value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if (conductorSelect.value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
 
-    // Calcular días blancos (sin diurno ni noche)
     var mesNum = Number(mesSelect.value);
     var cantDias = diasDelMes(AÑO, mesNum);
     var diasBlancos = [];
@@ -1992,10 +1895,8 @@ function guardarYVer() {
         }
     }
 
-    // Guardar los días blancos para después
     _diasPendientes = diasBlancos;
 
-    // Preparar registro (sin descanso ni mantenimiento todavía)
     var lista = obtenerConductoresPorPlaca(placaSelect.value);
     var nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
 
@@ -2009,18 +1910,12 @@ function guardarYVer() {
         mantenimiento: []
     };
 
-    // Si NO hay días blancos → guardar directo
     if (diasBlancos.length === 0) {
         _guardarRegistro(_registroPendiente);
         return;
     }
 
-    // Si hay días blancos → mostrar modal
-    var listaHTML = '';
-    if (diasBlancos.length > 0) {
-        listaHTML = agruparDias(diasBlancos);
-    }
-    $('diasSinMarcarLista').textContent = '📅 ' + listaHTML;
+    $('diasSinMarcarLista').textContent = '📅 ' + agruparDias(diasBlancos);
     $('modalTipoDias').classList.add('active');
 }
 
@@ -2052,7 +1947,6 @@ function _guardarRegistro(registro) {
     }
     _guardandoEnProgreso = true;
 
-    // Guardar en localStorage
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var claveLocal = registro.conductor + "_" + registro.placa + "_" + registro.mes;
     registros[claveLocal] = registro;
@@ -2061,7 +1955,6 @@ function _guardarRegistro(registro) {
     _registrosCache[claveRegistro(registro.placa, registro.conductor, registro.mes)] = registro;
     _borradosRecientes.delete(claveRegistro(registro.placa, registro.conductor, registro.mes));
 
-    // Preparar data para Sheets
     var data = {
         placa: registro.placa,
         conductor: registro.conductor,
@@ -2096,7 +1989,7 @@ function _guardarRegistro(registro) {
         setTimeout(function() { abrirDetalleConductor(registro.placa, registro.conductor, registro.mes); }, 400);
     })
     .catch(function(error) {
-        logErr('Error:', error);
+        console.error('Error:', error);
         mostrarToast('⚠️ Error al guardar (se guardó localmente)', 'error');
         btn.innerHTML = '⚠️ Error';
         btn.style.backgroundColor = '#e74c3c';
@@ -2106,10 +1999,7 @@ function _guardarRegistro(registro) {
 }
 
 
-/* ============================================================
-   BORRAR REGISTRO PROPIO
-   ============================================================ */
-
+// ============ BORRAR REGISTRO PROPIO ============
 function borrarMiRegistro() {
     var placaSelect = $("placa");
     var conductorSelect = $("conductor");
@@ -2124,11 +2014,11 @@ function borrarMiRegistro() {
     var nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
 
     mostrarConfirm(
-        '¿Estás seguro de borrar tu registro de ' + MESES[String(mesSelect.value)] + '? Esta acción no se puede deshacer.',
+        '¿Estás seguro de borrar tu registro de ' + MESES[String(mesSelect.value)] + '?',
         function(ok) {
             if (!ok) return;
 
-            var eliminado = eliminarRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
+            eliminarRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
 
             var claveR = claveRegistro(placaSelect.value, nombreConductor, mesSelect.value);
             _borradosRecientes.add(claveR);
@@ -2148,7 +2038,7 @@ function borrarMiRegistro() {
             enviarASheets(data).then(function() {
                 mostrarToast('🗑️ Registro borrado correctamente', 'success');
             }).catch(function() {
-                mostrarToast('🗑️ Borrado localmente (sin conexión)', 'warning');
+                mostrarToast('🗑️ Borrado localmente', 'warning');
             });
 
             diurno.clear();
@@ -2191,10 +2081,7 @@ function actualizarBotonBorrar() {
 }
 
 
-/* ============================================================
-   BORRAR REGISTRO (Admin)
-   ============================================================ */
-
+// ============ BORRAR REGISTRO ADMIN ============
 function borrarRegistroAdmin(placa, conductor, mes) {
     var nombreMes = MESES[String(mes)] || 'Mes ' + mes;
 
@@ -2217,7 +2104,8 @@ function borrarRegistroAdmin(placa, conductor, mes) {
                 noche: '',
                 descanso: '',
                 mantenimiento: '',
-                total: 0            };
+                total: 0
+            };
 
             enviarASheets(data).then(function() {
                 mostrarToast('🗑️ Registro borrado', 'success');
@@ -2240,10 +2128,7 @@ function refrescarVistaActual() {
 }
 
 
-/* ============================================================
-   EDITAR REGISTRO (Admin)
-   ============================================================ */
-
+// ============ EDITAR REGISTRO ADMIN ============
 function editarRegistroAdmin(placa, conductor, mes) {
     var lista = obtenerConductoresPorPlaca(placa);
     var indice = -1;
@@ -2265,15 +2150,12 @@ function editarRegistroAdmin(placa, conductor, mes) {
 
     setTimeout(function() {
         ingresar();
-        mostrarToast('✏️ Editando registro. Modifica los días y guarda para actualizar.', 'info', 4000);
+        mostrarToast('✏️ Editando registro. Modifica y guarda para actualizar.', 'info', 4000);
     }, 200);
 }
 
 
-/* ============================================================
-   TABS
-   ============================================================ */
-
+// ============ TABS ============
 function cambiarTab(tab) {
     document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
     document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
@@ -2294,10 +2176,7 @@ function cambiarTab(tab) {
 }
 
 
-/* ============================================================
-   OCULTAR CALENDARIO
-   ============================================================ */
-
+// ============ OCULTAR CALENDARIO ============
 function ocultarCalendario() {
     calendarioVisible = false;
     $("contenedorCalendario").classList.remove("visible");
@@ -2320,10 +2199,7 @@ function ocultarCalendario() {
 }
 
 
-/* ============================================================
-   CARGA DE PLACAS / CONDUCTORES
-   ============================================================ */
-
+// ============ CARGAR PLACAS / CONDUCTORES ============
 function cargarPlacas() {
     $("placa").innerHTML = '<option value="">Seleccione una placa</option>';
     obtenerPlacasUnicas().forEach(function(p) {
@@ -2359,10 +2235,7 @@ function cargarFiltroPlacasVisualizacion() {
 }
 
 
-/* ============================================================
-   EVENTOS SELECTS
-   ============================================================ */
-
+// ============ EVENTOS SELECTS ============
 function onPlacaChange() {
     var placaSelect = $("placa");
     var conductorSelect = $("conductor");
@@ -2399,10 +2272,7 @@ function onMesChange() {
 }
 
 
-/* ============================================================
-   CARGAR VISUALIZACIÓN (tabla)
-   ============================================================ */
-
+// ============ CARGAR VISUALIZACIÓN ============
 async function cargarVisualizacion(forzarRecarga) {
     if (rolActual !== 'admin') return;
 
@@ -2427,9 +2297,7 @@ async function cargarVisualizacion(forzarRecarga) {
         });
         clearTimeout(timeoutId);
 
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-        }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
 
         var data = await response.json();
 
@@ -2449,8 +2317,6 @@ async function cargarVisualizacion(forzarRecarga) {
 
                 var d = String(row[3] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
                 var n = String(row[4] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
-
-                // NUEVAS columnas: descanso (index 5), mantenimiento (index 6), total (index 7)
                 var dsc = String(row[5] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
                 var mnt = String(row[6] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
 
@@ -2489,13 +2355,11 @@ async function cargarVisualizacion(forzarRecarga) {
         renderizarTablaFiltrada(registrosFinales, filtroPlaca, filtroConductor, filtroMes);
 
     } catch (error) {
-        logErr('Error al cargar:', error);
+        console.error('Error al cargar:', error);
 
         var locales2 = JSON.parse(localStorage.getItem("disponibilidades")) || {};
         var filtrados = [];
-        for (var kk in locales2) {
-            filtrados.push(locales2[kk]);
-        }
+        for (var kk in locales2) filtrados.push(locales2[kk]);
 
         if (filtrados.length > 0) {
             var contenedor2 = $('contenedorVisualizacion');
@@ -2524,10 +2388,8 @@ async function cargarVisualizacion(forzarRecarga) {
     }
 }
 
-/* ============================================================
-   RENDERIZAR TABLA
-   ============================================================ */
 
+// ============ RENDERIZAR TABLA ============
 function construirFilaTabla(r) {
     var dStr = r.diurno && r.diurno.length
         ? agruparDias(r.diurno).split(', ').map(function(b) { return '<span class="bloque-dias">' + b + '</span>'; }).join('')
@@ -2576,9 +2438,7 @@ function renderizarTablaDesdeCache() {
         registros[r.conductor + "_" + r.placa + "_" + r.mes] = r;
     }
     var locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    for (var k in locales) {
-        registros[k] = locales[k];
-    }
+    for (var k in locales) registros[k] = locales[k];
 
     renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtroMes);
 }
@@ -2604,7 +2464,6 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
     if (filtrados.length === 0) {
         contenedor.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">' +
             '<h3>📭 No hay disponibilidades registradas</h3>' +
-            '<p>Para el mes y filtros seleccionados, no se encontraron registros.</p>' +
             '<button class="btn-ver-detalle" onclick="cambiarTab(\'registrar\')" style="background-color:#27ae60; padding:12px 20px; margin-top:15px;">📝 Ir a Registrar</button></div>';
         return;
     }
@@ -2614,38 +2473,17 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
         '<th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
         '</tr></thead><tbody>';
 
-    filtrados.forEach(function(r) {
-        html += construirFilaTabla(r);
-    });
+    filtrados.forEach(function(r) { html += construirFilaTabla(r); });
 
     html += '</tbody></table></div>' +
         '<div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">Total registros: <strong>' + filtrados.length + '</strong></div>';
 
     contenedor.innerHTML = html;
 }
-})();
-</script>
-
-<script>
-/* ============================================================
-   PARTE 3 - FUNCIONES SECUNDARIAS (detalle, calendario mensual, exportar)
-   ============================================================ */
-
-(function() {
-'use strict';
-
-var $ = function(id) { return document.getElementById(id); };
-
-var MESES = {
-    '1':'Enero','2':'Febrero','3':'Marzo','4':'Abril','5':'Mayo','6':'Junio',
-    '7':'Julio','8':'Septiembre','9':'Octubre','10':'Noviembre','11':'Diciembre','12':'Enero'
-};
-var DIAS_SEMANA = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-var AÑO = 2026;
 
 
 /* ============================================================
-   DETALLE DEL CONDUCTOR
+   FUNCIONES PARTE 3 — Detalle, Calendario Mensual, Excel/PDF
    ============================================================ */
 
 function abrirDetalleConductor(placa, conductor, mes) {
@@ -2670,7 +2508,6 @@ function abrirDetalleConductor(placa, conductor, mes) {
     var primerDia = new Date(AÑO, mesNumero, 1);
     var posIni = (primerDia.getDay() + 6) % 7;
 
-    // Calendario visual
     var calHTML = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:520px; margin:15px auto;">';
     DIAS_SEMANA.forEach(function(d) {
         calHTML += '<div style="text-align:center; font-weight:bold; padding:5px; background:#e8f0fa; border-radius:4px; font-size:12px;">' + d + '</div>';
@@ -2733,16 +2570,13 @@ function abrirDetalleConductor(placa, conductor, mes) {
             '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
             '<strong style="color:' + getColor(tipo) + '; font-size:15px;">' + icono + ' ' + titulo + '</strong>' +
             '<span style="background:' + getBgColor(tipo) + '; color:' + getColor(tipo) + '; padding:3px 12px; border-radius:12px; font-weight:bold; font-size:13px;">' + (dias ? dias.length : 0) + ' días</span>' +
-            '</div>' +
-            '<div>' + bloquesHTML + '</div>' +
-            '</div>';
+            '</div><div>' + bloquesHTML + '</div></div>';
     }
 
     var totalTrabajo = diurnoArr.length + nocheArr.length;
     var totalNoTrabajo = descansoArr.length + mantenimientoArr.length;
 
-    var contenido = '<!DOCTYPE html>' +
-        '<html lang="es"><head><meta charset="UTF-8">' +
+    var contenido = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
         '<title>Detalle - ' + escapeHtml(conductor) + '</title>' +
         '<style>' +
@@ -2773,18 +2607,15 @@ function abrirDetalleConductor(placa, conductor, mes) {
         '<div><div class="label">👤 Conductor</div><div class="valor">' + escapeHtml(registro.conductor) + '</div></div>' +
         '<div><div class="label">📅 Mes</div><div class="valor">' + escapeHtml(nombreMes) + '</div></div>' +
         '</div>' +
-
         seccionHTML('DIURNO', '☀️', diurnoArr, 'diurno') +
         seccionHTML('NOCHE', '🌙', nocheArr, 'noche') +
         seccionHTML('DESCANSO', '🛌', descansoArr, 'descanso') +
         seccionHTML('MANTENIMIENTO', '🔧', mantenimientoArr, 'mantenimiento') +
-
         '<div class="total-box">' +
         '<div class="num">' + totalTrabajo + ' días</div>' +
         '<div class="txt">de trabajo</div>' +
         (totalNoTrabajo > 0 ? '<div style="margin-top:5px;font-size:12px;opacity:0.9;">+ ' + totalNoTrabajo + ' días sin trabajo (descanso/mant.)</div>' : '') +
         '</div>' +
-
         '<div class="calendario-titulo">📅 Calendario del Mes</div>' +
         calHTML +
         '<div class="leyenda">' +
@@ -2799,7 +2630,6 @@ function abrirDetalleConductor(placa, conductor, mes) {
     var blob = new Blob([contenido], { type: 'text/html;charset=utf-8' });
     var url = URL.createObjectURL(blob);
     var nombreArchivo = 'Detalle_' + conductor.replace(/\s+/g, '_') + '_' + mes + '.html';
-    var IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     if (IS_IOS) {
         var a = document.createElement('a');
@@ -2821,10 +2651,6 @@ function abrirDetalleConductor(placa, conductor, mes) {
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
-
-/* ============================================================
-   CALENDARIO MENSUAL (Admin)
-   ============================================================ */
 
 function cargarCalendarioMensual() {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -2912,10 +2738,6 @@ function cargarCalendarioMensual() {
 }
 
 
-/* ============================================================
-   PANEL DE DETALLE DEL DÍA
-   ============================================================ */
-
 function abrirPanelDetalleDia(dia) {
     var diasMap = window._diasMapActual || {};
     var mesNum = window._mesActualCalendario || 8;
@@ -2943,9 +2765,7 @@ function abrirPanelDetalleDia(dia) {
         var h = '<div class="grupo-turno ' + clase + '"><div class="titulo-grupo">' +
             '<span>' + icono + ' ' + titulo + '</span>' +
             '<span class="count">' + lista.length + '</span></div><ul>';
-        lista.forEach(function(nombre) {
-            h += '<li>' + escapeHtml(nombre) + '</li>';
-        });
+        lista.forEach(function(nombre) { h += '<li>' + escapeHtml(nombre) + '</li>'; });
         h += '</ul></div>';
         return h;
     }
@@ -2981,10 +2801,6 @@ function cerrarPanelDetalle() {
     document.body.style.overflow = '';
 }
 
-
-/* ============================================================
-   EXPORTAR EXCEL
-   ============================================================ */
 
 function exportarExcel() {
     mostrarToast('📊 Generando Excel...', 'info');
@@ -3033,7 +2849,6 @@ function exportarExcel() {
     hr.eachCell(function(cell) {
         cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF17365D' } };
-        cell.alignment = { horizontal: 'center', vertical: 'middle' };
     });
 
     data.forEach(function(item, idx) {
@@ -3073,10 +2888,6 @@ function exportarExcel() {
     });
 }
 
-
-/* ============================================================
-   EXPORTAR PDF
-   ============================================================ */
 
 function exportarPDF() {
     mostrarToast('📄 Generando PDF...', 'info');
@@ -3140,10 +2951,6 @@ function exportarPDF() {
 }
 
 
-/* ============================================================
-   SUBIR A GOOGLE SHEETS
-   ============================================================ */
-
 function subirAGoogleSheets(btn) {
     if (!btn) return;
     var textoOriginal = btn.innerHTML;
@@ -3176,15 +2983,8 @@ function subirAGoogleSheets(btn) {
     }
 
     var enviados = 0;
-    var GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
-
     lista.forEach(function(data) {
-        fetch(GOOGLE_SHEETS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(function() {
+        enviarASheets(data).then(function() {
             enviados++;
             if (enviados === lista.length) {
                 btn.innerHTML = '✅ ¡SUBIDO!';
@@ -3202,11 +3002,9 @@ function subirAGoogleSheets(btn) {
 }
 
 
-/* ============================================================
-   CAMBIAR VISTA
-   ============================================================ */
-
 function cambiarVista(vista) {
+    vistaActual = vista;
+
     document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
         btn.classList.toggle('activo', btn.dataset.vista === vista);
     });
@@ -3228,9 +3026,120 @@ function cambiarVista(vista) {
 
 
 /* ============================================================
-   EXPONER FUNCIONES AL SCOPE GLOBAL
+   BOOT / EVENTOS
    ============================================================ */
 
+function iniciar() {
+    console.log('[boot] Iniciando app v3.0...');
+
+    mostrarFechaActual();
+    cargarPlacas();
+    cargarConductoresPorPlaca("");
+    cargarFiltroPlacasVisualizacion();
+    ocultarCalendario();
+
+    $('tabVisualizarBtn').style.display = 'none';
+    $('btnGuardarYVer').disabled = true;
+    $('btnBorrarRegistro').classList.remove('visible');
+
+    // Verificar URL admin
+    try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('admin') === 'true') {
+            setTimeout(abrirModalAdmin, 500);
+        }
+    } catch (e) { console.error(e); }
+
+    // Registrar eventos de botones de login
+    var btnRolConductor = $('btnRolConductor');
+    if (btnRolConductor) {
+        btnRolConductor.addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirModalConductor();
+        });
+    }
+
+    var btnRolAdmin = $('btnRolAdmin');
+    if (btnRolAdmin) {
+        btnRolAdmin.addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirModalAdmin();
+        });
+    }
+
+    // Eventos de selects
+    var placaSelect = $('placa');
+    var conductorSelect = $('conductor');
+    var mesSelect = $('mes');
+
+    if (placaSelect) {
+        ['change', 'input', 'blur'].forEach(function(evt) {
+            placaSelect.addEventListener(evt, onPlacaChange);
+        });
+    }
+    if (conductorSelect) {
+        ['change', 'input', 'blur'].forEach(function(evt) {
+            conductorSelect.addEventListener(evt, onConductorChange);
+        });
+    }
+    if (mesSelect) {
+        ['change', 'input', 'blur'].forEach(function(evt) {
+            mesSelect.addEventListener(evt, onMesChange);
+        });
+    }
+
+    // Eventos del panel detalle
+    var panel = $('panelDetalleDia');
+    if (panel) {
+        panel.addEventListener('click', function(e) {
+            if (e.target === panel) cerrarPanelDetalle();
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var p = $('panelDetalleDia');
+            if (p && p.classList.contains('active')) cerrarPanelDetalle();
+        }
+    });
+
+    cambiarVista('tabla');
+
+    console.log('[boot] ✅ App v3.0 lista');
+}
+
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciar);
+} else {
+    iniciar();
+}
+
+
+/* ============================================================
+   EXPONER FUNCIONES AL SCOPE GLOBAL
+   (para que los onclick del HTML las encuentren)
+   ============================================================ */
+
+window.abrirModalConductor = abrirModalConductor;
+window.cerrarModalConductor = cerrarModalConductor;
+window.cargarConductoresLogin = cargarConductoresLogin;
+window.ingresarConductor = ingresarConductor;
+window.abrirModalAdmin = abrirModalAdmin;
+window.cerrarModalAdmin = cerrarModalAdmin;
+window.verificarClaveAdmin = verificarClaveAdmin;
+window.cerrarSesion = cerrarSesion;
+window.guardarYVer = guardarYVer;
+window.ingresar = ingresar;
+window.cambiarTab = cambiarTab;
+window.toggleCalendario = toggleCalendario;
+window.borrarMiRegistro = borrarMiRegistro;
+window.borrarRegistroAdmin = borrarRegistroAdmin;
+window.editarRegistroAdmin = editarRegistroAdmin;
+window.cargarVisualizacion = cargarVisualizacion;
+window.cerrarConfirm = cerrarConfirm;
+window.elegirTipoDias = elegirTipoDias;
+window.cerrarModalTipoDias = cerrarModalTipoDias;
 window.abrirDetalleConductor = abrirDetalleConductor;
 window.cargarCalendarioMensual = cargarCalendarioMensual;
 window.abrirPanelDetalleDia = abrirPanelDetalleDia;
@@ -3240,236 +3149,8 @@ window.exportarExcel = exportarExcel;
 window.exportarPDF = exportarPDF;
 window.subirAGoogleSheets = subirAGoogleSheets;
 window.cambiarVista = cambiarVista;
-
-})();
-</script>
-
-<script>
-/* ============================================================
-   PARTE 4 - BOOT / EVENTOS GLOBALES
-   ============================================================ */
-
-(function() {
-'use strict';
-
-var $ = function(id) { return document.getElementById(id); };
-
-
-/* ============================================================
-   EXPONER FUNCIONES BÁSICAS AL SCOPE GLOBAL
-   ============================================================ */
-
-window.cerrarSesion = window.cerrarSesion || function() {};
-window.abrirModalConductor = window.abrirModalConductor || function() {};
-window.abrirModalAdmin = window.abrirModalAdmin || function() {};
-window.cargarConductoresLogin = window.cargarConductoresLogin || function() {};
-window.ingresarConductor = window.ingresarConductor || function() {};
-window.cerrarModalConductor = window.cerrarModalConductor || function() {};
-window.cerrarModalAdmin = window.cerrarModalAdmin || function() {};
-window.verificarClaveAdmin = window.verificarClaveAdmin || function() {};
-window.guardarYVer = window.guardarYVer || function() {};
-window.ingresar = window.ingresar || function() {};
-window.cambiarTab = window.cambiarTab || function() {};
-window.toggleCalendario = window.toggleCalendario || function() {};
-window.borrarMiRegistro = window.borrarMiRegistro || function() {};
-window.borrarRegistroAdmin = window.borrarRegistroAdmin || function() {};
-window.editarRegistroAdmin = window.editarRegistroAdmin || function() {};
-window.cargarVisualizacion = window.cargarVisualizacion || function() {};
-window.cerrarConfirm = window.cerrarConfirm || function() {};
-window.elegirTipoDias = window.elegirTipoDias || function() {};
-window.cerrarModalTipoDias = window.cerrarModalTipoDias || function() {};
-
-
-/* ============================================================
-   INICIAR APP
-   ============================================================ */
-
-function iniciar() {
-    console.log('[boot] Iniciando app...');
-
-    // 1. Fecha actual
-    try {
-        var ahora = new Date();
-        var opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        $('fechaActual').textContent = ahora.toLocaleDateString('es-ES', opciones);
-    } catch (e) { console.error(e); }
-
-    // 2. Cargar placas y conductores iniciales
-    try {
-        if (typeof window.cargarPlacas === 'function') window.cargarPlacas();
-    } catch (e) { console.error(e); }
-
-    // 3. Cargar filtros
-    try {
-        if (typeof window.cargarFiltroPlacasVisualizacion === 'function') {
-            window.cargarFiltroPlacasVisualizacion();
-        }
-    } catch (e) { console.error(e); }
-
-    // 4. Ocultar calendario
-    try {
-        if (typeof window.ocultarCalendario === 'function') window.ocultarCalendario();
-    } catch (e) { console.error(e); }
-
-    // 5. Botón visualizar oculto por defecto
-    var tabVizBtn = $('tabVisualizarBtn');
-    if (tabVizBtn) tabVizBtn.style.display = 'none';
-
-    var btnGuardar = $('btnGuardarYVer');
-    if (btnGuardar) btnGuardar.disabled = true;
-
-    var btnBorrar = $('btnBorrarRegistro');
-    if (btnBorrar) btnBorrar.classList.remove('visible');
-
-    // 6. Verificar si hay ?admin=true en URL
-    try {
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('admin') === 'true') {
-            setTimeout(function() {
-                if (typeof window.abrirModalAdmin === 'function') window.abrirModalAdmin();
-            }, 500);
-        }
-    } catch (e) { console.error(e); }
-
-    // 7. Registrar eventos de botones de login
-    registrarEventosLogin();
-
-    // 8. Registrar eventos de selects
-    registrarEventosSelects();
-
-    // 9. Cerrar panel al hacer click fuera
-    registrarEventosPanel();
-
-    console.log('[boot] ✅ App iniciada correctamente');
-}
-
-
-/* ============================================================
-   REGISTRAR EVENTOS DE BOTONES DE LOGIN
-   ============================================================ */
-
-function registrarEventosLogin() {
-    // Botón CONDUCTOR
-    var btnRolConductor = $('btnRolConductor');
-    if (btnRolConductor) {
-        btnRolConductor.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('[boot] Click en CONDUCTOR');
-            if (typeof window.abrirModalConductor === 'function') {
-                window.abrirModalConductor();
-            } else {
-                alert('Error: función abrirModalConductor no está definida. Revisa la consola.');
-            }
-        });
-        console.log('[boot] ✅ Evento CONDUCTOR registrado');
-    } else {
-        console.error('[boot] ❌ btnRolConductor no encontrado');
-    }
-
-    // Botón ADMINISTRADOR
-    var btnRolAdmin = $('btnRolAdmin');
-    if (btnRolAdmin) {
-        btnRolAdmin.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('[boot] Click en ADMINISTRADOR');
-            if (typeof window.abrirModalAdmin === 'function') {
-                window.abrirModalAdmin();
-            } else {
-                alert('Error: función abrirModalAdmin no está definida. Revisa la consola.');
-            }
-        });
-        console.log('[boot] ✅ Evento ADMINISTRADOR registrado');
-    } else {
-        console.error('[boot] ❌ btnRolAdmin no encontrado');
-    }
-}
-
-
-/* ============================================================
-   REGISTRAR EVENTOS DE SELECTS
-   ============================================================ */
-
-function registrarEventosSelects() {
-    var placaSelect = $('placa');
-    var conductorSelect = $('conductor');
-    var mesSelect = $('mes');
-
-    if (placaSelect) {
-        ['change', 'input', 'blur'].forEach(function(evt) {
-            placaSelect.addEventListener(evt, function() {
-                console.log('[select] placa:', placaSelect.value);
-                if (typeof window.onPlacaChange === 'function') {
-                    window.onPlacaChange();
-                }
-            });
-        });
-    }
-
-    if (conductorSelect) {
-        ['change', 'input', 'blur'].forEach(function(evt) {
-            conductorSelect.addEventListener(evt, function() {
-                console.log('[select] conductor:', conductorSelect.value);
-                if (typeof window.onConductorChange === 'function') {
-                    window.onConductorChange();
-                }
-            });
-        });
-    }
-
-    if (mesSelect) {
-        ['change', 'input', 'blur'].forEach(function(evt) {
-            mesSelect.addEventListener(evt, function() {
-                console.log('[select] mes:', mesSelect.value);
-                if (typeof window.onMesChange === 'function') {
-                    window.onMesChange();
-                }
-            });
-        });
-    }
-}
-
-
-/* ============================================================
-   REGISTRAR EVENTOS DEL PANEL DE DETALLE
-   ============================================================ */
-
-function registrarEventosPanel() {
-    var panel = $('panelDetalleDia');
-    if (panel) {
-        panel.addEventListener('click', function(e) {
-            if (e.target === panel) {
-                if (typeof window.cerrarPanelDetalle === 'function') {
-                    window.cerrarPanelDetalle();
-                }
-            }
-        });
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            var p = $('panelDetalleDia');
-            if (p && p.classList.contains('active')) {
-                if (typeof window.cerrarPanelDetalle === 'function') {
-                    window.cerrarPanelDetalle();
-                }
-            }
-        }
-    });
-}
-
-
-/* ============================================================
-   BOOT
-   ============================================================ */
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciar);
-} else {
-    iniciar();
-}
-
-})();
 </script>
 
 </body>
+
 </html>

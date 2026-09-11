@@ -452,10 +452,6 @@
     .vista-calendario { display: none; }
     .vista-calendario.activo { display: block; }
 
-    /* ============================================ */
-    /* CALENDARIO MENSUAL                            */
-    /* ============================================ */
-
     .calendario-mensual {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -562,10 +558,6 @@
         background: #d4e6f1;
         color: #1a5276;
     }
-
-    /* ============================================ */
-    /* PANEL DE DETALLE DEL DÍA                       */
-    /* ============================================ */
 
     .panel-detalle-dia {
         display: none;
@@ -927,10 +919,7 @@
         }
         .tabla-disponibilidad .disponible-tag { font-size: 10px; padding: 1px 5px; }
 
-        .acciones-celda {
-            flex-direction: column;
-            gap: 4px;
-        }
+        .acciones-celda { flex-direction: column; gap: 4px; }
 
         .calendario-mensual { gap: 3px; }
         .calendario-mensual .header-dia { font-size: 10px; padding: 6px 2px; }
@@ -989,7 +978,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v2.4</div>
+        <div class="version">Sistema de Disponibilidad v2.5</div>
     </div>
 </header>
 
@@ -1243,7 +1232,7 @@
                     </select>
                 </div>
                 <div class="grupo-filtro">
-                    <button class="btn-actualizar" onclick="cargarVisualizacion()">
+                    <button class="btn-actualizar" onclick="cargarVisualizacion(true)">
                         🔄 ACTUALIZAR
                     </button>
                 </div>
@@ -1385,6 +1374,10 @@ let _guardandoEnProgreso = false;
 let _confirmCallback = null;
 let _detalleDiaActual = { dia: null, diurno: [], noche: [] };
 
+// Caché de registros: para evitar que al borrar "reaparezca" el dato viejo de Sheets
+let _registrosCache = {};
+let _borradosRecientes = new Set(); // claves con "placa_conductor_mes" borradas en esta sesión
+
 const $ = (id) => document.getElementById(id);
 
 const placaSelect = $("placa");
@@ -1424,6 +1417,10 @@ function posicionInicial(año, mes) {
     return (primerDia.getDay() + 6) % 7;
 }
 
+function claveRegistro(placa, conductor, mes) {
+    return placa + "|" + conductor + "|" + mes;
+}
+
 function obtenerRegistroLocal(placa, conductor, mes) {
     const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     const clave = conductor + "_" + placa + "_" + mes;
@@ -1439,6 +1436,16 @@ function eliminarRegistroLocal(placa, conductor, mes) {
         return true;
     }
     return false;
+}
+
+// Enviar petición POST (fire & forget, sin esperar respuesta)
+function enviarASheets(data) {
+    return fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).catch(err => console.warn('POST warning:', err));
 }
 
 
@@ -1614,7 +1621,6 @@ function iniciarSesionUsuario(nombre, placa) {
     $('tabVisualizarBtn').style.display = 'none';
     cambiarTab('registrar');
 
-    // Auto-ingresar: cargar calendario si ya tiene registro guardado
     setTimeout(() => {
         const registro = obtenerRegistroLocal(placa, nombre, mesSelect.value);
         if (registro) {
@@ -1733,7 +1739,6 @@ function guardarYVer() {
         return;
     }
 
-    // Detectar si está sobreescribiendo
     const lista = obtenerConductoresPorPlaca(placaSelect.value);
     const nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
     const registroExistente = obtenerRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
@@ -1759,7 +1764,6 @@ function _guardarYVerInterno() {
 
     const lista = obtenerConductoresPorPlaca(placaSelect.value);
     const nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
-    const clave = nombreConductor + "_" + placaSelect.value + "_" + mesSelect.value;
 
     const registro = {
         conductor: nombreConductor,
@@ -1770,8 +1774,15 @@ function _guardarYVerInterno() {
     };
 
     const registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    registros[clave] = registro;
+    const claveLocal = nombreConductor + "_" + placaSelect.value + "_" + mesSelect.value;
+    registros[claveLocal] = registro;
     localStorage.setItem("disponibilidades", JSON.stringify(registros));
+
+    // Actualizar caché local
+    _registrosCache[claveRegistro(placaSelect.value, nombreConductor, mesSelect.value)] = registro;
+
+    // Si estaba en borrados recientes, quitarlo
+    _borradosRecientes.delete(claveRegistro(placaSelect.value, nombreConductor, mesSelect.value));
 
     const data = {
         placa: placaSelect.value,
@@ -1796,12 +1807,7 @@ function _guardarYVerInterno() {
         actualizarBotonBorrar();
     };
 
-    fetch(GOOGLE_SHEETS_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
+    enviarASheets(data)
     .then(() => {
         mostrarToast('✅ Guardado correctamente', 'success');
         btn.innerHTML = '✅ ¡GUARDADO!';
@@ -1840,38 +1846,37 @@ function borrarMiRegistro() {
 
             const eliminado = eliminarRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
 
-            if (eliminado) {
-                // Enviar POST con total=0 para sobrescribir en Sheets
-                const data = {
-                    placa: placaSelect.value,
-                    conductor: nombreConductor,
-                    mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
-                    diurno: '',
-                    noche: '',
-                    total: 0
-                };
+            // Marcar como borrado reciente (para que no reaparezca desde Sheets)
+            const claveR = claveRegistro(placaSelect.value, nombreConductor, mesSelect.value);
+            _borradosRecientes.add(claveR);
+            delete _registrosCache[claveR];
 
-                fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                }).then(() => {
+            const data = {
+                placa: placaSelect.value,
+                conductor: nombreConductor,
+                mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
+                diurno: '',
+                noche: '',
+                total: 0
+            };
+
+            enviarASheets(data).then(() => {
+                if (eliminado) {
                     mostrarToast('🗑️ Registro borrado correctamente', 'success');
-                }).catch(() => {
-                    mostrarToast('🗑️ Borrado localmente (sin conexión)', 'warning');
-                });
+                } else {
+                    mostrarToast('🗑️ Registro borrado (remoto)', 'success');
+                }
+            }).catch(() => {
+                mostrarToast('🗑️ Borrado localmente (sin conexión)', 'warning');
+            });
 
-                // Limpiar calendario y estado
-                diurno.clear();
-                noche.clear();
-                crearCalendarios();
-                actualizarResumen();
-                actualizarIdentificacion();
-                actualizarBotonBorrar();
-            } else {
-                mostrarToast('No se encontró el registro', 'error');
-            }
+            // Limpiar UI inmediatamente
+            diurno.clear();
+            noche.clear();
+            crearCalendarios();
+            actualizarResumen();
+            actualizarIdentificacion();
+            actualizarBotonBorrar();
         },
         'Borrar mi registro'
     );
@@ -1913,14 +1918,13 @@ function borrarRegistroAdmin(placa, conductor, mes) {
         (ok) => {
             if (!ok) return;
 
-            const eliminado = eliminarRegistroLocal(placa, conductor, mes);
+            eliminarRegistroLocal(placa, conductor, mes);
 
-            if (!eliminado) {
-                mostrarToast('No se encontró el registro local', 'error');
-                return;
-            }
+            // Marcar como borrado reciente
+            const claveR = claveRegistro(placa, conductor, mes);
+            _borradosRecientes.add(claveR);
+            delete _registrosCache[claveR];
 
-            // Enviar POST con total=0 para sobrescribir en Sheets
             const data = {
                 placa: placa,
                 conductor: conductor,
@@ -1930,32 +1934,34 @@ function borrarRegistroAdmin(placa, conductor, mes) {
                 total: 0
             };
 
-            fetch(GOOGLE_SHEETS_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(() => {
+            enviarASheets(data).then(() => {
                 mostrarToast('🗑️ Registro borrado', 'success');
             }).catch(() => {
                 mostrarToast('🗑️ Borrado localmente', 'warning');
             });
 
-            // Refrescar vistas
-            cargarVisualizacion();
-            if (vistaActual === 'calendario') cargarCalendarioMensual();
+            // Refrescar UI sin esperar a Sheets
+            refrescarVistaActual();
         },
         'Borrar registro'
     );
 }
 
+// Refresca la vista actual SIN consultar Sheets (usa caché + local)
+function refrescarVistaActual() {
+    if (vistaActual === 'tabla') {
+        renderizarTablaDesdeCache();
+    } else if (vistaActual === 'calendario') {
+        cargarCalendarioMensual();
+    }
+}
+
 
 /* ============================================================
-   EDITAR REGISTRO (Admin) — Carga en pestaña Registrar
+   EDITAR REGISTRO (Admin)
    ============================================================ */
 
 function editarRegistroAdmin(placa, conductor, mes) {
-    // Cambiar a rol admin (por si acaso), luego cargar datos
     const lista = obtenerConductoresPorPlaca(placa);
     const indice = lista.findIndex(c => c.nombre === conductor);
 
@@ -1964,16 +1970,13 @@ function editarRegistroAdmin(placa, conductor, mes) {
         return;
     }
 
-    // Setear los selects
     placaSelect.value = placa;
     cargarConductoresPorPlaca(placa);
     conductorSelect.value = indice;
     mesSelect.value = mes;
 
-    // Cambiar a la pestaña Registrar
     cambiarTab('registrar');
 
-    // Cargar calendario
     setTimeout(() => {
         ingresar();
         mostrarToast('✏️ Editando registro. Modifica los días y guarda para actualizar.', 'info', 4000);
@@ -2134,7 +2137,12 @@ function cambiarVista(vista) {
 
     if (vista === 'tabla') {
         $('vistaTabla').style.display = 'block';
-        cargarVisualizacion();
+        // Si hay caché, renderizar inmediato y luego actualizar en background
+        if (Object.keys(_registrosCache).length > 0) {
+            renderizarTablaDesdeCache();
+        } else {
+            cargarVisualizacion();
+        }
     } else if (vista === 'calendario') {
         $('vistaCalendario').style.display = 'block';
         cargarCalendarioMensual();
@@ -2148,21 +2156,26 @@ function cambiarVista(vista) {
    CARGAR VISUALIZACIÓN DESDE GOOGLE SHEETS
    ============================================================ */
 
-async function cargarVisualizacion() {
+async function cargarVisualizacion(forzarRecarga = false) {
     if (rolActual !== 'admin') return;
 
-    const contenedor = $('contenedorVisualizacion');
     const filtroPlaca = $('filtroPlaca').value;
     const filtroConductor = $('filtroConductor').value;
     const filtroMes = $('filtroMes').value;
 
-    contenedor.innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando datos...</p>';
+    if (!forzarRecarga) {
+        const contenedor = $('contenedorVisualizacion');
+        contenedor.innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando datos...</p>';
+    }
 
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-        const response = await fetch(GOOGLE_SHEETS_URL, {
+        // Agregar un timestamp para forzar que el navegador no use caché
+        const urlConCache = GOOGLE_SHEETS_URL + '?t=' + Date.now();
+
+        const response = await fetch(urlConCache, {
             signal: controller.signal,
             cache: 'no-store'
         });
@@ -2174,7 +2187,7 @@ async function cargarVisualizacion() {
 
         const data = await response.json();
 
-        const registros = {};
+        const registrosRemotos = {};
         if (Array.isArray(data)) {
             const filas = data.slice(1);
 
@@ -2205,111 +2218,48 @@ async function cargarVisualizacion() {
                 else if (mes.includes('Noviembre')) mesNum = "10";
                 else if (mes.includes('Diciembre')) mesNum = "11";
 
+                const claveR = claveRegistro(placa, conductor, mesNum);
+
+                // Ignorar si fue borrado recientemente en esta sesión
+                if (_borradosRecientes.has(claveR)) return;
+
                 const clave = conductor + "_" + placa + "_" + mesNum;
-                registros[clave] = { conductor, placa, mes: mesNum, diurno: d, noche: n };
+                registrosRemotos[clave] = { conductor, placa, mes: mesNum, diurno: d, noche: n };
             });
         }
 
-        // Fusionar con locales (los locales tienen prioridad)
+        // Fusionar: locales tienen prioridad
         const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-        for (const k in locales) registros[k] = locales[k];
 
-        let filtrados = [];
-        for (const k in registros) {
-            const r = registros[k];
-            if (String(r.mes) !== String(filtroMes)) continue;
-            if (filtroPlaca && r.placa !== filtroPlaca) continue;
-            if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase().trim())) continue;
-            filtrados.push(r);
+        const registrosFinales = { ...registrosRemotos };
+        for (const k in locales) {
+            registrosFinales[k] = locales[k];
         }
 
-        filtrados.sort((a, b) => {
-            if (a.placa !== b.placa) return a.placa.localeCompare(b.placa);
-            return a.conductor.localeCompare(b.conductor);
-        });
-
-        if (filtrados.length === 0) {
-            contenedor.innerHTML = `
-                <div style="text-align:center; padding:40px; color:#666;">
-                    <h3>📭 No hay disponibilidades registradas</h3>
-                    <p>Para el mes y filtros seleccionados, no se encontraron registros.</p>
-                    <button class="btn-ver-detalle" onclick="cambiarTab('registrar')"
-                            style="background-color:#27ae60; padding:12px 20px; margin-top:15px;">
-                        📝 Ir a Registrar
-                    </button>
-                </div>`;
-            return;
+        // Guardar en caché
+        _registrosCache = {};
+        for (const k in registrosFinales) {
+            const r = registrosFinales[k];
+            _registrosCache[claveRegistro(r.placa, r.conductor, r.mes)] = r;
         }
 
-        let html = `
-            <div class="contenedor-tabla">
-                <table class="tabla-disponibilidad">
-                    <thead><tr>
-                        <th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th>
-                        <th>☀️ Diurno</th><th>🌙 Noche</th><th>📊 Total</th><th>Acciones</th>
-                    </tr></thead><tbody>`;
-
-        filtrados.forEach(r => {
-            const dStr = r.diurno?.length
-                ? r.diurno.slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ')
-                : '<span class="sin-disponibilidad">Ninguno</span>';
-            const nStr = r.noche?.length
-                ? r.noche.slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ')
-                : '<span class="sin-disponibilidad">Ninguno</span>';
-            const total = (r.diurno?.length || 0) + (r.noche?.length || 0);
-            const nombreMes = (MESES[String(r.mes)] || 'Mes ' + r.mes) + ' ' + AÑO;
-
-            html += `<tr>
-                <td><strong>${escapeHtml(r.placa)}</strong></td>
-                <td>${escapeHtml(r.conductor)}</td>
-                <td>${escapeHtml(nombreMes)}</td>
-                <td>${dStr}</td>
-                <td>${nStr}</td>
-                <td>${total} días</td>
-                <td>
-                    <div class="acciones-celda">
-                        <button class="btn-ver-detalle"
-                            onclick="abrirDetalleConductor('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
-                            📋 Ver
-                        </button>
-                        <button class="btn-editar"
-                            onclick="editarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
-                            ✏️ Editar
-                        </button>
-                        <button class="btn-eliminar"
-                            onclick="borrarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
-                            🗑️ Borrar
-                        </button>
-                    </div>
-                </td>
-            </tr>`;
-        });
-
-        html += `</tbody></table></div>
-            <div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">
-                Total registros: <strong>${filtrados.length}</strong>
-                <span style="margin-left:15px; font-size:12px; color:#999;">(Google Sheets)</span>
-            </div>`;
-
-        contenedor.innerHTML = html;
+        renderizarTablaFiltrada(registrosFinales, filtroPlaca, filtroConductor, filtroMes);
 
     } catch (error) {
         console.error('❌ Error al cargar:', error);
 
         const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-        let fallback = [];
+        const filtrados = [];
         for (const k in locales) {
             const r = locales[k];
-            if (String(r.mes) !== String(filtroMes)) continue;
-            if (filtroPlaca && r.placa !== filtroPlaca) continue;
-            if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase())) continue;
-            fallback.push(r);
+            filtrados.push(r);
         }
 
-        if (fallback.length > 0) {
+        if (filtrados.length > 0) {
+            const contenedor = $('contenedorVisualizacion');
             let htmlFB = `
                 <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:12px 15px; border-radius:8px; margin-bottom:15px; font-size:13px;">
-                    ⚠️ Sin conexión con Google Sheets. Mostrando datos locales (${fallback.length}).
+                    ⚠️ Sin conexión con Google Sheets. Mostrando datos locales (${filtrados.length}).
                     <br><small>Error: ${escapeHtml(error.message)}</small>
                 </div>
                 <div class="contenedor-tabla">
@@ -2319,7 +2269,11 @@ async function cargarVisualizacion() {
                             <th>☀️ Diurno</th><th>🌙 Noche</th><th>📊 Total</th><th>Acciones</th>
                         </tr></thead><tbody>`;
 
-            fallback.forEach(r => {
+            filtrados.forEach(r => {
+                if (String(r.mes) !== String(filtroMes)) return;
+                if (filtroPlaca && r.placa !== filtroPlaca) return;
+                if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase())) return;
+
                 const dStr = (r.diurno||[]).slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ') || '<span class="sin-disponibilidad">Ninguno</span>';
                 const nStr = (r.noche||[]).slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ') || '<span class="sin-disponibilidad">Ninguno</span>';
                 const total = (r.diurno?.length || 0) + (r.noche?.length || 0);
@@ -2353,23 +2307,133 @@ async function cargarVisualizacion() {
 
             htmlFB += `</tbody></table></div>
                 <div style="margin-top:15px; text-align:right;">
-                    <button class="btn-ver-detalle" onclick="cargarVisualizacion()"
+                    <button class="btn-ver-detalle" onclick="cargarVisualizacion(true)"
                         style="background:#2980b9; padding:10px 20px;">🔄 Reintentar conexión</button>
                 </div>`;
 
             contenedor.innerHTML = htmlFB;
         } else {
-            contenedor.innerHTML = `
+            $('contenedorVisualizacion').innerHTML = `
                 <div style="text-align:center; padding:40px; color:#e74c3c;">
                     <h3>⚠️ Error al cargar los datos</h3>
                     <p>${escapeHtml(error.message)}</p>
-                    <button class="btn-ver-detalle" onclick="cargarVisualizacion()"
+                    <button class="btn-ver-detalle" onclick="cargarVisualizacion(true)"
                         style="background:#2980b9; padding:10px 20px; margin-top:15px;">
                         🔄 Reintentar
                     </button>
                 </div>`;
         }
     }
+}
+
+
+/* ============================================================
+   RENDERIZAR TABLA (desde caché, sin consultar Sheets)
+   ============================================================ */
+
+function renderizarTablaDesdeCache() {
+    const filtroPlaca = $('filtroPlaca').value;
+    const filtroConductor = $('filtroConductor').value;
+    const filtroMes = $('filtroMes').value;
+
+    // Construir registro a partir de caché
+    const registros = {};
+    for (const claveR in _registrosCache) {
+        const r = _registrosCache[claveR];
+        if (_borradosRecientes.has(claveR)) continue;
+        registros[r.conductor + "_" + r.placa + "_" + r.mes] = r;
+    }
+    // Añadir locales
+    const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    for (const k in locales) {
+        registros[k] = locales[k];
+    }
+
+    renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtroMes);
+}
+
+function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtroMes) {
+    const contenedor = $('contenedorVisualizacion');
+
+    let filtrados = [];
+    for (const k in registros) {
+        const r = registros[k];
+        if (String(r.mes) !== String(filtroMes)) continue;
+        if (filtroPlaca && r.placa !== filtroPlaca) continue;
+        if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase().trim())) continue;
+        // Excluir borrados recientes
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
+        filtrados.push(r);
+    }
+
+    filtrados.sort((a, b) => {
+        if (a.placa !== b.placa) return a.placa.localeCompare(b.placa);
+        return a.conductor.localeCompare(b.conductor);
+    });
+
+    if (filtrados.length === 0) {
+        contenedor.innerHTML = `
+            <div style="text-align:center; padding:40px; color:#666;">
+                <h3>📭 No hay disponibilidades registradas</h3>
+                <p>Para el mes y filtros seleccionados, no se encontraron registros.</p>
+                <button class="btn-ver-detalle" onclick="cambiarTab('registrar')"
+                        style="background-color:#27ae60; padding:12px 20px; margin-top:15px;">
+                    📝 Ir a Registrar
+                </button>
+            </div>`;
+        return;
+    }
+
+    let html = `
+        <div class="contenedor-tabla">
+            <table class="tabla-disponibilidad">
+                <thead><tr>
+                    <th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th>
+                    <th>☀️ Diurno</th><th>🌙 Noche</th><th>📊 Total</th><th>Acciones</th>
+                </tr></thead><tbody>`;
+
+    filtrados.forEach(r => {
+        const dStr = r.diurno?.length
+            ? r.diurno.slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ')
+            : '<span class="sin-disponibilidad">Ninguno</span>';
+        const nStr = r.noche?.length
+            ? r.noche.slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ')
+            : '<span class="sin-disponibilidad">Ninguno</span>';
+        const total = (r.diurno?.length || 0) + (r.noche?.length || 0);
+        const nombreMes = (MESES[String(r.mes)] || 'Mes ' + r.mes) + ' ' + AÑO;
+
+        html += `<tr>
+            <td><strong>${escapeHtml(r.placa)}</strong></td>
+            <td>${escapeHtml(r.conductor)}</td>
+            <td>${escapeHtml(nombreMes)}</td>
+            <td>${dStr}</td>
+            <td>${nStr}</td>
+            <td>${total} días</td>
+            <td>
+                <div class="acciones-celda">
+                    <button class="btn-ver-detalle"
+                        onclick="abrirDetalleConductor('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                        📋 Ver
+                    </button>
+                    <button class="btn-editar"
+                        onclick="editarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                        ✏️ Editar
+                    </button>
+                    <button class="btn-eliminar"
+                        onclick="borrarRegistroAdmin('${escapeHtml(r.placa)}','${escapeHtml(r.conductor)}','${escapeHtml(r.mes)}')">
+                        🗑️ Borrar
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    });
+
+    html += `</tbody></table></div>
+        <div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">
+            Total registros: <strong>${filtrados.length}</strong>
+        </div>`;
+
+    contenedor.innerHTML = html;
 }
 
 
@@ -2396,6 +2460,7 @@ function cargarCalendarioMensual() {
         if (String(r.mes) !== String(filtroMes)) continue;
         if (filtroPlaca && r.placa !== filtroPlaca) continue;
         if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase())) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         filtrados.push(r);
     }
 
@@ -2587,6 +2652,7 @@ function exportarExcel() {
     for (const k in registros) {
         const r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         const dc = r.diurno?.length || 0;
         const nc = r.noche?.length || 0;
         totalD += dc; totalN += nc;
@@ -2770,6 +2836,7 @@ function exportarPDF() {
     for (const k in registros) {
         const r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         const dc = r.diurno?.length || 0;
         const nc = r.noche?.length || 0;
         const total = dc + nc;
@@ -2881,12 +2948,7 @@ function subirAGoogleSheets(btn) {
 
     let enviados = 0;
     lista.forEach(data => {
-        fetch(GOOGLE_SHEETS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(() => {
+        enviarASheets(data).then(() => {
             enviados++;
             if (enviados === lista.length) {
                 btn.innerHTML = '✅ ¡SUBIDO!';
@@ -3173,7 +3235,6 @@ mesSelect.addEventListener("change", function() {
     ocultarCalendario();
     actualizarIdentificacion();
     actualizarBotonBorrar();
-    // Auto-recargar si es conductor y ya tiene registro en ese mes
     if (rolActual === 'usuario' && conductorLogueado) {
         const registro = obtenerRegistroLocal(placaSelect.value, conductorLogueado, this.value);
         if (registro) {

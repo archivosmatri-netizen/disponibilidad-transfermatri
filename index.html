@@ -18,8 +18,8 @@
 <script>
 (function() {
     var params = new URLSearchParams(window.location.search);
-    if (params.get('v') !== '3.6') {
-        params.set('v', '3.6');
+    if (params.get('v') !== '3.7') {
+        params.set('v', '3.7');
         window.location.replace(window.location.pathname + '?' + params.toString());
     }
 })();
@@ -418,7 +418,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v3.6</div>
+        <div class="version">Sistema de Disponibilidad v3.7</div>
     </div>
 </header>
 
@@ -652,7 +652,7 @@
 
 <script>
 /* ============================================================
-   v3.6 - FIX: un día puede estar en Diurno Y Noche a la vez
+   v3.7 - FIX: closure en renderMiniCalendario (días individuales)
    ============================================================ */
 
 window.addEventListener('error', function(e) {
@@ -830,7 +830,6 @@ function mostrarFechaActual() {
     $('fechaActual').textContent = ahora.toLocaleDateString('es-ES', opciones);
 }
 
-/* Obtener registros combinados para exportación */
 async function obtenerRegistrosCombinados() {
     var registros = {};
     for (var k in _registrosCache) {
@@ -877,7 +876,6 @@ async function obtenerRegistrosCombinados() {
     return registros;
 }
 
-/* ACTUALIZAR IDENTIFICACIÓN */
 function actualizarIdentificacion() {
     var id = $('identificacion');
     if (!id) return;
@@ -921,7 +919,6 @@ function actualizarIdentificacion() {
     }
 }
 
-/* LOGIN */
 function cargarPlacasLogin() {
     var s = $('loginPlaca');
     s.innerHTML = '<option value="">-- Seleccione una placa --</option>';
@@ -1082,7 +1079,6 @@ function cerrarSesion() {
     }, 'Cerrar Sesión');
 }
 
-/* INGRESAR */
 function ingresar() {
     try {
         if (rolActual === 'usuario' && conductorLogueado) {
@@ -1149,7 +1145,6 @@ function cargarDisponibilidadGuardada() {
     }
 }
 
-/* CALENDARIO */
 function toggleCalendario(tipo) {
     if (!calendarioVisible) return;
     var w = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
@@ -1209,7 +1204,6 @@ function crearCalendario(elemento, seleccionados, tipo) {
 
             if (ocupadoPor) { celda.classList.add("ocupado"); celda.title = "Ocupado por: " + ocupadoPor; }
 
-            // ✅ FIX: puede estar en ambos
             var esDiurno = diurno.has(dia);
             var esNoche = noche.has(dia);
 
@@ -1221,7 +1215,6 @@ function crearCalendario(elemento, seleccionados, tipo) {
                 celda.classList.add("seleccionado-noche");
             }
 
-            // Mostrar indicador visual según lo que esté marcado
             var labelHTML = '';
             if (esDiurno && esNoche) {
                 labelHTML = '<div class="disponible-ambos">☀️🌙 Ambos</div>';
@@ -1237,14 +1230,8 @@ function crearCalendario(elemento, seleccionados, tipo) {
 
             celda.addEventListener("click", function() {
                 if (ocupadoPor) { mostrarToast("Día ocupado por: " + ocupadoPor, 'warning'); return; }
-
-                // ✅ FIX: solo alterna el turno actual, sin tocar el otro
-                if (seleccionados.has(dia)) {
-                    seleccionados.delete(dia);
-                } else {
-                    seleccionados.add(dia);
-                }
-
+                if (seleccionados.has(dia)) seleccionados.delete(dia);
+                else seleccionados.add(dia);
                 crearCalendarios();
                 actualizarResumen();
             });
@@ -1273,7 +1260,6 @@ function actualizarResumen() {
     } catch (e) { console.error('Error resumen:', e); }
 }
 
-/* GUARDAR */
 function guardarYVer() {
     if ($("placa").value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if ($("conductor").value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
@@ -1316,6 +1302,7 @@ function guardarYVer() {
     $('modalTipoDias').classList.add('active');
 }
 
+/* ✅ FIX: IIFE para capturar cada `dia` correctamente */
 function renderMiniCalendario() {
     var cont = $('miniCalendario');
     cont.innerHTML = '';
@@ -1337,55 +1324,55 @@ function renderMiniCalendario() {
         cont.appendChild(vacio);
     }
 
+    // Pre-calcular días ocupados por otros conductores
+    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    var diasOcupadosPorOtros = {};
+    for (var k in registros) {
+        var r = registros[k];
+        if (r && r.placa === _registroPendiente.placa &&
+            String(r.mes) === String(_registroPendiente.mes) &&
+            r.conductor !== _registroPendiente.conductor) {
+            (r.diurno || []).forEach(function(d) { diasOcupadosPorOtros[d] = true; });
+            (r.noche || []).forEach(function(d) { diasOcupadosPorOtros[d] = true; });
+        }
+    }
+
     for (var dia = 1; dia <= cantDias; dia++) {
-        var celda = document.createElement('div');
-        celda.className = 'mini-dia';
+        (function(diaActual) {
+            var celda = document.createElement('div');
+            celda.className = 'mini-dia';
 
-        var esDiurno = _registroPendiente.diurno.indexOf(dia) >= 0;
-        var esNoche = _registroPendiente.noche.indexOf(dia) >= 0;
-        var esBlanco = _diasBlancosPendientes.indexOf(dia) >= 0;
-        var clasificacion = _clasificacionDias[dia];
+            var esDiurno = _registroPendiente.diurno.indexOf(diaActual) >= 0;
+            var esNoche = _registroPendiente.noche.indexOf(diaActual) >= 0;
+            var esBlanco = _diasBlancosPendientes.indexOf(diaActual) >= 0;
+            var clasificacion = _clasificacionDias[diaActual];
+            var ocupadoPorOtro = diasOcupadosPorOtros[diaActual] || false;
 
-        var ocupadoPorOtro = false;
-        var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-        for (var k in registros) {
-            var r = registros[k];
-            if (r && r.placa === _registroPendiente.placa &&
-                String(r.mes) === String(_registroPendiente.mes) &&
-                r.conductor !== _registroPendiente.conductor) {
-                var diasD = r.diurno || [];
-                var diasN = r.noche || [];
-                if (diasD.indexOf(dia) >= 0 || diasN.indexOf(dia) >= 0) {
-                    ocupadoPorOtro = true;
-                    break;
-                }
+            if (esDiurno || esNoche) {
+                celda.classList.add('bloqueado');
+                celda.innerHTML = '<span>' + diaActual + '</span><span class="mini-icon">' +
+                    (esDiurno && esNoche ? '☀️🌙' : esDiurno ? '☀️' : '🌙') + '</span>';
+            } else if (ocupadoPorOtro) {
+                celda.classList.add('ocupado');
+                celda.innerHTML = '<span>' + diaActual + '</span><span class="mini-icon">🚫</span>';
+            } else if (clasificacion === 'descanso') {
+                celda.classList.add('descanso');
+                celda.innerHTML = '<span>' + diaActual + '</span><span class="mini-icon">🛌</span>';
+                celda.addEventListener('click', function() { toggleDiaMini(diaActual); });
+            } else if (clasificacion === 'mantenimiento') {
+                celda.classList.add('mantenimiento');
+                celda.innerHTML = '<span>' + diaActual + '</span><span class="mini-icon">🔧</span>';
+                celda.addEventListener('click', function() { toggleDiaMini(diaActual); });
+            } else if (esBlanco) {
+                celda.innerHTML = '<span>' + diaActual + '</span>';
+                celda.addEventListener('click', function() { toggleDiaMini(diaActual); });
+            } else {
+                celda.classList.add('bloqueado');
+                celda.innerHTML = '<span>' + diaActual + '</span>';
             }
-        }
 
-        if (esDiurno || esNoche) {
-            celda.classList.add('bloqueado');
-            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">' +
-                (esDiurno && esNoche ? '☀️🌙' : esDiurno ? '☀️' : '🌙') + '</span>';
-        } else if (ocupadoPorOtro) {
-            celda.classList.add('ocupado');
-            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🚫</span>';
-        } else if (clasificacion === 'descanso') {
-            celda.classList.add('descanso');
-            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🛌</span>';
-            celda.addEventListener('click', function() { toggleDiaMini(dia); });
-        } else if (clasificacion === 'mantenimiento') {
-            celda.classList.add('mantenimiento');
-            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🔧</span>';
-            celda.addEventListener('click', function() { toggleDiaMini(dia); });
-        } else if (esBlanco) {
-            celda.innerHTML = '<span>' + dia + '</span>';
-            celda.addEventListener('click', function() { toggleDiaMini(dia); });
-        } else {
-            celda.classList.add('bloqueado');
-            celda.innerHTML = '<span>' + dia + '</span>';
-        }
-
-        cont.appendChild(celda);
+            cont.appendChild(celda);
+        })(dia);
     }
 }
 
@@ -1531,7 +1518,6 @@ function _guardarRegistro(registro) {
     });
 }
 
-/* BORRAR */
 function borrarMiRegistro() {
     if ($("placa").value === "" || $("conductor").value === "") {
         mostrarToast("No hay registro", 'warning'); return;
@@ -1604,7 +1590,6 @@ function editarRegistroAdmin(placa, conductor, mes) {
     setTimeout(function() { ingresar(); mostrarToast('✏️ Editando...', 'info', 4000); }, 200);
 }
 
-/* TABS */
 function cambiarTab(tab) {
     document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
     document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
@@ -1696,7 +1681,6 @@ function onMesChange() {
     }
 }
 
-/* VISUALIZACIÓN */
 async function cargarVisualizacion(forzarRecarga) {
     if (rolActual !== 'admin') return;
     var filtroPlaca = $('filtroPlaca').value;
@@ -1844,7 +1828,6 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
     $('contenedorVisualizacion').innerHTML = html;
 }
 
-/* DETALLE */
 function abrirDetalleConductor(placa, conductor, mes) {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var registro = registros[conductor + "_" + placa + "_" + mes];
@@ -1970,7 +1953,6 @@ function abrirDetalleConductor(placa, conductor, mes) {
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
-/* CALENDARIO MENSUAL */
 async function cargarCalendarioMensual() {
     var registros = await obtenerRegistrosCombinados();
     var filtroPlaca = $('filtroPlaca').value;
@@ -2097,7 +2079,6 @@ function cerrarPanelDetalle() {
     document.body.style.overflow = '';
 }
 
-/* EXPORTAR */
 async function exportarExcel() {
     mostrarToast('📊 Generando Excel...', 'info');
     var registros = await obtenerRegistrosCombinados();
@@ -2216,9 +2197,8 @@ function cambiarVista(vista) {
     }
 }
 
-/* INICIAR */
 function iniciar() {
-    console.log('[boot] v3.6');
+    console.log('[boot] v3.7');
 
     var faltantes = [];
     ['fechaActual', 'pantallaLogin', 'placa', 'conductor', 'mes', 'btnIngresar'].forEach(function(id) {
@@ -2301,7 +2281,7 @@ function iniciar() {
     });
 
     cambiarVista('tabla');
-    console.log('[boot] ✅ v3.6 lista');
+    console.log('[boot] ✅ v3.7 lista');
 }
 
 if (document.readyState === 'loading') {

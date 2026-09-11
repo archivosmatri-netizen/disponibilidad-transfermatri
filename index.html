@@ -16,12 +16,10 @@
 <title>Disponibilidad Mensual - TRANSFERMATRI SA</title>
 
 <script>
-// Detectar si la URL no tiene ?v=3.1 y recargar con el parámetro
 (function() {
-    var url = window.location.href;
     var params = new URLSearchParams(window.location.search);
-    if (params.get('v') !== '3.1') {
-        params.set('v', '3.1');
+    if (params.get('v') !== '3.2') {
+        params.set('v', '3.2');
         window.location.replace(window.location.pathname + '?' + params.toString());
     }
 })();
@@ -34,16 +32,8 @@
 
 <style>
     * { box-sizing: border-box; }
-
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f2f4f7;
-        margin: 0;
-        -webkit-text-size-adjust: 100%;
-    }
-
+    body { font-family: Arial, sans-serif; background-color: #f2f4f7; margin: 0; -webkit-text-size-adjust: 100%; }
     input, select, textarea { font-size: 16px; }
-
     button, .dia, .logo-operativo-container, .tab-vista-btn, .tab-btn, .btn-rol, .celda-dia {
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
@@ -51,71 +41,32 @@
 
     header {
         background: linear-gradient(135deg, #17365d 0%, #1a4a7a 100%);
-        color: white;
-        padding: 15px 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 15px;
+        color: white; padding: 15px 30px;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 15px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
-
     .header-izquierda { display: flex; align-items: center; gap: 20px; }
     .header-logo { display: flex; align-items: center; gap: 15px; }
-    .header-logo img {
-        height: 70px; width: auto; border-radius: 8px;
-        padding: 5px; background-color: white; object-fit: contain;
-    }
-    .header-texto h1 {
-        margin: 0; font-size: 22px; font-weight: bold;
-        letter-spacing: 1px; color: #ffffff;
-    }
-    .header-texto .subtitulo {
-        margin: 3px 0 0 0; font-size: 13px; opacity: 0.9;
-        font-weight: normal; color: #b8d4f0;
-    }
-    .header-texto .slogan {
-        margin: 2px 0 0 0; font-size: 11px; opacity: 0.7;
-        font-style: italic; color: #8ab3d9;
-    }
-    .header-derecha {
-        text-align: right; font-size: 14px; opacity: 0.8;
-        border-left: 2px solid rgba(255, 255, 255, 0.2); padding-left: 20px;
-    }
+    .header-logo img { height: 70px; width: auto; border-radius: 8px; padding: 5px; background-color: white; object-fit: contain; }
+    .header-texto h1 { margin: 0; font-size: 22px; font-weight: bold; letter-spacing: 1px; color: #ffffff; }
+    .header-texto .subtitulo { margin: 3px 0 0 0; font-size: 13px; opacity: 0.9; font-weight: normal; color: #b8d4f0; }
+    .header-texto .slogan { margin: 2px 0 0 0; font-size: 11px; opacity: 0.7; font-style: italic; color: #8ab3d9; }
+    .header-derecha { text-align: right; font-size: 14px; opacity: 0.8; border-left: 2px solid rgba(255, 255, 255, 0.2); padding-left: 20px; }
     .header-derecha .fecha-actual { font-weight: bold; font-size: 15px; color: #ffffff; }
     .header-derecha .version { font-size: 11px; opacity: 0.6; color: #b8d4f0; }
 
     .contenedor { max-width: 1200px; margin: 25px auto; padding: 0 20px; }
-    .tarjeta {
-        background: white; padding: 25px; margin-bottom: 20px;
-        border-radius: 12px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-    }
-    .controles {
-        display: grid; grid-template-columns: 1fr 1fr 1fr auto;
-        gap: 15px; align-items: end;
-    }
+    .tarjeta { background: white; padding: 25px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); }
+    .controles { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 15px; align-items: end; }
     label { font-weight: bold; display: block; margin-bottom: 7px; }
-    select, input {
-        width: 100%; padding: 12px; border-radius: 7px;
-        border: 1px solid #ccc; font-size: 15px; box-sizing: border-box;
-    }
-    .btn-ingresar {
-        padding: 12px 30px; border: none; border-radius: 7px;
-        background-color: #548235; color: white; font-weight: bold;
-        cursor: pointer; font-size: 15px; white-space: nowrap;
-    }
+    select, input { width: 100%; padding: 12px; border-radius: 7px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
+    .btn-ingresar { padding: 12px 30px; border: none; border-radius: 7px; background-color: #548235; color: white; font-weight: bold; cursor: pointer; font-size: 15px; white-space: nowrap; }
     .btn-ingresar:hover { background-color: #3d6a28; }
     .btn-ingresar:disabled { background-color: #ccc; cursor: not-allowed; }
 
-    .identificacion {
-        margin-top: 20px; padding: 12px; background-color: #e8f0fa;
-        color: #17365d; border-radius: 7px; font-weight: bold; font-size: 16px;
-    }
-    .identificacion.con-registro {
-        background-color: #d9ead3;
-        color: #1a7a3a;
-    }
+    .identificacion { margin-top: 20px; padding: 12px; background-color: #e8f0fa; color: #17365d; border-radius: 7px; font-weight: bold; font-size: 16px; }
+    .identificacion.con-registro { background-color: #d9ead3; color: #1a7a3a; }
 
     .turno { margin-top: 25px; }
     .logo-operativo-container {
@@ -123,19 +74,12 @@
         border-radius: 14px; overflow: hidden;
         box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
         border: 3px solid #e8e8e8;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
         background-color: #ffffff; cursor: pointer; position: relative;
     }
-    .logo-operativo-container:hover {
-        transform: scale(1.01);
-        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.25);
-    }
-    .logo-operativo-container:active { transform: scale(0.98); }
     .logo-operativo-container img {
         display: block; width: 100%; height: auto;
         border: none; pointer-events: none; user-select: none;
-        -webkit-user-drag: none;
-        -webkit-touch-callout: none;
+        -webkit-user-drag: none; -webkit-touch-callout: none;
     }
     .logo-operativo-container .click-indicator {
         position: absolute; bottom: 10px; right: 15px;
@@ -143,84 +87,32 @@
         padding: 4px 12px; border-radius: 20px;
         font-size: 11px; font-weight: bold; opacity: 0.8; pointer-events: none;
     }
-    .logo-operativo-container .click-indicator .icono {
-        display: inline-block; transition: transform 0.3s ease;
-    }
-    .logo-operativo-container:hover .click-indicator .icono { transform: rotate(180deg); }
 
-    .calendario-wrapper {
-        overflow: hidden; max-height: 0; opacity: 0;
-        transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.3s ease;
-        margin-top: 0;
-    }
+    .calendario-wrapper { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.3s ease; margin-top: 0; }
     .calendario-wrapper.abierto { max-height: 1500px; opacity: 1; margin-top: 15px; }
 
-    .calendario {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 7px;
-        width: 100%;
-    }
-
-    .nombre-dia {
-        text-align: center;
-        font-weight: bold;
-        padding: 8px 2px;
-        color: #555;
-        font-size: 13px;
-    }
-
+    .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; width: 100%; }
+    .nombre-dia { text-align: center; font-weight: bold; padding: 8px 2px; color: #555; font-size: 13px; }
     .dia {
-        aspect-ratio: 1 / 1;
-        min-height: 0;
-        max-height: 100px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 6px;
-        cursor: pointer;
-        background-color: white;
-        box-sizing: border-box;
+        aspect-ratio: 1 / 1; min-height: 0; max-height: 100px;
+        border: 1px solid #ddd; border-radius: 8px; padding: 6px;
+        cursor: pointer; background-color: white; box-sizing: border-box;
         transition: background-color 0.2s ease, border-color 0.2s ease;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
+        position: relative; overflow: hidden;
+        display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
         min-width: 0;
     }
-
     .dia:hover { border-color: #17365d; background-color: #f5f8fc; }
     .dia.seleccionado { background-color: #d9ead3; border: 2px solid #548235; }
     .dia.seleccionado-noche { background-color: #d4e6f1; border: 2px solid #2980b9; }
-    .dia.ocupado {
-        background-color: #fce4e4; border: 2px solid #c0392b;
-        cursor: not-allowed; opacity: 0.7;
-    }
-    .dia.ocupado:hover { border-color: #c0392b; background-color: #fce4e4; }
+    .dia.ocupado { background-color: #fce4e4; border: 2px solid #c0392b; cursor: not-allowed; opacity: 0.7; }
+    .numero { font-weight: bold; font-size: 16px; line-height: 1; color: #17365d; }
 
-    .numero {
-        font-weight: bold;
-        font-size: 16px;
-        line-height: 1;
-        color: #17365d;
-    }
-
-    .disponible,
-    .disponible-noche,
-    .ocupado-texto {
-        position: absolute;
-        bottom: 4px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 9px;
-        font-weight: bold;
-        padding: 0 2px;
-        line-height: 1.1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .disponible, .disponible-noche, .ocupado-texto {
+        position: absolute; bottom: 4px; left: 0; right: 0;
+        text-align: center; font-size: 9px; font-weight: bold;
+        padding: 0 2px; line-height: 1.1;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .disponible { color: #38761d; }
     .disponible-noche { color: #1a5276; }
@@ -228,40 +120,13 @@
 
     .resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .resumen-box { background-color: #f7f9fb; padding: 15px; border-radius: 8px; }
-
-    .btn-guardar {
-        margin-top: 20px; padding: 13px 25px; border: none; border-radius: 7px;
-        background-color: #17365d; color: white; font-weight: bold;
-        cursor: pointer; font-size: 16px; transition: background-color 0.3s ease;
-    }
-    .btn-guardar:hover { background-color: #0f2745; }
+    .btn-guardar { margin-top: 20px; padding: 13px 25px; border: none; border-radius: 7px; background-color: #17365d; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
     .btn-guardar:disabled { background-color: #ccc; cursor: not-allowed; }
-
-    .btn-borrar-registro {
-        margin-top: 10px;
-        margin-left: 10px;
-        padding: 13px 25px;
-        border: none;
-        border-radius: 7px;
-        background-color: #e74c3c;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 15px;
-        display: none;
-    }
+    .btn-borrar-registro { margin-top: 10px; margin-left: 10px; padding: 13px 25px; border: none; border-radius: 7px; background-color: #e74c3c; color: white; font-weight: bold; cursor: pointer; font-size: 15px; display: none; }
     .btn-borrar-registro.visible { display: inline-block; }
-    .btn-borrar-registro:hover { background-color: #c0392b; }
 
-    .pantalla-login {
-        display: flex; justify-content: center; align-items: center;
-        min-height: 60vh; padding: 20px;
-    }
-    .login-container {
-        background: white; padding: 40px; border-radius: 16px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
-        max-width: 500px; width: 100%; text-align: center;
-    }
+    .pantalla-login { display: flex; justify-content: center; align-items: center; min-height: 60vh; padding: 20px; }
+    .login-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12); max-width: 500px; width: 100%; text-align: center; }
     .login-container .login-logo { margin-bottom: 20px; }
     .login-container .login-logo img { height: 80px; width: auto; }
     .login-container h2 { color: #17365d; margin-bottom: 10px; }
@@ -270,455 +135,156 @@
     .login-container .opciones .btn-rol {
         padding: 16px 20px; border: 2px solid #e8e8e8; border-radius: 10px;
         background: white; cursor: pointer; font-size: 16px; font-weight: bold;
-        transition: all 0.3s ease; display: flex;
-        align-items: center; justify-content: center; gap: 12px;
+        display: flex; align-items: center; justify-content: center; gap: 12px;
         font-family: inherit;
-    }
-    .login-container .opciones .btn-rol:hover {
-        border-color: #17365d; background: #f5f8fc;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
     .login-container .opciones .btn-rol .icono { font-size: 24px; }
-    .login-container .opciones .btn-rol .descripcion {
-        font-weight: normal; font-size: 12px; color: #888;
-        display: block; margin-top: 2px;
-    }
+    .login-container .opciones .btn-rol .descripcion { font-weight: normal; font-size: 12px; color: #888; display: block; margin-top: 2px; }
     .login-container .opciones .btn-rol.usuario { border-color: #27ae60; }
-    .login-container .opciones .btn-rol.usuario:hover {
-        border-color: #1e8449; background: #eafaf1;
-    }
     .login-container .opciones .btn-rol.admin { border-color: #2980b9; }
-    .login-container .opciones .btn-rol.admin:hover {
-        border-color: #1a5276; background: #eaf2f8;
-    }
 
-    .modal-conductor,
-    .modal-admin,
-    .modal-confirm,
-    .modal-tipo-dias {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-        padding: 15px;
+    .modal-conductor, .modal-admin, .modal-confirm, .modal-tipo-dias {
+        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5); z-index: 1000;
+        justify-content: center; align-items: center; padding: 15px;
     }
+    .modal-conductor.active, .modal-admin.active, .modal-confirm.active, .modal-tipo-dias.active { display: flex; }
 
-    .modal-conductor.active,
-    .modal-admin.active,
-    .modal-confirm.active,
-    .modal-tipo-dias.active {
-        display: flex;
-    }
-
-    .modal-conductor .modal-content,
-    .modal-admin .modal-content,
-    .modal-confirm-content,
-    .modal-tipo-dias-content {
-        background: white;
-        padding: 30px;
-        border-radius: 16px;
-        max-width: 440px;
-        width: 100%;
-        text-align: center;
+    .modal-conductor .modal-content, .modal-admin .modal-content,
+    .modal-confirm-content, .modal-tipo-dias-content {
+        background: white; padding: 30px; border-radius: 16px;
+        max-width: 440px; width: 100%; text-align: center;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        animation: modalFadeIn 0.3s ease;
-        max-height: 90vh;
-        overflow-y: auto;
+        max-height: 90vh; overflow-y: auto;
     }
 
-    @keyframes modalFadeIn {
-        from { transform: scale(0.9); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-conductor .modal-content h3,
-    .modal-admin .modal-content h3,
-    .modal-confirm-content h3,
-    .modal-tipo-dias-content h3 {
-        color: #17365d;
-        margin: 0 0 10px 0;
-        font-size: 18px;
-    }
-
-    .modal-tipo-dias-content .dias-lista {
-        background: #fff3cd; color: #856404;
-        padding: 12px 15px; border-radius: 8px;
-        font-weight: bold; margin: 15px 0;
-        word-break: break-word; line-height: 1.5;
-        max-height: 130px; overflow-y: auto;
-        font-size: 14px; text-align: left;
-    }
-
-    .modal-tipo-dias-content .sub-texto-tipo {
-        color: #666; font-size: 14px;
-        margin: 12px 0 15px 0; line-height: 1.4;
-    }
-
-    .btn-tipo {
-        display: flex; align-items: center; gap: 15px;
-        width: 100%; padding: 14px 18px;
-        border: 2px solid #e8e8e8; border-radius: 10px;
-        background: white; cursor: pointer;
-        text-align: left; font-size: 15px;
-        margin-bottom: 10px; transition: all 0.2s ease;
-        font-family: inherit;
-    }
-    .btn-tipo:hover {
-        border-color: #17365d; background: #f5f8fc;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
+    .modal-tipo-dias-content .dias-lista { background: #fff3cd; color: #856404; padding: 12px 15px; border-radius: 8px; font-weight: bold; margin: 15px 0; word-break: break-word; line-height: 1.5; max-height: 130px; overflow-y: auto; font-size: 14px; text-align: left; }
+    .modal-tipo-dias-content .sub-texto-tipo { color: #666; font-size: 14px; margin: 12px 0 15px 0; line-height: 1.4; }
+    .btn-tipo { display: flex; align-items: center; gap: 15px; width: 100%; padding: 14px 18px; border: 2px solid #e8e8e8; border-radius: 10px; background: white; cursor: pointer; text-align: left; font-size: 15px; margin-bottom: 10px; font-family: inherit; }
     .btn-tipo .btn-tipo-icono { font-size: 28px; flex-shrink: 0; }
-    .btn-tipo .btn-tipo-titulo {
-        font-weight: bold; font-size: 16px; color: #17365d; display: block;
-    }
-    .btn-tipo .btn-tipo-desc {
-        font-size: 12px; color: #888; margin-top: 2px;
-        font-weight: normal; display: block;
-    }
+    .btn-tipo .btn-tipo-titulo { font-weight: bold; font-size: 16px; color: #17365d; display: block; }
+    .btn-tipo .btn-tipo-desc { font-size: 12px; color: #888; margin-top: 2px; font-weight: normal; display: block; }
     .btn-tipo.descanso:hover { border-color: #f39c12; background: #fef5e7; }
     .btn-tipo.mantenimiento:hover { border-color: #e74c3c; background: #fdedec; }
+    .btn-cancelar-tipo { margin-top: 10px; padding: 12px 20px; border: none; border-radius: 8px; background: #ecf0f1; color: #555; cursor: pointer; font-size: 14px; font-weight: bold; width: 100%; font-family: inherit; min-height: 44px; }
 
-    .btn-cancelar-tipo {
-        margin-top: 10px; padding: 12px 20px;
-        border: none; border-radius: 8px; background: #ecf0f1;
-        color: #555; cursor: pointer; font-size: 14px;
-        font-weight: bold; width: 100%; font-family: inherit;
-        min-height: 44px;
-    }
-    .btn-cancelar-tipo:hover { background: #d5dbdb; }
-
-    .modal-conductor .modal-content .sub-texto {
-        color: #666; font-size: 14px; margin-bottom: 20px;
-    }
+    .modal-conductor .modal-content .sub-texto { color: #666; font-size: 14px; margin-bottom: 20px; }
     .modal-conductor .modal-content .grupo-placa { margin-bottom: 15px; }
-    .modal-conductor .modal-content .grupo-placa label {
-        display: block; text-align: left; font-weight: bold;
-        margin-bottom: 5px; color: #333;
-    }
-    .modal-conductor .modal-content .grupo-placa select {
-        width: 100%; padding: 12px; border: 2px solid #ddd;
-        border-radius: 8px; font-size: 16px;
-    }
-    .modal-conductor .modal-content .grupo-placa select:focus {
-        border-color: #17365d; outline: none;
-    }
-    .modal-conductor .modal-content .btn-ingresar-conductor {
-        padding: 12px 40px; border: none; border-radius: 8px;
-        background: #27ae60; color: white; font-weight: bold;
-        cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;
-        font-family: inherit;
-    }
-    .modal-conductor .modal-content .btn-ingresar-conductor:disabled {
-        background: #ccc; cursor: not-allowed;
-    }
-    .modal-conductor .modal-content .btn-cancelar-conductor {
-        padding: 10px 20px; border: none; border-radius: 8px;
-        background: #e74c3c; color: white; cursor: pointer;
-        font-size: 14px; margin-top: 10px; width: 100%;
-        font-family: inherit;
-    }
+    .modal-conductor .modal-content .grupo-placa label { display: block; text-align: left; font-weight: bold; margin-bottom: 5px; color: #333; }
+    .modal-conductor .modal-content .grupo-placa select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+    .modal-conductor .modal-content .btn-ingresar-conductor { padding: 12px 40px; border: none; border-radius: 8px; background: #27ae60; color: white; font-weight: bold; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; font-family: inherit; }
+    .modal-conductor .modal-content .btn-ingresar-conductor:disabled { background: #ccc; cursor: not-allowed; }
+    .modal-conductor .modal-content .btn-cancelar-conductor { padding: 10px 20px; border: none; border-radius: 8px; background: #e74c3c; color: white; cursor: pointer; font-size: 14px; margin-top: 10px; width: 100%; font-family: inherit; }
 
     .modal-admin .modal-content p { color: #666; font-size: 14px; margin-bottom: 20px; }
-    .modal-admin .modal-content .input-clave {
-        width: 100%; padding: 12px; border: 2px solid #ddd;
-        border-radius: 8px; font-size: 16px; text-align: center;
-        letter-spacing: 4px; margin-bottom: 15px;
-    }
-    .modal-admin .modal-content .input-clave:focus {
-        border-color: #17365d; outline: none;
-    }
-    .modal-admin .modal-content .btn-ingresar-admin {
-        padding: 12px 40px; border: none; border-radius: 8px;
-        background: #17365d; color: white; font-weight: bold;
-        cursor: pointer; font-size: 16px; width: 100%;
-        font-family: inherit;
-    }
-    .modal-admin .modal-content .btn-cancelar-admin {
-        padding: 10px 20px; border: none; border-radius: 8px;
-        background: #e74c3c; color: white; cursor: pointer;
-        font-size: 14px; margin-top: 10px; width: 100%;
-        font-family: inherit;
-    }
-    .modal-admin .modal-content .error-clave {
-        color: #e74c3c; font-size: 13px; margin-bottom: 10px; display: none;
-    }
+    .modal-admin .modal-content .input-clave { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center; letter-spacing: 4px; margin-bottom: 15px; }
+    .modal-admin .modal-content .btn-ingresar-admin { padding: 12px 40px; border: none; border-radius: 8px; background: #17365d; color: white; font-weight: bold; cursor: pointer; font-size: 16px; width: 100%; font-family: inherit; }
+    .modal-admin .modal-content .btn-cancelar-admin { padding: 10px 20px; border: none; border-radius: 8px; background: #e74c3c; color: white; cursor: pointer; font-size: 14px; margin-top: 10px; width: 100%; font-family: inherit; }
+    .modal-admin .modal-content .error-clave { color: #e74c3c; font-size: 13px; margin-bottom: 10px; display: none; }
     .modal-admin .modal-content .error-clave.visible { display: block; }
 
-    .modal-confirm-content p {
-        color: #555; font-size: 15px; margin: 0 0 20px 0; line-height: 1.4;
-    }
+    .modal-confirm-content p { color: #555; font-size: 15px; margin: 0 0 20px 0; line-height: 1.4; }
     .modal-confirm-content .confirm-botones { display: flex; gap: 10px; }
-    .modal-confirm-content .confirm-botones button {
-        flex: 1; padding: 12px; border: none; border-radius: 8px;
-        font-weight: bold; cursor: pointer; font-size: 15px; min-height: 44px;
-        font-family: inherit;
-    }
+    .modal-confirm-content .confirm-botones button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; min-height: 44px; font-family: inherit; }
     .modal-confirm-content .btn-cancelar-confirm { background: #ecf0f1; color: #555; }
     .modal-confirm-content .btn-aceptar-confirm { background: #e74c3c; color: white; }
 
     .contenido-principal { display: none; }
     .contenido-principal.visible { display: block; }
 
-    .barra-rol {
-        background: white; padding: 10px 25px; border-radius: 12px;
-        margin-bottom: 20px; display: flex; align-items: center;
-        justify-content: space-between; flex-wrap: wrap; gap: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    }
-    .barra-rol .rol-info {
-        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    }
-    .barra-rol .rol-info .etiqueta {
-        font-weight: bold; color: #666; font-size: 13px;
-    }
-    .barra-rol .rol-info .rol-actual {
-        font-weight: bold; padding: 4px 16px; border-radius: 20px; font-size: 14px;
-    }
+    .barra-rol { background: white; padding: 10px 25px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06); }
+    .barra-rol .rol-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .barra-rol .rol-info .etiqueta { font-weight: bold; color: #666; font-size: 13px; }
+    .barra-rol .rol-info .rol-actual { font-weight: bold; padding: 4px 16px; border-radius: 20px; font-size: 14px; }
     .barra-rol .rol-info .rol-actual.usuario { background: #d5f5e3; color: #1a7a3a; }
     .barra-rol .rol-info .rol-actual.admin { background: #d4e6f1; color: #1a5276; }
-    .barra-rol .rol-info .conductor-nombre {
-        font-weight: bold; color: #17365d; font-size: 14px;
-        background: #e8f0fa; padding: 3px 12px; border-radius: 15px;
-    }
-    .barra-rol .btn-salir {
-        padding: 8px 20px; border: none; border-radius: 7px;
-        background: #e74c3c; color: white; cursor: pointer;
-        font-weight: bold; font-size: 13px;
-        font-family: inherit;
-    }
+    .barra-rol .rol-info .conductor-nombre { font-weight: bold; color: #17365d; font-size: 14px; background: #e8f0fa; padding: 3px 12px; border-radius: 15px; }
+    .barra-rol .btn-salir { padding: 8px 20px; border: none; border-radius: 7px; background: #e74c3c; color: white; cursor: pointer; font-weight: bold; font-size: 13px; font-family: inherit; }
 
-    .filtros-visualizacion {
-        display: grid; grid-template-columns: 1fr 1fr 1fr auto;
-        gap: 15px; align-items: end; margin-bottom: 20px;
-    }
+    .filtros-visualizacion { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 15px; align-items: end; margin-bottom: 20px; }
     .filtros-visualizacion .grupo-filtro { display: flex; flex-direction: column; }
-    .filtros-visualizacion select,
-    .filtros-visualizacion input {
-        width: 100%; padding: 12px; border-radius: 7px;
-        border: 1px solid #ccc; font-size: 15px; box-sizing: border-box;
-    }
-    .filtros-visualizacion .btn-actualizar {
-        padding: 12px 30px; border: none; border-radius: 7px;
-        background-color: #17365d; color: white; font-weight: bold;
-        cursor: pointer; font-size: 15px; white-space: nowrap;
-        height: 48px; display: flex; align-items: center; justify-content: center;
-        font-family: inherit;
-    }
+    .filtros-visualizacion select, .filtros-visualizacion input { width: 100%; padding: 12px; border-radius: 7px; border: 1px solid #ccc; font-size: 15px; }
+    .filtros-visualizacion .btn-actualizar { padding: 12px 30px; border: none; border-radius: 7px; background-color: #17365d; color: white; font-weight: bold; cursor: pointer; font-size: 15px; height: 48px; font-family: inherit; }
 
-    .tabs-visualizacion {
-        display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
-    }
-    .tab-vista-btn {
-        padding: 10px 20px; border: none; border-radius: 7px;
-        background-color: #e8f0fa; color: #17365d; font-weight: bold;
-        cursor: pointer; font-size: 14px; transition: all 0.3s ease;
-        display: flex; align-items: center; gap: 8px;
-        font-family: inherit;
-    }
+    .tabs-visualizacion { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-vista-btn { padding: 10px 20px; border: none; border-radius: 7px; background-color: #e8f0fa; color: #17365d; font-weight: bold; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; font-family: inherit; }
     .tab-vista-btn.activo { background-color: #17365d; color: white; }
-    .tab-vista-btn .badge {
-        background: rgba(255, 255, 255, 0.3);
-        padding: 1px 8px; border-radius: 12px; font-size: 11px;
-    }
+    .tab-vista-btn .badge { background: rgba(255, 255, 255, 0.3); padding: 1px 8px; border-radius: 12px; font-size: 11px; }
 
     .tabla-disponibilidad { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .tabla-disponibilidad th {
-        background-color: #17365d; color: white; padding: 10px 8px;
-        text-align: left; position: sticky; top: 0; z-index: 10;
-        white-space: nowrap;
-    }
-    .tabla-disponibilidad td {
-        padding: 10px 8px; border-bottom: 1px solid #ddd; vertical-align: top;
-    }
-    .tabla-disponibilidad tr:hover { background-color: #f5f7fa; }
+    .tabla-disponibilidad th { background-color: #17365d; color: white; padding: 10px 8px; text-align: left; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
+    .tabla-disponibilidad td { padding: 10px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
 
-    .bloque-dias {
-        display: inline-block; background-color: #d9ead3; color: #38761d;
-        padding: 3px 8px; border-radius: 5px; font-size: 11px;
-        font-weight: bold; margin: 2px 3px 2px 0;
-        white-space: nowrap; line-height: 1.3;
-    }
+    .bloque-dias { display: inline-block; background-color: #d9ead3; color: #38761d; padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; margin: 2px 3px 2px 0; white-space: nowrap; line-height: 1.3; }
     .bloque-dias.noche { background-color: #d4e6f1; color: #1a5276; }
     .bloque-dias.descanso { background-color: #fce4d6; color: #b85c00; }
     .bloque-dias.mantenimiento { background-color: #fadbd8; color: #922b21; }
     .bloque-vacio { color: #999; font-style: italic; font-size: 11px; }
 
     .acciones-celda { display: flex; gap: 5px; flex-wrap: wrap; }
+    .btn-eliminar { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; font-family: inherit; }
+    .btn-editar { background-color: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; font-family: inherit; }
+    .btn-ver-detalle { background-color: #2980b9; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; font-family: inherit; }
 
-    .btn-eliminar {
-        background-color: #e74c3c; color: white; border: none;
-        padding: 5px 10px; border-radius: 5px; cursor: pointer;
-        font-size: 11px; font-weight: bold; font-family: inherit;
-    }
-    .btn-editar {
-        background-color: #f39c12; color: white; border: none;
-        padding: 5px 10px; border-radius: 5px; cursor: pointer;
-        font-size: 11px; font-weight: bold; font-family: inherit;
-    }
-    .btn-ver-detalle {
-        background-color: #2980b9; color: white; border: none;
-        padding: 5px 10px; border-radius: 5px; cursor: pointer;
-        font-size: 11px; font-weight: bold; font-family: inherit;
-    }
-
-    .contenedor-tabla {
-        max-height: 600px; overflow: auto;
-        border: 1px solid #ddd; border-radius: 8px;
-        -webkit-overflow-scrolling: touch;
-    }
+    .contenedor-tabla { max-height: 600px; overflow: auto; border: 1px solid #ddd; border-radius: 8px; -webkit-overflow-scrolling: touch; }
 
     .vista-calendario { display: none; }
     .vista-calendario.activo { display: block; }
 
-    .calendario-mensual {
-        display: grid; grid-template-columns: repeat(7, 1fr);
-        gap: 5px; margin-top: 15px;
-    }
-    .calendario-mensual .header-dia {
-        text-align: center; font-weight: bold; padding: 10px 4px;
-        background: #17365d; color: white; border-radius: 6px; font-size: 12px;
-        text-transform: uppercase;
-    }
-    .calendario-mensual .celda-dia {
-        min-height: 80px; border: 1px solid #e0e0e0; border-radius: 8px;
-        background: white; font-size: 12px; position: relative;
-        overflow: hidden; display: flex; flex-direction: column;
-    }
+    .calendario-mensual { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
+    .calendario-mensual .header-dia { text-align: center; font-weight: bold; padding: 10px 4px; background: #17365d; color: white; border-radius: 6px; font-size: 12px; text-transform: uppercase; }
+    .calendario-mensual .celda-dia { min-height: 80px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; font-size: 12px; overflow: hidden; display: flex; flex-direction: column; }
     .calendario-mensual .celda-dia.vacia { background: #fafafa; border-color: #f0f0f0; }
     .calendario-mensual .celda-dia.con-conductores { cursor: pointer; }
-    .calendario-mensual .celda-dia .barra-turno {
-        height: 5px; background: #e8e8e8; border-radius: 8px 8px 0 0;
-    }
-    .calendario-mensual .celda-dia .barra-turno.diurno {
-        background: linear-gradient(90deg, #27ae60, #52c07a);
-    }
-    .calendario-mensual .celda-dia .barra-turno.noche {
-        background: linear-gradient(90deg, #2980b9, #4fa8dd);
-    }
-    .calendario-mensual .celda-dia .barra-turno.ambos {
-        background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
-    }
-    .calendario-mensual .celda-dia .contenido-dia {
-        padding: 5px 7px; display: flex; flex-direction: column;
-        align-items: flex-start; justify-content: space-between;
-        flex: 1; gap: 3px;
-    }
-    .calendario-mensual .celda-dia .numero {
-        font-weight: bold; font-size: 15px; color: #17365d; line-height: 1;
-    }
-    .calendario-mensual .celda-dia .contadores {
-        display: flex; flex-direction: column; gap: 2px;
-        width: 100%; margin-top: auto;
-    }
-    .calendario-mensual .celda-dia .contador {
-        display: inline-flex; align-items: center; gap: 3px;
-        font-size: 10px; font-weight: bold; padding: 2px 6px;
-        border-radius: 10px; white-space: nowrap; width: fit-content;
-    }
+    .calendario-mensual .celda-dia .barra-turno { height: 5px; background: #e8e8e8; border-radius: 8px 8px 0 0; }
+    .calendario-mensual .celda-dia .barra-turno.diurno { background: linear-gradient(90deg, #27ae60, #52c07a); }
+    .calendario-mensual .celda-dia .barra-turno.noche { background: linear-gradient(90deg, #2980b9, #4fa8dd); }
+    .calendario-mensual .celda-dia .barra-turno.ambos { background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%); }
+    .calendario-mensual .celda-dia .contenido-dia { padding: 5px 7px; display: flex; flex-direction: column; flex: 1; gap: 3px; }
+    .calendario-mensual .celda-dia .numero { font-weight: bold; font-size: 15px; color: #17365d; line-height: 1; }
+    .calendario-mensual .celda-dia .contadores { display: flex; flex-direction: column; gap: 2px; margin-top: auto; }
+    .calendario-mensual .celda-dia .contador { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; width: fit-content; }
     .calendario-mensual .celda-dia .contador.diurno { background: #d9ead3; color: #1a7a3a; }
     .calendario-mensual .celda-dia .contador.noche { background: #d4e6f1; color: #1a5276; }
     .calendario-mensual .celda-dia .contador.descanso { background: #fce4d6; color: #b85c00; }
     .calendario-mensual .celda-dia .contador.mantenimiento { background: #fadbd8; color: #922b21; }
 
-    .panel-detalle-dia {
-        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.5); z-index: 5000;
-        justify-content: center; align-items: center; padding: 15px;
-    }
+    .panel-detalle-dia { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 5000; justify-content: center; align-items: center; padding: 15px; }
     .panel-detalle-dia.active { display: flex; }
-    .panel-detalle-content {
-        background: white; border-radius: 14px; max-width: 500px;
-        width: 100%; max-height: 85vh; display: flex;
-        flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-        animation: modalFadeIn 0.25s ease; overflow: hidden;
-    }
-    .panel-detalle-header {
-        background: linear-gradient(135deg, #17365d 0%, #1a4a7a 100%);
-        color: white; padding: 15px 20px; display: flex;
-        justify-content: space-between; align-items: center; flex-shrink: 0;
-    }
+    .panel-detalle-content { background: white; border-radius: 14px; max-width: 500px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+    .panel-detalle-header { background: linear-gradient(135deg, #17365d 0%, #1a4a7a 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .panel-detalle-header h3 { margin: 0; font-size: 16px; }
-    .panel-detalle-header .btn-cerrar-panel {
-        background: rgba(255,255,255,0.2); border: none; color: white;
-        width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-        font-size: 18px; display: flex; align-items: center;
-        justify-content: center; flex-shrink: 0;
-        font-family: inherit;
-    }
-    .panel-detalle-body {
-        padding: 15px; overflow-y: auto; flex: 1;
-        -webkit-overflow-scrolling: touch;
-    }
+    .panel-detalle-header .btn-cerrar-panel { background: rgba(255,255,255,0.2); border: none; color: white; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+    .panel-detalle-body { padding: 15px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
     .panel-detalle-body .grupo-turno { margin-bottom: 15px; }
-    .panel-detalle-body .grupo-turno .titulo-grupo {
-        display: flex; justify-content: space-between; align-items: center;
-        margin: 0 0 8px 0; padding: 8px 12px; border-radius: 8px;
-        font-size: 13px; font-weight: bold; text-transform: uppercase;
-    }
+    .panel-detalle-body .titulo-grupo { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; text-transform: uppercase; }
     .panel-detalle-body .grupo-turno.diurno .titulo-grupo { background: #d9ead3; color: #1a7a3a; }
     .panel-detalle-body .grupo-turno.noche .titulo-grupo { background: #d4e6f1; color: #1a5276; }
     .panel-detalle-body .grupo-turno.descanso .titulo-grupo { background: #fce4d6; color: #b85c00; }
     .panel-detalle-body .grupo-turno.mantenimiento .titulo-grupo { background: #fadbd8; color: #922b21; }
-    .panel-detalle-body .grupo-turno .titulo-grupo .count {
-        background: rgba(255,255,255,0.6); padding: 2px 10px;
-        border-radius: 12px; font-size: 12px;
-    }
+    .panel-detalle-body .count { background: rgba(255,255,255,0.6); padding: 2px 10px; border-radius: 12px; font-size: 12px; }
     .panel-detalle-body ul { list-style: none; padding: 0; margin: 0; }
-    .panel-detalle-body ul li {
-        padding: 8px 12px; border-radius: 6px; margin-bottom: 4px;
-        font-size: 13px; display: flex; align-items: center; gap: 8px;
-    }
+    .panel-detalle-body ul li { padding: 8px 12px; border-radius: 6px; margin-bottom: 4px; font-size: 13px; }
     .panel-detalle-body .grupo-turno.diurno ul li { background: #f1f8ed; color: #1a5a2a; border-left: 3px solid #27ae60; }
     .panel-detalle-body .grupo-turno.noche ul li { background: #eef5fb; color: #1a4a6e; border-left: 3px solid #2980b9; }
     .panel-detalle-body .grupo-turno.descanso ul li { background: #fef5e7; color: #7e5109; border-left: 3px solid #f39c12; }
     .panel-detalle-body .grupo-turno.mantenimiento ul li { background: #fdedec; color: #7b241c; border-left: 3px solid #e74c3c; }
 
-    .leyenda-calendario {
-        display: flex; gap: 15px; margin: 15px 0;
-        flex-wrap: wrap; font-size: 12px; justify-content: center;
-    }
+    .leyenda-calendario { display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap; font-size: 12px; justify-content: center; }
     .leyenda-calendario .item { display: flex; align-items: center; gap: 6px; }
-    .leyenda-calendario .color {
-        width: 20px; height: 20px; border-radius: 4px; border: 1px solid #ccc;
-    }
+    .leyenda-calendario .color { width: 20px; height: 20px; border-radius: 4px; border: 1px solid #ccc; }
     .leyenda-calendario .color.diurno { background: #27ae60; }
     .leyenda-calendario .color.noche { background: #2980b9; }
     .leyenda-calendario .color.descanso { background: #f39c12; }
     .leyenda-calendario .color.mantenimiento { background: #e74c3c; }
 
-    .btn-reporte {
-        padding: 12px 25px; border: none; border-radius: 7px;
-        color: white; font-weight: bold; cursor: pointer;
-        font-size: 14px; transition: all 0.3s ease;
-        display: inline-flex; align-items: center; gap: 8px;
-        font-family: inherit;
-    }
+    .btn-reporte { padding: 12px 25px; border: none; border-radius: 7px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; }
     .btn-reporte.excel { background: #27ae60; }
     .btn-reporte.pdf { background: #c0392b; }
+    .btn-google-sheets { background: #4285F4; color: white; border: none; padding: 12px 25px; border-radius: 7px; cursor: pointer; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; }
 
-    .btn-google-sheets {
-        background: #4285F4; color: white; border: none;
-        padding: 12px 25px; border-radius: 7px; cursor: pointer;
-        font-weight: bold; font-size: 14px;
-        display: inline-flex; align-items: center; gap: 8px;
-        font-family: inherit;
-    }
-
-    .tabs {
-        display: flex; gap: 10px; margin-bottom: 20px;
-        border-bottom: 2px solid #ddd; padding-bottom: 10px;
-    }
-    .tab-btn {
-        padding: 10px 20px; border: none; border-radius: 7px 7px 0 0;
-        background-color: #e8f0fa; color: #17365d; font-weight: bold;
-        cursor: pointer; font-size: 14px;
-        font-family: inherit;
-    }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+    .tab-btn { padding: 10px 20px; border: none; border-radius: 7px 7px 0 0; background-color: #e8f0fa; color: #17365d; font-weight: bold; cursor: pointer; font-size: 14px; font-family: inherit; }
     .tab-btn.activo { background-color: #17365d; color: white; }
 
     .tab-contenido { display: none; padding: 10px 0; }
@@ -727,141 +293,51 @@
     #contenedorCalendario, #contenedorResumen { display: none !important; }
     #contenedorCalendario.visible, #contenedorResumen.visible { display: block !important; }
 
-    .toast {
-        position: fixed; bottom: 20px; left: 50%;
-        transform: translateX(-50%) translateY(20px);
-        background: #333; color: white; padding: 14px 24px;
-        border-radius: 10px; font-size: 14px; font-weight: 500;
-        z-index: 99999; opacity: 0;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-        pointer-events: none; max-width: 90vw; text-align: center;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #333; color: white; padding: 14px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; z-index: 99999; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; max-width: 90vw; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
     .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.success { background: #27ae60; }
-    .toast.error   { background: #e74c3c; }
+    .toast.error { background: #e74c3c; }
     .toast.warning { background: #f39c12; }
-    .toast.info    { background: #2980b9; }
+    .toast.info { background: #2980b9; }
 
-    #errorPanel {
-        display: none;
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        background: #c0392b;
-        color: white;
-        padding: 12px;
-        font-size: 12px;
-        font-family: monospace;
-        z-index: 999999;
-        max-height: 40vh;
-        overflow-y: auto;
-    }
+    #errorPanel { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #c0392b; color: white; padding: 12px; font-size: 12px; font-family: monospace; z-index: 999999; max-height: 40vh; overflow-y: auto; }
     #errorPanel.visible { display: block; }
 
     @media(max-width: 700px) {
         header { flex-direction: column; text-align: center; padding: 12px 15px; gap: 10px; }
-        .header-izquierda { flex-direction: column; text-align: center; width: 100%; }
         .header-logo { flex-direction: column; text-align: center; gap: 8px; }
         .header-logo img { height: 55px; }
         .header-texto h1 { font-size: 17px; }
-        .header-texto .subtitulo { font-size: 11px; }
-        .header-texto .slogan { font-size: 10px; }
-        .header-derecha {
-            border-left: none; border-top: 2px solid rgba(255,255,255,0.3);
-            padding: 10px 0 0 0; text-align: center; width: 100%;
-        }
-
+        .header-derecha { border-left: none; border-top: 2px solid rgba(255,255,255,0.3); padding: 10px 0 0 0; text-align: center; width: 100%; }
         .contenedor { padding: 0 12px; margin: 15px auto; }
         .tarjeta { padding: 15px; border-radius: 10px; }
-        .tarjeta h2 { font-size: 17px; margin-top: 0; }
-
         .controles { grid-template-columns: 1fr; gap: 12px; }
         .filtros-visualizacion { grid-template-columns: 1fr; gap: 10px; }
-        .filtros-visualizacion .btn-actualizar { height: auto; padding: 14px; }
         .resumen { grid-template-columns: 1fr; }
-
-        .btn-ingresar, .btn-guardar, .btn-ver-detalle, .btn-eliminar,
-        .btn-editar, .btn-salir, .btn-reporte, .btn-google-sheets,
-        .btn-borrar-registro { min-height: 44px; }
-
-        .btn-guardar { width: 100%; padding: 15px; font-size: 15px; }
+        .btn-ingresar, .btn-guardar, .btn-ver-detalle, .btn-eliminar, .btn-editar, .btn-salir, .btn-reporte, .btn-google-sheets, .btn-borrar-registro { min-height: 44px; }
+        .btn-guardar { width: 100%; padding: 15px; }
         .btn-ingresar { width: 100%; padding: 14px; }
         .btn-borrar-registro { margin-left: 0; width: 100%; }
-
-        .tabs, .tabs-visualizacion {
-            flex-wrap: nowrap; overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; padding-bottom: 8px;
-        }
-        .tabs::-webkit-scrollbar, .tabs-visualizacion::-webkit-scrollbar { display: none; }
-        .tab-btn, .tab-vista-btn {
-            flex-shrink: 0; white-space: nowrap; padding: 10px 14px; font-size: 12px;
-        }
-
-        /* Calendario móvil: ajustes */
+        .tabs, .tabs-visualizacion { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; }
         .calendario { gap: 4px; }
         .nombre-dia { font-size: 11px; padding: 5px 2px; }
         .dia { max-height: 70px; padding: 4px; border-radius: 6px; }
         .dia .numero { font-size: 14px; }
         .disponible, .disponible-noche { font-size: 8px; bottom: 3px; }
         .ocupado-texto { font-size: 7px; bottom: 3px; }
-
-        .logo-operativo-container { border-radius: 10px; border-width: 2px; }
-        .logo-operativo-container .click-indicator {
-            font-size: 9px; padding: 3px 10px; bottom: 6px; right: 8px;
-        }
-
         .pantalla-login { min-height: 100dvh; padding: 15px; }
-        .login-container { padding: 25px 20px; border-radius: 14px; }
-        .login-container .login-logo img { height: 60px; }
-        .login-container h2 { font-size: 20px; }
-        .login-container .opciones .btn-rol { padding: 14px 15px; font-size: 14px; }
-
-        .modal-conductor.active, .modal-admin.active, .modal-tipo-dias.active {
-            align-items: flex-start; padding: 20px 12px; overflow-y: auto;
-        }
-        .modal-conductor .modal-content, .modal-admin .modal-content,
-        .modal-tipo-dias-content {
-            padding: 20px; margin: 0 auto; border-radius: 12px;
-        }
-
-        .barra-rol {
-            flex-direction: column; text-align: center;
-            padding: 12px 15px; gap: 10px;
-        }
+        .login-container { padding: 25px 20px; }
+        .modal-conductor .modal-content, .modal-admin .modal-content, .modal-tipo-dias-content { padding: 20px; }
+        .barra-rol { flex-direction: column; text-align: center; }
         .barra-rol .btn-salir { width: 100%; padding: 12px; }
-
-        .contenedor-tabla {
-            overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 60vh;
-        }
+        .contenedor-tabla { overflow-x: auto; max-height: 60vh; }
         .tabla-disponibilidad { font-size: 12px; min-width: 800px; }
-        .tabla-disponibilidad th, .tabla-disponibilidad td {
-            padding: 8px 6px; white-space: nowrap;
-        }
-
         .acciones-celda { flex-direction: column; gap: 4px; }
-
         .calendario-mensual { gap: 3px; }
         .calendario-mensual .header-dia { font-size: 10px; padding: 6px 2px; }
-        .calendario-mensual .celda-dia { min-height: 62px; border-radius: 6px; }
-        .calendario-mensual .celda-dia .contenido-dia { padding: 4px 5px; gap: 2px; }
-        .calendario-mensual .celda-dia .numero { font-size: 13px; }
-        .calendario-mensual .celda-dia .contador { font-size: 9px; padding: 1px 4px; }
-        .calendario-mensual .celda-dia .barra-turno { height: 4px; }
-
+        .calendario-mensual .celda-dia { min-height: 62px; }
         .panel-detalle-dia { padding: 0; align-items: flex-end; }
-        .panel-detalle-content {
-            max-width: 100%; max-height: 90vh;
-            border-radius: 14px 14px 0 0;
-        }
-
-        .leyenda-calendario { gap: 8px; font-size: 10px; }
-        .leyenda-calendario .color { width: 14px; height: 14px; }
-
-        .btn-reporte, .btn-google-sheets {
-            width: 100%; justify-content: center; padding: 14px;
-        }
-
+        .panel-detalle-content { max-width: 100%; max-height: 90vh; border-radius: 14px 14px 0 0; }
         .identificacion { font-size: 14px; padding: 10px; }
     }
 </style>
@@ -875,11 +351,10 @@
     <pre id="errorTexto"></pre>
 </div>
 
-
 <header>
     <div class="header-izquierda">
         <div class="header-logo">
-            <img src="logo-transfermatri.png" alt="TRANSFERMATRI SA Logo" id="logoEmpresa">
+            <img src="logo-transfermatri.png" alt="TRANSFERMATRI SA">
             <div class="header-texto">
                 <h1>TRANSFERMATRI S.A.</h1>
                 <p class="subtitulo">COMPAÑÍA DE TRANSPORTE DE CARGA PESADA</p>
@@ -889,10 +364,9 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v3.1</div>
+        <div class="version">Sistema de Disponibilidad v3.2</div>
     </div>
 </header>
-
 
 <div class="contenedor contenido-principal" id="barraRol">
     <div class="barra-rol">
@@ -902,10 +376,9 @@
             <span class="conductor-nombre" id="conductorNombre"></span>
             <span style="font-size:13px; color:#888;" id="usuarioActual"></span>
         </div>
-        <button class="btn-salir" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+        <button class="btn-salir" id="btnSalirTop">🚪 Cerrar Sesión</button>
     </div>
 </div>
-
 
 <div class="contenedor" id="pantallaLogin">
     <div class="pantalla-login">
@@ -915,106 +388,65 @@
             </div>
             <h2>📅 Disponibilidad Mensual</h2>
             <p class="subtitulo-login">Selecciona tu rol para continuar</p>
-
             <div class="opciones">
                 <button type="button" class="btn-rol usuario" id="btnRolConductor">
                     <span class="icono">👤</span>
-                    <div>
-                        CONDUCTOR
-                        <span class="descripcion">Registra tu disponibilidad con tu placa</span>
-                    </div>
+                    <div>CONDUCTOR<span class="descripcion">Registra tu disponibilidad</span></div>
                 </button>
-
                 <button type="button" class="btn-rol admin" id="btnRolAdmin">
                     <span class="icono">🔑</span>
-                    <div>
-                        ADMINISTRADOR
-                        <span class="descripcion">Ver y gestionar todos los registros</span>
-                    </div>
+                    <div>ADMINISTRADOR<span class="descripcion">Ver y gestionar registros</span></div>
                 </button>
-            </div>
-
-            <div style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#999;">
-                💡 Administradores: agregue <code>?admin=true</code> al final de la URL
-                <br>
-                <small>Ejemplo: <code>index.html?admin=true</code></small>
             </div>
         </div>
     </div>
 </div>
-
 
 <div class="modal-conductor" id="modalConductor">
     <div class="modal-content">
         <h3>👤 Ingreso de Conductor</h3>
-        <p class="sub-texto">Selecciona tu placa y luego el conductor correspondiente</p>
-
+        <p class="sub-texto">Selecciona tu placa y luego tu nombre</p>
         <div class="grupo-placa">
-            <label>🚗 Selecciona tu Placa</label>
-            <select id="loginPlaca">
-                <option value="">-- Seleccione una placa --</option>
-            </select>
+            <label>🚗 Placa</label>
+            <select id="loginPlaca"><option value="">-- Seleccione una placa --</option></select>
         </div>
-
         <div class="grupo-placa">
-            <label>👤 Selecciona tu Nombre</label>
-            <select id="loginConductor" disabled>
-                <option value="">-- Primero seleccione una placa --</option>
-            </select>
+            <label>👤 Nombre</label>
+            <select id="loginConductor" disabled><option value="">-- Primero seleccione una placa --</option></select>
         </div>
-
-        <button class="btn-ingresar-conductor" id="btnLoginConductor" disabled>
-            🚪 INGRESAR
-        </button>
-
-        <button class="btn-cancelar-conductor" id="btnCancelarConductor">
-            ❌ Cancelar
-        </button>
+        <button class="btn-ingresar-conductor" id="btnLoginConductor" disabled>🚪 INGRESAR</button>
+        <button class="btn-cancelar-conductor" id="btnCancelarConductor">❌ Cancelar</button>
     </div>
 </div>
-
 
 <div class="modal-admin" id="modalAdmin">
     <div class="modal-content">
         <h3>🔑 Acceso Administrador</h3>
-        <p>Ingrese la clave de administrador para acceder al panel de control</p>
-        <div class="error-clave" id="errorClave">❌ Clave incorrecta. Intente nuevamente.</div>
-        <input type="password" class="input-clave" id="claveAdmin" placeholder="Ingrese la clave..." maxlength="20">
+        <p>Ingrese la clave de administrador</p>
+        <div class="error-clave" id="errorClave">❌ Clave incorrecta</div>
+        <input type="password" class="input-clave" id="claveAdmin" placeholder="Clave..." maxlength="20">
         <button class="btn-ingresar-admin" id="btnIngresarAdmin">🔓 INGRESAR</button>
         <button class="btn-cancelar-admin" id="btnCancelarAdmin">❌ Cancelar</button>
     </div>
 </div>
 
-
 <div class="modal-tipo-dias" id="modalTipoDias">
     <div class="modal-tipo-dias-content">
         <h3>⚠️ DÍAS SIN MARCAR</h3>
-        <p class="sub-texto-tipo">Tienes los siguientes días sin disponibilidad registrada:</p>
+        <p class="sub-texto-tipo">Tienes los siguientes días sin disponibilidad:</p>
         <div class="dias-lista" id="diasSinMarcarLista"></div>
-        <p class="sub-texto-tipo"><strong>Debes indicar qué representan esos días para poder guardar:</strong></p>
-
+        <p class="sub-texto-tipo"><strong>Debes indicar qué representan:</strong></p>
         <button class="btn-tipo descanso" id="btnTipoDescanso">
             <span class="btn-tipo-icono">🛌</span>
-            <div>
-                <span class="btn-tipo-titulo">DESCANSO</span>
-                <span class="btn-tipo-desc">Días libres normales</span>
-            </div>
+            <div><span class="btn-tipo-titulo">DESCANSO</span><span class="btn-tipo-desc">Días libres normales</span></div>
         </button>
-
         <button class="btn-tipo mantenimiento" id="btnTipoMantenimiento">
             <span class="btn-tipo-icono">🔧</span>
-            <div>
-                <span class="btn-tipo-titulo">MANTENIMIENTO</span>
-                <span class="btn-tipo-desc">Unidad en taller</span>
-            </div>
+            <div><span class="btn-tipo-titulo">MANTENIMIENTO</span><span class="btn-tipo-desc">Unidad en taller</span></div>
         </button>
-
-        <button class="btn-cancelar-tipo" id="btnCancelarTipo">
-            ❌ CANCELAR (no guardar)
-        </button>
+        <button class="btn-cancelar-tipo" id="btnCancelarTipo">❌ CANCELAR</button>
     </div>
 </div>
-
 
 <div class="modal-confirm" id="modalConfirm">
     <div class="modal-confirm-content">
@@ -1027,51 +459,36 @@
     </div>
 </div>
 
-
 <div class="panel-detalle-dia" id="panelDetalleDia">
     <div class="panel-detalle-content">
         <div class="panel-detalle-header">
             <div>
                 <h3 id="panelTitulo">Día 1</h3>
-                <div class="subtitulo-panel" id="panelSubtitulo">Detalle</div>
+                <div id="panelSubtitulo" style="font-size:12px;opacity:0.85;">Detalle</div>
             </div>
             <button class="btn-cerrar-panel" id="btnCerrarPanel">✕</button>
         </div>
-        <div class="panel-busqueda" style="padding:10px 15px;background:#f7f9fb;border-bottom:1px solid #e0e0e0;">
-            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;">
+        <div style="padding:10px 15px;background:#f7f9fb;border-bottom:1px solid #e0e0e0;">
+            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar..." style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:15px;">
         </div>
         <div class="panel-detalle-body" id="panelDetalleBody"></div>
     </div>
 </div>
 
-
 <div class="contenedor contenido-principal" id="contenidoPrincipal">
-
     <div class="tarjeta" style="padding: 15px 25px;">
-        <div class="tabs" id="tabsContainer">
-            <button class="tab-btn activo" id="tabBtnRegistrar">📝 Registrar Disponibilidad</button>
-            <button class="tab-btn" id="tabVisualizarBtn">👀 Visualizar Disponibilidad</button>
+        <div class="tabs">
+            <button class="tab-btn activo" id="tabBtnRegistrar">📝 Registrar</button>
+            <button class="tab-btn" id="tabVisualizarBtn">👀 Visualizar</button>
         </div>
     </div>
 
-
     <div id="tabRegistrar" class="tab-contenido activo">
-
         <div class="tarjeta">
             <h2>Datos del conductor</h2>
             <div class="controles">
-                <div>
-                    <label>🚗 Placa</label>
-                    <select id="placa">
-                        <option value="">Seleccione una placa</option>
-                    </select>
-                </div>
-                <div>
-                    <label>👤 Conductor</label>
-                    <select id="conductor">
-                        <option value="">Seleccione un conductor</option>
-                    </select>
-                </div>
+                <div><label>🚗 Placa</label><select id="placa"><option value="">Seleccione</option></select></div>
+                <div><label>👤 Conductor</label><select id="conductor"><option value="">Seleccione</option></select></div>
                 <div>
                     <label>📅 Mes</label>
                     <select id="mes">
@@ -1081,26 +498,18 @@
                         <option value="11">Diciembre 2026</option>
                     </select>
                 </div>
-                <div>
-                    <button class="btn-ingresar" id="btnIngresar" disabled>🚪 INGRESAR</button>
-                </div>
+                <div><button class="btn-ingresar" id="btnIngresar" disabled>🚪 INGRESAR</button></div>
             </div>
-            <div class="identificacion" id="identificacion">
-                👋 Seleccione una placa y un conductor, luego presione INGRESAR
-            </div>
+            <div class="identificacion" id="identificacion">👋 Seleccione una placa y un conductor</div>
         </div>
 
         <div class="tarjeta" id="contenedorCalendario">
             <h2>📋 Calendario de disponibilidad</h2>
-            <p id="mensajeInstruccion">
-                👆 Haga clic en la imagen del turno para ver su calendario.
-            </p>
+            <p id="mensajeInstruccion">👆 Haga clic en la imagen para ver su calendario.</p>
             <div id="seccionDiurno" class="turno">
                 <div class="logo-operativo-container" id="logoDiurnoContainer">
-                    <img src="ChatGPT Image 8 sept 2026, 14_14_17.png" alt="OPERATIVO DIURNO" id="logoDiurno">
-                    <div class="click-indicator">
-                        <span class="icono">▼</span> Click para mostrar
-                    </div>
+                    <img src="ChatGPT Image 8 sept 2026, 14_14_17.png" alt="DIURNO">
+                    <div class="click-indicator"><span class="icono">▼</span> Click para mostrar</div>
                 </div>
                 <div id="calendarioDiurnoWrapper" class="calendario-wrapper cerrado">
                     <div id="calendarioDiurno" class="calendario"></div>
@@ -1108,10 +517,8 @@
             </div>
             <div id="seccionNoche" class="turno">
                 <div class="logo-operativo-container" id="logoNocheContainer">
-                    <img src="ChatGPT Image 8 sept 2026, 14_14_07.png" alt="OPERATIVO NOCTURNO" id="logoNocturno">
-                    <div class="click-indicator">
-                        <span class="icono">▼</span> Click para mostrar
-                    </div>
+                    <img src="ChatGPT Image 8 sept 2026, 14_14_07.png" alt="NOCTURNO">
+                    <div class="click-indicator"><span class="icono">▼</span> Click para mostrar</div>
                 </div>
                 <div id="calendarioNocheWrapper" class="calendario-wrapper cerrado">
                     <div id="calendarioNoche" class="calendario"></div>
@@ -1120,43 +527,24 @@
         </div>
 
         <div class="tarjeta" id="contenedorResumen">
-            <h2>📊 Resumen de disponibilidad</h2>
+            <h2>📊 Resumen</h2>
             <div class="resumen">
-                <div class="resumen-box">
-                    <strong>☀️ DIURNO</strong>
-                    <p id="resumenDiurno">Ningún día seleccionado</p>
-                </div>
-                <div class="resumen-box">
-                    <strong>🌙 NOCHE</strong>
-                    <p id="resumenNoche">Ningún día seleccionado</p>
-                </div>
+                <div class="resumen-box"><strong>☀️ DIURNO</strong><p id="resumenDiurno">Ningún día</p></div>
+                <div class="resumen-box"><strong>🌙 NOCHE</strong><p id="resumenNoche">Ningún día</p></div>
             </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-guardar" id="btnGuardarYVer">💾 GUARDAR Y VER DISPONIBILIDAD</button>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <button class="btn-guardar" id="btnGuardarYVer">💾 GUARDAR Y VER</button>
                 <button class="btn-borrar-registro" id="btnBorrarRegistro">🗑️ BORRAR MI REGISTRO</button>
             </div>
         </div>
-
     </div>
 
-
     <div id="tabVisualizar" class="tab-contenido">
-
         <div class="tarjeta">
-
-            <h2>👀 Visualizar Disponibilidad de Conductores</h2>
-
+            <h2>👀 Visualizar Disponibilidad</h2>
             <div class="filtros-visualizacion">
-                <div class="grupo-filtro">
-                    <label>🚗 Filtrar por Placa</label>
-                    <select id="filtroPlaca">
-                        <option value="">Todas las placas</option>
-                    </select>
-                </div>
-                <div class="grupo-filtro">
-                    <label>👤 Filtrar por Conductor</label>
-                    <input type="text" id="filtroConductor" placeholder="Buscar conductor...">
-                </div>
+                <div class="grupo-filtro"><label>🚗 Placa</label><select id="filtroPlaca"><option value="">Todas</option></select></div>
+                <div class="grupo-filtro"><label>👤 Conductor</label><input type="text" id="filtroConductor" placeholder="Buscar..."></div>
                 <div class="grupo-filtro">
                     <label>📅 Mes</label>
                     <select id="filtroMes">
@@ -1166,62 +554,43 @@
                         <option value="11">Diciembre 2026</option>
                     </select>
                 </div>
-                <div class="grupo-filtro">
-                    <button class="btn-actualizar" id="btnActualizar">🔄 ACTUALIZAR</button>
-                </div>
+                <div class="grupo-filtro"><button class="btn-actualizar" id="btnActualizar">🔄 ACTUALIZAR</button></div>
             </div>
 
-            <div style="margin-top:20px;">
-                <div class="tabs-visualizacion">
-                    <button class="tab-vista-btn activo" data-vista="tabla" id="tabVistaTabla">
-                        📋 TABLA <span class="badge">Resumen</span>
-                    </button>
-                    <button class="tab-vista-btn" data-vista="calendario" id="tabVistaCalendario">
-                        📅 CALENDARIO <span class="badge">Mensual</span>
-                    </button>
-                    <button class="tab-vista-btn" data-vista="reporte" id="tabVistaReporte">
-                        📊 REPORTE <span class="badge">Descargar</span>
-                    </button>
-                </div>
+            <div class="tabs-visualizacion">
+                <button class="tab-vista-btn activo" data-vista="tabla" id="tabVistaTabla">📋 TABLA</button>
+                <button class="tab-vista-btn" data-vista="calendario" id="tabVistaCalendario">📅 CALENDARIO</button>
+                <button class="tab-vista-btn" data-vista="reporte" id="tabVistaReporte">📊 REPORTE</button>
+            </div>
 
-                <div id="vistaTabla" class="vista-contenido">
-                    <div id="contenedorVisualizacion">
-                        <p style="text-align:center; color:#666; padding:30px;">Cargando disponibilidades...</p>
-                    </div>
-                </div>
+            <div id="vistaTabla" class="vista-contenido">
+                <div id="contenedorVisualizacion"><p style="text-align:center;padding:30px;">Cargando...</p></div>
+            </div>
 
-                <div id="vistaCalendario" class="vista-contenido vista-calendario">
-                    <div id="contenedorCalendarioMensual">
-                        <p style="text-align:center; color:#666; padding:30px;">Cargando calendario...</p>
-                    </div>
-                </div>
+            <div id="vistaCalendario" class="vista-contenido vista-calendario">
+                <div id="contenedorCalendarioMensual"><p style="text-align:center;padding:30px;">Cargando...</p></div>
+            </div>
 
-                <div id="vistaReporte" class="vista-contenido vista-calendario">
-                    <div style="text-align:center; padding:30px;">
-                        <h3 style="color:#17365d;">📊 Exportar Reporte</h3>
-                        <p style="color:#666; margin-bottom:20px;">Descarga los datos en formato Excel o PDF.</p>
-                        <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
-                            <button class="btn-reporte excel" id="btnExportarExcel">📊 DESCARGAR EXCEL</button>
-                            <button class="btn-reporte pdf" id="btnExportarPDF">📄 DESCARGAR PDF</button>
-                            <button class="btn-google-sheets" id="btnSubirSheets">☁️ SUBIR A GOOGLE SHEETS</button>
-                        </div>
+            <div id="vistaReporte" class="vista-contenido vista-calendario">
+                <div style="text-align:center;padding:30px;">
+                    <h3 style="color:#17365d;">📊 Exportar</h3>
+                    <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:15px;">
+                        <button class="btn-reporte excel" id="btnExportarExcel">📊 EXCEL</button>
+                        <button class="btn-reporte pdf" id="btnExportarPDF">📄 PDF</button>
+                        <button class="btn-google-sheets" id="btnSubirSheets">☁️ GOOGLE SHEETS</button>
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 
 <script>
 /* ============================================================
-   v3.1 - FUNCIONES GLOBALES (sin IIFE, todo en window)
+   v3.2 - FIX: protección contra null en crearCalendario
    ============================================================ */
 
-// -------- CAPTURA DE ERRORES --------
 window.addEventListener('error', function(e) {
     var panel = document.getElementById('errorPanel');
     var texto = document.getElementById('errorTexto');
@@ -1229,11 +598,8 @@ window.addEventListener('error', function(e) {
         texto.textContent = (e.message || 'Error') + '\n' + (e.filename || '') + ':' + (e.lineno || '');
         panel.classList.add('visible');
     }
-    console.error('[ERROR]', e.message, e.filename, e.lineno);
 });
 
-
-// -------- CONSTANTES --------
 var AÑO = 2026;
 var CLAVE_ADMIN = "ADMIN2026";
 var GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwc4a5SBXXMu5-1lDyhplLxDy9aUmHSvAW_CfM4TJsSgGhnv_UHHmBOPvaUsp_TYv7ynQ/exec";
@@ -1243,7 +609,6 @@ var MESES = {
     '1':'Enero','2':'Febrero','3':'Marzo','4':'Abril','5':'Mayo','6':'Junio',
     '7':'Julio','8':'Septiembre','9':'Octubre','10':'Noviembre','11':'Diciembre','12':'Enero'
 };
-
 var DIAS_SEMANA = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 
 var CONDUCTORES = [
@@ -1291,8 +656,6 @@ var CONDUCTORES = [
     { nombre: "PATRICIO SANDOVAL", placa: "ABE8842" }
 ];
 
-
-// -------- ESTADO --------
 var rolActual = 'usuario';
 var conductorLogueado = null;
 var placaLogueada = null;
@@ -1307,8 +670,6 @@ var _borradosRecientes = new Set();
 var _diasPendientes = [];
 var _registroPendiente = null;
 
-
-// -------- HELPERS --------
 function $(id) { return document.getElementById(id); }
 
 function escapeHtml(texto) {
@@ -1327,40 +688,29 @@ function obtenerConductoresPorPlaca(placa) {
     return CONDUCTORES.filter(function(c) { return c.placa === placa; });
 }
 
-function diasDelMes(año, mes) {
-    return new Date(año, mes + 1, 0).getDate();
-}
-
+function diasDelMes(año, mes) { return new Date(año, mes + 1, 0).getDate(); }
 function posicionInicial(año, mes) {
-    var primerDia = new Date(año, mes, 1);
-    return (primerDia.getDay() + 6) % 7;
+    var p = new Date(año, mes, 1);
+    return (p.getDay() + 6) % 7;
 }
 
-function claveRegistro(placa, conductor, mes) {
-    return placa + "|" + conductor + "|" + mes;
-}
+function claveRegistro(placa, conductor, mes) { return placa + "|" + conductor + "|" + mes; }
 
 function obtenerRegistroLocal(placa, conductor, mes) {
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var clave = conductor + "_" + placa + "_" + mes;
-    return registros[clave] || null;
+    var r = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    return r[conductor + "_" + placa + "_" + mes] || null;
 }
 
 function eliminarRegistroLocal(placa, conductor, mes) {
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var clave = conductor + "_" + placa + "_" + mes;
-    if (registros[clave]) {
-        delete registros[clave];
-        localStorage.setItem("disponibilidades", JSON.stringify(registros));
-        return true;
-    }
+    var r = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    var k = conductor + "_" + placa + "_" + mes;
+    if (r[k]) { delete r[k]; localStorage.setItem("disponibilidades", JSON.stringify(r)); return true; }
     return false;
 }
 
 function enviarASheets(data) {
     return fetch(GOOGLE_SHEETS_URL, {
-        method: 'POST',
-        mode: 'no-cors',
+        method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     }).catch(function(err) { console.warn('POST warning:', err); });
@@ -1368,26 +718,17 @@ function enviarASheets(data) {
 
 function agruparDias(dias) {
     if (!dias || dias.length === 0) return '';
-    var ordenados = dias.slice().sort(function(a,b) { return a - b; });
-    var bloques = [];
-    var inicio = ordenados[0];
-    var anterior = ordenados[0];
-
-    for (var i = 1; i < ordenados.length; i++) {
-        if (ordenados[i] === anterior + 1) {
-            anterior = ordenados[i];
-        } else {
-            bloques.push(inicio === anterior ? String(inicio) : inicio + '-' + anterior);
-            inicio = ordenados[i];
-            anterior = ordenados[i];
-        }
+    var o = dias.slice().sort(function(a,b) { return a - b; });
+    var b = [];
+    var ini = o[0], ant = o[0];
+    for (var i = 1; i < o.length; i++) {
+        if (o[i] === ant + 1) ant = o[i];
+        else { b.push(ini === ant ? String(ini) : ini + '-' + ant); ini = o[i]; ant = o[i]; }
     }
-    bloques.push(inicio === anterior ? String(inicio) : inicio + '-' + anterior);
-    return bloques.join(', ');
+    b.push(ini === ant ? String(ini) : ini + '-' + ant);
+    return b.join(', ');
 }
 
-
-// -------- TOAST --------
 function mostrarToast(mensaje, tipo, duracion) {
     tipo = tipo || 'info';
     duracion = duracion || 3000;
@@ -1414,78 +755,51 @@ function mostrarConfirm(mensaje, callback, titulo) {
 
 function cerrarConfirm(aceptar) {
     $('modalConfirm').classList.remove('active');
-    if (_confirmCallback) {
-        var cb = _confirmCallback;
-        _confirmCallback = null;
-        cb(aceptar);
-    }
+    if (_confirmCallback) { var cb = _confirmCallback; _confirmCallback = null; cb(aceptar); }
 }
 
-
-// -------- FECHA --------
 function mostrarFechaActual() {
     var ahora = new Date();
     var opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     $('fechaActual').textContent = ahora.toLocaleDateString('es-ES', opciones);
 }
 
-
-// -------- LOGIN --------
+/* ============================================================
+   LOGIN
+   ============================================================ */
 function cargarPlacasLogin() {
-    var select = $('loginPlaca');
-    select.innerHTML = '<option value="">-- Seleccione una placa --</option>';
+    var s = $('loginPlaca');
+    s.innerHTML = '<option value="">-- Seleccione una placa --</option>';
     obtenerPlacasUnicas().forEach(function(p) {
-        var op = document.createElement("option");
-        op.value = p;
-        op.textContent = p;
-        select.appendChild(op);
+        var op = document.createElement("option"); op.value = p; op.textContent = p; s.appendChild(op);
     });
 }
 
 function cargarConductoresLogin() {
     var placa = $('loginPlaca').value;
-    var select = $('loginConductor');
+    var s = $('loginConductor');
     var btn = $('btnLoginConductor');
-
-    select.innerHTML = '<option value="">-- Primero seleccione una placa --</option>';
-    select.disabled = true;
-    btn.disabled = true;
-
+    s.innerHTML = '<option value="">-- Primero seleccione una placa --</option>';
+    s.disabled = true; btn.disabled = true;
     if (placa === "") return;
-
-    select.innerHTML = '';
+    s.innerHTML = '';
     obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
-        var op = document.createElement("option");
-        op.value = i;
-        op.textContent = item.nombre;
-        select.appendChild(op);
+        var op = document.createElement("option"); op.value = i; op.textContent = item.nombre; s.appendChild(op);
     });
-
-    select.disabled = false;
-    btn.disabled = false;
+    s.disabled = false; btn.disabled = false;
 }
 
 function ingresarConductor() {
     var placa = $('loginPlaca').value.trim().toUpperCase();
     var indice = $('loginConductor').value;
-
-    if (placa === "" || indice === "") {
-        mostrarToast("Seleccione una placa y un conductor", 'warning');
-        return;
-    }
-
+    if (placa === "" || indice === "") { mostrarToast("Seleccione placa y conductor", 'warning'); return; }
     var lista = obtenerConductoresPorPlaca(placa);
-    var conductor = lista[parseInt(indice)];
-    if (!conductor) {
-        mostrarToast("Conductor no encontrado", 'error');
-        return;
-    }
-
-    conductorLogueado = conductor.nombre;
+    var c = lista[parseInt(indice)];
+    if (!c) { mostrarToast("Conductor no encontrado", 'error'); return; }
+    conductorLogueado = c.nombre;
     placaLogueada = placa;
-
     cerrarModalConductor();
-    iniciarSesionUsuario(conductor.nombre, placa);
+    iniciarSesionUsuario(c.nombre, placa);
 }
 
 function abrirModalConductor() {
@@ -1497,9 +811,7 @@ function abrirModalConductor() {
     cargarPlacasLogin();
 }
 
-function cerrarModalConductor() {
-    $('modalConductor').classList.remove('active');
-}
+function cerrarModalConductor() { $('modalConductor').classList.remove('active'); }
 
 function abrirModalAdmin() {
     $('modalAdmin').classList.add('active');
@@ -1508,20 +820,12 @@ function abrirModalAdmin() {
     setTimeout(function() { $('claveAdmin').focus(); }, 100);
 }
 
-function cerrarModalAdmin() {
-    $('modalAdmin').classList.remove('active');
-}
+function cerrarModalAdmin() { $('modalAdmin').classList.remove('active'); }
 
 function verificarClaveAdmin() {
     var clave = $('claveAdmin').value;
-    if (clave === CLAVE_ADMIN) {
-        cerrarModalAdmin();
-        iniciarSesionAdmin();
-    } else {
-        $('errorClave').classList.add('visible');
-        $('claveAdmin').value = '';
-        $('claveAdmin').focus();
-    }
+    if (clave === CLAVE_ADMIN) { cerrarModalAdmin(); iniciarSesionAdmin(); }
+    else { $('errorClave').classList.add('visible'); $('claveAdmin').value = ''; $('claveAdmin').focus(); }
 }
 
 function iniciarSesionUsuario(nombre, placa) {
@@ -1535,9 +839,7 @@ function iniciarSesionUsuario(nombre, placa) {
 
     $("conductor").innerHTML = '';
     obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
-        var op = document.createElement("option");
-        op.value = i;
-        op.textContent = item.nombre;
+        var op = document.createElement("option"); op.value = i; op.textContent = item.nombre;
         $("conductor").appendChild(op);
         if (item.nombre === nombre) $("conductor").value = i;
     });
@@ -1575,9 +877,7 @@ function iniciarSesionAdmin() {
 
 function mostrarContenidoPrincipal() {
     $('pantallaLogin').style.display = 'none';
-    document.querySelectorAll('.contenido-principal').forEach(function(el) {
-        el.classList.add('visible');
-    });
+    document.querySelectorAll('.contenido-principal').forEach(function(el) { el.classList.add('visible'); });
 }
 
 function actualizarBarraRol(nombre, placa) {
@@ -1607,11 +907,9 @@ function actualizarIdentificacion() {
         id.classList.remove('con-registro');
         return;
     }
-
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var conductor = lista[parseInt($("conductor").value)] ? lista[parseInt($("conductor").value)].nombre : '';
     var registro = obtenerRegistroLocal($("placa").value, conductor, $("mes").value);
-
     if (registro) {
         var totalDias = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
         id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 📋 Registrado (' + totalDias + ' días)';
@@ -1623,31 +921,27 @@ function actualizarIdentificacion() {
 }
 
 function cerrarSesion() {
-    mostrarConfirm('¿Está seguro de cerrar sesión?', function(ok) {
+    mostrarConfirm('¿Cerrar sesión?', function(ok) {
         if (!ok) return;
         rolActual = 'usuario';
         conductorLogueado = null;
         placaLogueada = null;
-
         $("placa").disabled = false;
         $("conductor").disabled = false;
-
-        document.querySelectorAll('.contenido-principal').forEach(function(el) {
-            el.classList.remove('visible');
-        });
+        document.querySelectorAll('.contenido-principal').forEach(function(el) { el.classList.remove('visible'); });
         $('pantallaLogin').style.display = 'block';
         ocultarCalendario();
-
         $("placa").value = '';
-        $("conductor").innerHTML = '<option value="">Seleccione un conductor</option>';
+        $("conductor").innerHTML = '<option value="">Seleccione</option>';
         $("btnIngresar").disabled = true;
         $("btnGuardarYVer").disabled = true;
         actualizarIdentificacion();
     }, 'Cerrar Sesión');
 }
 
-
-// -------- INGRESAR --------
+/* ============================================================
+   ✅ INGRESAR - con protección extra
+   ============================================================ */
 function ingresar() {
     try {
         if (rolActual === 'usuario' && conductorLogueado) {
@@ -1661,6 +955,14 @@ function ingresar() {
                 mostrarToast("Seleccione una placa y un conductor", 'warning');
                 return;
             }
+        }
+
+        // ✅ FIX CRÍTICO: Verificar que el conductor realmente exista
+        var listaVerif = obtenerConductoresPorPlaca($("placa").value);
+        var conductorVerif = listaVerif[parseInt($("conductor").value)];
+        if (!conductorVerif) {
+            mostrarToast("Conductor no válido. Vuelva a seleccionar.", 'error');
+            return;
         }
 
         calendarioVisible = true;
@@ -1679,22 +981,15 @@ function ingresar() {
         actualizarIdentificacion();
 
         ['diurno', 'noche'].forEach(function(tipo) {
-            var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
-            if (wrapper) {
-                wrapper.classList.remove('abierto');
-                wrapper.classList.add('cerrado');
-            }
-            var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-            if (container) {
-                container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
-            }
+            var w = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
+            if (w) { w.classList.remove('abierto'); w.classList.add('cerrado'); }
+            var c = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+            if (c) { c.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar'; }
         });
 
-        try {
-            $("contenedorCalendario").scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } catch (e) {
-            $("contenedorCalendario").scrollIntoView(true);
-        }
+        try { $("contenedorCalendario").scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        catch (e) { $("contenedorCalendario").scrollIntoView(true); }
+
     } catch (err) {
         console.error('Error en ingresar():', err);
         mostrarToast('Error: ' + err.message, 'error', 5000);
@@ -1713,26 +1008,30 @@ function cargarDisponibilidadGuardada() {
     }
 }
 
-
-// -------- CALENDARIO REGISTRO --------
+/* ============================================================
+   ✅ CALENDARIO - con protección null
+   ============================================================ */
 function toggleCalendario(tipo) {
     if (!calendarioVisible) return;
-    var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
-    var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-    if (!wrapper || !container) return;
+    var w = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
+    var c = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+    if (!w || !c) return;
 
-    if (wrapper.classList.contains('cerrado')) {
-        wrapper.classList.remove('cerrado');
-        wrapper.classList.add('abierto');
-        container.querySelector('.click-indicator').innerHTML = '<span class="icono">▲</span> Click para ocultar';
+    if (w.classList.contains('cerrado')) {
+        w.classList.remove('cerrado'); w.classList.add('abierto');
+        c.querySelector('.click-indicator').innerHTML = '<span class="icono">▲</span> Click para ocultar';
     } else {
-        wrapper.classList.remove('abierto');
-        wrapper.classList.add('cerrado');
-        container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
+        w.classList.remove('abierto'); w.classList.add('cerrado');
+        c.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
     }
 }
 
 function crearCalendario(elemento, seleccionados, tipo) {
+    if (!elemento) {
+        console.warn('crearCalendario: elemento nulo');
+        return;
+    }
+
     elemento.innerHTML = "";
 
     DIAS_SEMANA.forEach(function(nombre) {
@@ -1751,8 +1050,17 @@ function crearCalendario(elemento, seleccionados, tipo) {
     }
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var lista = obtenerConductoresPorPlaca($("placa").value);
-    var conductor = lista[parseInt($("conductor").value)];
+    var placaActual = $("placa").value;
+
+    // ✅ FIX: protección cuando no hay placa o conductor
+    if (!placaActual) {
+        console.warn('crearCalendario: no hay placa');
+        return;
+    }
+
+    var lista = obtenerConductoresPorPlaca(placaActual);
+    var idxConductor = parseInt($("conductor").value);
+    var conductor = (!isNaN(idxConductor) && lista[idxConductor]) ? lista[idxConductor] : null;
     var nombreActual = conductor ? conductor.nombre : '';
 
     for (var dia = 1; dia <= cantDias; dia++) {
@@ -1763,7 +1071,8 @@ function crearCalendario(elemento, seleccionados, tipo) {
             var ocupadoPor = null;
             for (var k in registros) {
                 var r = registros[k];
-                if (r.placa === $("placa").value &&
+                // ✅ FIX: proteger contra r null
+                if (r && r.placa === placaActual &&
                     String(r.mes) === String($("mes").value) &&
                     r.conductor !== nombreActual) {
                     var dias = tipo === 'diurno' ? r.diurno : r.noche;
@@ -1771,10 +1080,7 @@ function crearCalendario(elemento, seleccionados, tipo) {
                 }
             }
 
-            if (ocupadoPor) {
-                celda.classList.add("ocupado");
-                celda.title = "Ocupado por: " + ocupadoPor;
-            }
+            if (ocupadoPor) { celda.classList.add("ocupado"); celda.title = "Ocupado por: " + ocupadoPor; }
 
             if (seleccionados.has(dia)) {
                 if (tipo === 'diurno') celda.classList.add("seleccionado");
@@ -1788,22 +1094,13 @@ function crearCalendario(elemento, seleccionados, tipo) {
                 (ocupadoPor ? '<div class="ocupado-texto">🚫</div>' : '');
 
             celda.addEventListener("click", function() {
-                if (ocupadoPor) {
-                    mostrarToast("Día ocupado por: " + ocupadoPor, 'warning');
-                    return;
-                }
-
-                if (seleccionados.has(dia)) {
-                    seleccionados.delete(dia);
-                } else {
-                    if (tipo === 'diurno' && noche.has(dia)) {
-                        noche.delete(dia);
-                    } else if (tipo === 'noche' && diurno.has(dia)) {
-                        diurno.delete(dia);
-                    }
+                if (ocupadoPor) { mostrarToast("Día ocupado por: " + ocupadoPor, 'warning'); return; }
+                if (seleccionados.has(dia)) { seleccionados.delete(dia); }
+                else {
+                    if (tipo === 'diurno' && noche.has(dia)) noche.delete(dia);
+                    else if (tipo === 'noche' && diurno.has(dia)) diurno.delete(dia);
                     seleccionados.add(dia);
                 }
-
                 crearCalendarios();
                 actualizarResumen();
             });
@@ -1814,6 +1111,12 @@ function crearCalendario(elemento, seleccionados, tipo) {
 }
 
 function crearCalendarios() {
+    // ✅ FIX: no crear si no hay placa/conductor
+    if (!$("placa").value) return;
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var idx = parseInt($("conductor").value);
+    if (isNaN(idx) || !lista[idx]) return;
+
     crearCalendario($("calendarioDiurno"), diurno, 'diurno');
     crearCalendario($("calendarioNoche"), noche, 'noche');
 }
@@ -1822,15 +1125,14 @@ function actualizarResumen() {
     try {
         var lD = Array.from(diurno).sort(function(a,b) { return a - b; });
         var lN = Array.from(noche).sort(function(a,b) { return a - b; });
-        if ($("resumenDiurno")) $("resumenDiurno").textContent = lD.length > 0 ? agruparDias(lD) : "Ningún día seleccionado";
-        if ($("resumenNoche")) $("resumenNoche").textContent = lN.length > 0 ? agruparDias(lN) : "Ningún día seleccionado";
-    } catch (e) {
-        console.error('Error en actualizarResumen:', e);
-    }
+        if ($("resumenDiurno")) $("resumenDiurno").textContent = lD.length > 0 ? agruparDias(lD) : "Ningún día";
+        if ($("resumenNoche")) $("resumenNoche").textContent = lN.length > 0 ? agruparDias(lN) : "Ningún día";
+    } catch (e) { console.error('Error resumen:', e); }
 }
 
-
-// -------- GUARDAR con modal tipo días --------
+/* ============================================================
+   GUARDAR
+   ============================================================ */
 function guardarYVer() {
     if ($("placa").value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if ($("conductor").value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
@@ -1848,19 +1150,13 @@ function guardarYVer() {
     var nombreConductor = lista[parseInt($("conductor").value)].nombre;
 
     _registroPendiente = {
-        conductor: nombreConductor,
-        placa: $("placa").value,
-        mes: $("mes").value,
+        conductor: nombreConductor, placa: $("placa").value, mes: $("mes").value,
         diurno: Array.from(diurno).sort(function(a,b) { return a - b; }),
         noche: Array.from(noche).sort(function(a,b) { return a - b; }),
-        descanso: [],
-        mantenimiento: []
+        descanso: [], mantenimiento: []
     };
 
-    if (diasBlancos.length === 0) {
-        _guardarRegistro(_registroPendiente);
-        return;
-    }
+    if (diasBlancos.length === 0) { _guardarRegistro(_registroPendiente); return; }
 
     $('diasSinMarcarLista').textContent = '📅 ' + agruparDias(diasBlancos);
     $('modalTipoDias').classList.add('active');
@@ -1868,7 +1164,6 @@ function guardarYVer() {
 
 function elegirTipoDias(tipo) {
     if (!_registroPendiente) return;
-
     if (tipo === 'descanso') {
         _registroPendiente.descanso = _diasPendientes.slice();
         _registroPendiente.mantenimiento = [];
@@ -1876,7 +1171,6 @@ function elegirTipoDias(tipo) {
         _registroPendiente.mantenimiento = _diasPendientes.slice();
         _registroPendiente.descanso = [];
     }
-
     cerrarModalTipoDias();
     _guardarRegistro(_registroPendiente);
 }
@@ -1888,23 +1182,18 @@ function cerrarModalTipoDias() {
 }
 
 function _guardarRegistro(registro) {
-    if (_guardandoEnProgreso) {
-        mostrarToast('⏳ Guardando...', 'info');
-        return;
-    }
+    if (_guardandoEnProgreso) { mostrarToast('⏳ Guardando...', 'info'); return; }
     _guardandoEnProgreso = true;
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var claveLocal = registro.conductor + "_" + registro.placa + "_" + registro.mes;
-    registros[claveLocal] = registro;
+    registros[registro.conductor + "_" + registro.placa + "_" + registro.mes] = registro;
     localStorage.setItem("disponibilidades", JSON.stringify(registros));
 
     _registrosCache[claveRegistro(registro.placa, registro.conductor, registro.mes)] = registro;
     _borradosRecientes.delete(claveRegistro(registro.placa, registro.conductor, registro.mes));
 
     var data = {
-        placa: registro.placa,
-        conductor: registro.conductor,
+        placa: registro.placa, conductor: registro.conductor,
         mes: MESES[String(registro.mes)] + ' ' + AÑO,
         diurno: registro.diurno.join(', '),
         noche: registro.noche.join(', '),
@@ -1929,7 +1218,7 @@ function _guardarRegistro(registro) {
 
     enviarASheets(data)
     .then(function() {
-        mostrarToast('✅ Guardado correctamente', 'success');
+        mostrarToast('✅ Guardado', 'success');
         btn.innerHTML = '✅ ¡GUARDADO!';
         btn.style.backgroundColor = '#27ae60';
         setTimeout(restaurar, 2000);
@@ -1937,82 +1226,65 @@ function _guardarRegistro(registro) {
     })
     .catch(function(error) {
         console.error('Error:', error);
-        mostrarToast('⚠️ Error (se guardó localmente)', 'error');
-        btn.innerHTML = '⚠️ Error';
-        btn.style.backgroundColor = '#e74c3c';
+        mostrarToast('⚠️ Error (guardado local)', 'error');
         setTimeout(restaurar, 3000);
-        setTimeout(function() { abrirDetalleConductor(registro.placa, registro.conductor, registro.mes); }, 400);
     });
 }
 
-
-// -------- BORRAR REGISTROS --------
+/* ============================================================
+   BORRAR
+   ============================================================ */
 function borrarMiRegistro() {
     if ($("placa").value === "" || $("conductor").value === "") {
-        mostrarToast("No hay registro seleccionado", 'warning');
-        return;
+        mostrarToast("No hay registro seleccionado", 'warning'); return;
     }
-
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var nombreConductor = lista[parseInt($("conductor").value)].nombre;
 
-    mostrarConfirm('¿Borrar tu registro de ' + MESES[String($("mes").value)] + '?', function(ok) {
+    mostrarConfirm('¿Borrar tu registro?', function(ok) {
         if (!ok) return;
-
         eliminarRegistroLocal($("placa").value, nombreConductor, $("mes").value);
-
         var claveR = claveRegistro($("placa").value, nombreConductor, $("mes").value);
         _borradosRecientes.add(claveR);
         delete _registrosCache[claveR];
-
         enviarASheets({
-            placa: $("placa").value,
-            conductor: nombreConductor,
+            placa: $("placa").value, conductor: nombreConductor,
             mes: MESES[String($("mes").value)] + ' ' + AÑO,
             diurno: '', noche: '', descanso: '', mantenimiento: '', total: 0
         });
-
-        mostrarToast('🗑️ Registro borrado', 'success');
-        diurno.clear();
-        noche.clear();
-        crearCalendarios();
-        actualizarResumen();
-        actualizarIdentificacion();
-        actualizarBotonBorrar();
-    }, 'Borrar mi registro');
+        mostrarToast('🗑️ Borrado', 'success');
+        diurno.clear(); noche.clear();
+        crearCalendarios(); actualizarResumen();
+        actualizarIdentificacion(); actualizarBotonBorrar();
+    }, 'Borrar');
 }
 
 function actualizarBotonBorrar() {
-    var btnBorrarRegistro = $("btnBorrarRegistro");
-    if (rolActual !== 'usuario') { btnBorrarRegistro.classList.remove('visible'); return; }
-    if ($("placa").value === "" || $("conductor").value === "") { btnBorrarRegistro.classList.remove('visible'); return; }
-
+    var btn = $("btnBorrarRegistro");
+    if (rolActual !== 'usuario') { btn.classList.remove('visible'); return; }
+    if ($("placa").value === "" || $("conductor").value === "") { btn.classList.remove('visible'); return; }
     var lista = obtenerConductoresPorPlaca($("placa").value);
-    var conductor = lista[parseInt($("conductor").value)];
-    if (!conductor) { btnBorrarRegistro.classList.remove('visible'); return; }
-
-    var registro = obtenerRegistroLocal($("placa").value, conductor.nombre, $("mes").value);
-    if (registro) btnBorrarRegistro.classList.add('visible');
-    else btnBorrarRegistro.classList.remove('visible');
+    var c = lista[parseInt($("conductor").value)];
+    if (!c) { btn.classList.remove('visible'); return; }
+    var r = obtenerRegistroLocal($("placa").value, c.nombre, $("mes").value);
+    if (r) btn.classList.add('visible'); else btn.classList.remove('visible');
 }
 
 function borrarRegistroAdmin(placa, conductor, mes) {
     var nombreMes = MESES[String(mes)] || 'Mes ' + mes;
-    mostrarConfirm('¿Borrar "' + conductor + '" (' + placa + ') ' + nombreMes + '?', function(ok) {
+    mostrarConfirm('¿Borrar "' + conductor + '"?', function(ok) {
         if (!ok) return;
         eliminarRegistroLocal(placa, conductor, mes);
         var claveR = claveRegistro(placa, conductor, mes);
         _borradosRecientes.add(claveR);
         delete _registrosCache[claveR];
-
         enviarASheets({
             placa: placa, conductor: conductor, mes: nombreMes + ' ' + AÑO,
             diurno: '', noche: '', descanso: '', mantenimiento: '', total: 0
         });
-
-        mostrarToast('🗑️ Registro borrado', 'success');
+        mostrarToast('🗑️ Borrado', 'success');
         refrescarVistaActual();
-    }, 'Borrar registro');
+    }, 'Borrar');
 }
 
 function refrescarVistaActual() {
@@ -2023,36 +1295,29 @@ function refrescarVistaActual() {
 function editarRegistroAdmin(placa, conductor, mes) {
     var lista = obtenerConductoresPorPlaca(placa);
     var indice = -1;
-    for (var i = 0; i < lista.length; i++) {
-        if (lista[i].nombre === conductor) { indice = i; break; }
-    }
-    if (indice === -1) { mostrarToast('Conductor no encontrado', 'error'); return; }
-
+    for (var i = 0; i < lista.length; i++) if (lista[i].nombre === conductor) { indice = i; break; }
+    if (indice === -1) { mostrarToast('No encontrado', 'error'); return; }
     $("placa").value = placa;
     cargarConductoresPorPlaca(placa);
     $("conductor").value = indice;
     $("mes").value = mes;
-
     cambiarTab('registrar');
-    setTimeout(function() {
-        ingresar();
-        mostrarToast('✏️ Editando registro...', 'info', 4000);
-    }, 200);
+    setTimeout(function() { ingresar(); mostrarToast('✏️ Editando...', 'info', 4000); }, 200);
 }
 
-
-// -------- TABS --------
+/* ============================================================
+   TABS
+   ============================================================ */
 function cambiarTab(tab) {
     document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
     document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
-
     if (tab === 'registrar') {
         $('tabRegistrar').classList.add('activo');
-        document.querySelector('.tab-btn').classList.add('activo');
+        $('tabBtnRegistrar').classList.add('activo');
     } else {
         if (rolActual === 'admin') {
             $('tabVisualizar').classList.add('activo');
-            document.querySelectorAll('.tab-btn')[1].classList.add('activo');
+            $('tabVisualizarBtn').classList.add('activo');
             cambiarVista(vistaActual);
         } else {
             mostrarToast('⛔ Solo administradores', 'warning');
@@ -2061,8 +1326,6 @@ function cambiarTab(tab) {
     }
 }
 
-
-// -------- OCULTAR CALENDARIO --------
 function ocultarCalendario() {
     calendarioVisible = false;
     $("contenedorCalendario").classList.remove("visible");
@@ -2070,57 +1333,38 @@ function ocultarCalendario() {
     $("contenedorResumen").classList.remove("visible");
     $("contenedorResumen").style.display = "none";
     $("btnBorrarRegistro").classList.remove('visible');
-
     ['diurno', 'noche'].forEach(function(tipo) {
-        var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
-        if (wrapper) {
-            wrapper.classList.remove('abierto');
-            wrapper.classList.add('cerrado');
-        }
-        var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-        if (container) {
-            container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
-        }
+        var w = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
+        if (w) { w.classList.remove('abierto'); w.classList.add('cerrado'); }
+        var c = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+        if (c) { c.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar'; }
     });
 }
 
-
-// -------- CARGAS --------
 function cargarPlacas() {
-    $("placa").innerHTML = '<option value="">Seleccione una placa</option>';
+    $("placa").innerHTML = '<option value="">Seleccione</option>';
     obtenerPlacasUnicas().forEach(function(p) {
-        var op = document.createElement("option");
-        op.value = p;
-        op.textContent = p;
-        $("placa").appendChild(op);
+        var op = document.createElement("option"); op.value = p; op.textContent = p; $("placa").appendChild(op);
     });
 }
 
 function cargarConductoresPorPlaca(placa) {
-    $("conductor").innerHTML = '<option value="">Seleccione un conductor</option>';
+    $("conductor").innerHTML = '<option value="">Seleccione</option>';
     if (placa === "") { $("btnIngresar").disabled = true; return; }
     obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
-        var op = document.createElement("option");
-        op.value = i;
-        op.textContent = item.nombre;
-        $("conductor").appendChild(op);
+        var op = document.createElement("option"); op.value = i; op.textContent = item.nombre; $("conductor").appendChild(op);
     });
     $("btnIngresar").disabled = true;
 }
 
 function cargarFiltroPlacasVisualizacion() {
-    var sel = $('filtroPlaca');
-    sel.innerHTML = '<option value="">Todas las placas</option>';
+    var s = $('filtroPlaca');
+    s.innerHTML = '<option value="">Todas</option>';
     obtenerPlacasUnicas().forEach(function(p) {
-        var op = document.createElement("option");
-        op.value = p;
-        op.textContent = p;
-        sel.appendChild(op);
+        var op = document.createElement("option"); op.value = p; op.textContent = p; s.appendChild(op);
     });
 }
 
-
-// -------- EVENTOS --------
 function onPlacaChange() {
     if (rolActual === 'admin') {
         cargarConductoresPorPlaca($("placa").value);
@@ -2129,9 +1373,7 @@ function onPlacaChange() {
         actualizarIdentificacion();
         ocultarCalendario();
         actualizarBotonBorrar();
-    } else {
-        actualizarBotonBorrar();
-    }
+    } else { actualizarBotonBorrar(); }
 }
 
 function onConductorChange() {
@@ -2148,42 +1390,33 @@ function onMesChange() {
     actualizarIdentificacion();
     actualizarBotonBorrar();
     if (rolActual === 'usuario' && conductorLogueado) {
-        var registro = obtenerRegistroLocal($("placa").value, conductorLogueado, $("mes").value);
-        if (registro) ingresar();
+        var r = obtenerRegistroLocal($("placa").value, conductorLogueado, $("mes").value);
+        if (r) ingresar();
     }
 }
 
-
-// -------- VISUALIZACIÓN --------
+/* ============================================================
+   VISUALIZACIÓN
+   ============================================================ */
 async function cargarVisualizacion(forzarRecarga) {
     if (rolActual !== 'admin') return;
-
     var filtroPlaca = $('filtroPlaca').value;
     var filtroConductor = $('filtroConductor').value;
     var filtroMes = $('filtroMes').value;
 
-    if (!forzarRecarga) {
-        $('contenedorVisualizacion').innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando...</p>';
-    }
+    if (!forzarRecarga) $('contenedorVisualizacion').innerHTML = '<p style="text-align:center;padding:30px;">⏳ Cargando...</p>';
 
     try {
         var controller = new AbortController();
         var timeoutId = setTimeout(function() { controller.abort(); }, 12000);
-
-        var response = await fetch(GOOGLE_SHEETS_URL + '?t=' + Date.now(), {
-            signal: controller.signal,
-            cache: 'no-store'
-        });
+        var response = await fetch(GOOGLE_SHEETS_URL + '?t=' + Date.now(), { signal: controller.signal, cache: 'no-store' });
         clearTimeout(timeoutId);
-
         if (!response.ok) throw new Error('HTTP ' + response.status);
-
         var data = await response.json();
         var registrosRemotos = {};
 
         if (Array.isArray(data)) {
-            var filas = data.slice(1);
-            filas.forEach(function(row) {
+            data.slice(1).forEach(function(row) {
                 if (!row || row.length < 5) return;
                 var placa = String(row[0] || '').trim();
                 var conductor = String(row[1] || '').trim();
@@ -2206,11 +1439,7 @@ async function cargarVisualizacion(forzarRecarga) {
 
                 var claveR = claveRegistro(placa, conductor, mesNum);
                 if (_borradosRecientes.has(claveR)) return;
-
-                registrosRemotos[conductor + "_" + placa + "_" + mesNum] = {
-                    conductor: conductor, placa: placa, mes: mesNum,
-                    diurno: d, noche: n, descanso: dsc, mantenimiento: mnt
-                };
+                registrosRemotos[conductor + "_" + placa + "_" + mesNum] = { conductor: conductor, placa: placa, mes: mesNum, diurno: d, noche: n, descanso: dsc, mantenimiento: mnt };
             });
         }
 
@@ -2226,7 +1455,6 @@ async function cargarVisualizacion(forzarRecarga) {
         }
 
         renderizarTablaFiltrada(registrosFinales, filtroPlaca, filtroConductor, filtroMes);
-
     } catch (error) {
         console.error('Error:', error);
         var locales2 = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -2234,7 +1462,7 @@ async function cargarVisualizacion(forzarRecarga) {
         for (var kk in locales2) filtrados.push(locales2[kk]);
 
         if (filtrados.length > 0) {
-            var htmlFB = '<div style="background:#fff3cd; padding:12px; border-radius:8px; margin-bottom:15px;">⚠️ Sin conexión. Datos locales (' + filtrados.length + ')</div>' +
+            var htmlFB = '<div style="background:#fff3cd;padding:12px;border-radius:8px;margin-bottom:15px;">⚠️ Sin conexión (' + filtrados.length + ')</div>' +
                 '<div class="contenedor-tabla"><table class="tabla-disponibilidad"><thead><tr>' +
                 '<th>Placa</th><th>Conductor</th><th>Mes</th><th>Diurno</th><th>Noche</th><th>Desc.</th><th>Mant.</th><th>Total</th><th>Acciones</th>' +
                 '</tr></thead><tbody>';
@@ -2248,7 +1476,7 @@ async function cargarVisualizacion(forzarRecarga) {
             htmlFB += '</tbody></table></div>';
             $('contenedorVisualizacion').innerHTML = htmlFB;
         } else {
-            $('contenedorVisualizacion').innerHTML = '<div style="text-align:center; padding:40px; color:#e74c3c;"><h3>Error</h3><p>' + escapeHtml(error.message) + '</p></div>';
+            $('contenedorVisualizacion').innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;"><h3>Error</h3><p>' + escapeHtml(error.message) + '</p></div>';
         }
     }
 }
@@ -2258,7 +1486,6 @@ function construirFilaTabla(r) {
     var nStr = r.noche && r.noche.length ? agruparDias(r.noche).split(', ').map(function(b) { return '<span class="bloque-dias noche">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
     var dscStr = r.descanso && r.descanso.length ? agruparDias(r.descanso).split(', ').map(function(b) { return '<span class="bloque-dias descanso">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
     var mntStr = r.mantenimiento && r.mantenimiento.length ? agruparDias(r.mantenimiento).split(', ').map(function(b) { return '<span class="bloque-dias mantenimiento">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
-
     var total = (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0);
     var nombreMes = (MESES[String(r.mes)] || 'Mes ' + r.mes) + ' ' + AÑO;
 
@@ -2279,7 +1506,6 @@ function renderizarTablaDesdeCache() {
     var filtroPlaca = $('filtroPlaca').value;
     var filtroConductor = $('filtroConductor').value;
     var filtroMes = $('filtroMes').value;
-
     var registros = {};
     for (var claveR in _registrosCache) {
         var r = _registrosCache[claveR];
@@ -2288,7 +1514,6 @@ function renderizarTablaDesdeCache() {
     }
     var locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     for (var k in locales) registros[k] = locales[k];
-
     renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtroMes);
 }
 
@@ -2302,34 +1527,31 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
         if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         filtrados.push(r);
     }
-
     filtrados.sort(function(a, b) {
         if (a.placa !== b.placa) return a.placa.localeCompare(b.placa);
         return a.conductor.localeCompare(b.conductor);
     });
 
     if (filtrados.length === 0) {
-        $('contenedorVisualizacion').innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><h3>📭 Sin registros</h3></div>';
+        $('contenedorVisualizacion').innerHTML = '<div style="text-align:center;padding:40px;color:#666;"><h3>📭 Sin registros</h3></div>';
         return;
     }
 
     var html = '<div class="contenedor-tabla"><table class="tabla-disponibilidad"><thead><tr>' +
-        '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th>' +
-        '<th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
+        '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th><th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
         '</tr></thead><tbody>';
     filtrados.forEach(function(r) { html += construirFilaTabla(r); });
-    html += '</tbody></table></div>' +
-        '<div style="margin-top:15px; text-align:right; color:#666;">Total: <strong>' + filtrados.length + '</strong></div>';
-
+    html += '</tbody></table></div><div style="margin-top:15px;text-align:right;">Total: <strong>' + filtrados.length + '</strong></div>';
     $('contenedorVisualizacion').innerHTML = html;
 }
 
-
-// -------- DETALLE --------
+/* ============================================================
+   DETALLE
+   ============================================================ */
 function abrirDetalleConductor(placa, conductor, mes) {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var registro = registros[conductor + "_" + placa + "_" + mes];
-    if (!registro) { mostrarToast("No se encontró", 'error'); return; }
+    if (!registro) { mostrarToast("No encontrado", 'error'); return; }
 
     var diurnoArr = registro.diurno || [];
     var nocheArr = registro.noche || [];
@@ -2341,9 +1563,9 @@ function abrirDetalleConductor(placa, conductor, mes) {
     var diasMes = diasDelMes(AÑO, mesNumero);
     var posIni = posicionInicial(AÑO, mesNumero);
 
-    var calHTML = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:520px; margin:15px auto;">';
+    var calHTML = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:520px;margin:15px auto;">';
     DIAS_SEMANA.forEach(function(d) {
-        calHTML += '<div style="text-align:center; font-weight:bold; padding:5px; background:#e8f0fa; border-radius:4px; font-size:12px;">' + d + '</div>';
+        calHTML += '<div style="text-align:center;font-weight:bold;padding:5px;background:#e8f0fa;border-radius:4px;font-size:12px;">' + d + '</div>';
     });
     for (var i = 0; i < posIni; i++) calHTML += '<div style="padding:5px;"></div>';
 
@@ -2354,13 +1576,13 @@ function abrirDetalleConductor(placa, conductor, mes) {
 
     for (var dia = 1; dia <= diasMes; dia++) {
         var color = '', label = '';
-        if (setMnt.has(dia)) { color = 'background:#fadbd8; border:2px solid #e74c3c;'; label = '🔧'; }
-        else if (setDsc.has(dia)) { color = 'background:#fce4d6; border:2px solid #f39c12;'; label = '🛌'; }
-        else if (setD.has(dia) && setN.has(dia)) { color = 'background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%); border:2px solid #1a7a3a;'; label = '☀️🌙'; }
-        else if (setD.has(dia)) { color = 'background:#d9ead3; border:2px solid #27ae60;'; label = '☀️'; }
-        else if (setN.has(dia)) { color = 'background:#d4e6f1; border:2px solid #2980b9;'; label = '🌙'; }
-        else { color = 'background:#f5f5f5; opacity:0.5;'; }
-        calHTML += '<div style="padding:8px 4px; text-align:center; border-radius:6px; ' + color + ' font-weight:bold; font-size:13px;">' + dia + (label ? '<br><span style="font-size:10px;">' + label + '</span>' : '') + '</div>';
+        if (setMnt.has(dia)) { color = 'background:#fadbd8;border:2px solid #e74c3c;'; label = '🔧'; }
+        else if (setDsc.has(dia)) { color = 'background:#fce4d6;border:2px solid #f39c12;'; label = '🛌'; }
+        else if (setD.has(dia) && setN.has(dia)) { color = 'background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%);border:2px solid #1a7a3a;'; label = '☀️🌙'; }
+        else if (setD.has(dia)) { color = 'background:#d9ead3;border:2px solid #27ae60;'; label = '☀️'; }
+        else if (setN.has(dia)) { color = 'background:#d4e6f1;border:2px solid #2980b9;'; label = '🌙'; }
+        else { color = 'background:#f5f5f5;opacity:0.5;'; }
+        calHTML += '<div style="padding:8px 4px;text-align:center;border-radius:6px;' + color + 'font-weight:bold;font-size:13px;">' + dia + (label ? '<br><span style="font-size:10px;">' + label + '</span>' : '') + '</div>';
     }
     calHTML += '</div>';
 
@@ -2381,23 +1603,21 @@ function abrirDetalleConductor(placa, conductor, mes) {
     function seccionHTML(titulo, icono, dias, tipo) {
         var bloquesHTML = dias && dias.length
             ? agruparDias(dias).split(', ').map(function(b) {
-                return '<span style="display:inline-block; background:' + getBgColor(tipo) + '; color:' + getColor(tipo) + '; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px; margin:3px;">' + b + '</span>';
+                return '<span style="display:inline-block;background:' + getBgColor(tipo) + ';color:' + getColor(tipo) + ';padding:4px 10px;border-radius:6px;font-weight:bold;font-size:13px;margin:3px;">' + b + '</span>';
             }).join('')
-            : '<span style="color:#999; font-style:italic;">Ninguno</span>';
-
-        return '<div style="margin:12px 0; border-left:5px solid ' + getColor(tipo) + '; background:#f9f9f9; border-radius:8px; padding:12px 15px;">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
-            '<strong style="color:' + getColor(tipo) + '; font-size:15px;">' + icono + ' ' + titulo + '</strong>' +
-            '<span style="background:' + getBgColor(tipo) + '; color:' + getColor(tipo) + '; padding:3px 12px; border-radius:12px; font-weight:bold; font-size:13px;">' + (dias ? dias.length : 0) + ' días</span>' +
+            : '<span style="color:#999;font-style:italic;">Ninguno</span>';
+        return '<div style="margin:12px 0;border-left:5px solid ' + getColor(tipo) + ';background:#f9f9f9;border-radius:8px;padding:12px 15px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+            '<strong style="color:' + getColor(tipo) + ';font-size:15px;">' + icono + ' ' + titulo + '</strong>' +
+            '<span style="background:' + getBgColor(tipo) + ';color:' + getColor(tipo) + ';padding:3px 12px;border-radius:12px;font-weight:bold;font-size:13px;">' + (dias ? dias.length : 0) + ' días</span>' +
             '</div><div>' + bloquesHTML + '</div></div>';
     }
 
     var totalTrabajo = diurnoArr.length + nocheArr.length;
     var totalNoTrabajo = descansoArr.length + mantenimientoArr.length;
 
-    var contenido = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-        '<title>Detalle - ' + escapeHtml(conductor) + '</title><style>' +
+    var contenido = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+        '<title>Detalle</title><style>' +
         '*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f2f4f7;margin:0;padding:15px}' +
         '.header{background:linear-gradient(135deg,#17365d,#1a4a7a);color:white;padding:15px 25px;border-radius:12px;margin-bottom:15px;text-align:center}' +
         '.tarjeta{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.08);max-width:600px;margin:0 auto}' +
@@ -2432,7 +1652,7 @@ function abrirDetalleConductor(placa, conductor, mes) {
         '<span><span class="c" style="background:#27ae60;"></span> Diurno</span>' +
         '<span><span class="c" style="background:#2980b9;"></span> Noche</span>' +
         '<span><span class="c" style="background:#f39c12;"></span> Descanso</span>' +
-        '<span><span class="c" style="background:#e74c3c;"></span> Mantenimiento</span>' +
+        '<span><span class="c" style="background:#e74c3c;"></span> Mant.</span>' +
         '</div>' +
         '<button class="btn-cerrar" onclick="window.close()">❌ CERRAR</button>' +
         '</div></body></html>';
@@ -2447,17 +1667,15 @@ function abrirDetalleConductor(placa, conductor, mes) {
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         mostrarToast('📄 Detalle descargado', 'success', 5000);
     } else {
-        var ventana = window.open(url, '_blank');
-        if (!ventana) {
-            mostrarToast('⚠️ Permita popups', 'warning', 5000);
-            URL.revokeObjectURL(url); return;
-        }
+        var v = window.open(url, '_blank');
+        if (!v) { mostrarToast('⚠️ Permita popups', 'warning', 5000); URL.revokeObjectURL(url); return; }
     }
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
-
-// -------- CALENDARIO MENSUAL --------
+/* ============================================================
+   CALENDARIO MENSUAL
+   ============================================================ */
 function cargarCalendarioMensual() {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroPlaca = $('filtroPlaca').value;
@@ -2479,14 +1697,12 @@ function cargarCalendarioMensual() {
     }
 
     if (filtrados.length === 0) {
-        contenedor.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><h3>📭 Sin registros</h3></div>';
+        contenedor.innerHTML = '<div style="text-align:center;padding:40px;color:#666;"><h3>📭 Sin registros</h3></div>';
         return;
     }
 
     var diasMap = {};
-    for (var d = 1; d <= diasMes; d++) {
-        diasMap[d] = { diurno: [], noche: [], descanso: [], mantenimiento: [] };
-    }
+    for (var d = 1; d <= diasMes; d++) diasMap[d] = { diurno: [], noche: [], descanso: [], mantenimiento: [] };
 
     filtrados.forEach(function(r) {
         (r.diurno || []).forEach(function(d) { if (diasMap[d]) diasMap[d].diurno.push(r.conductor); });
@@ -2495,8 +1711,7 @@ function cargarCalendarioMensual() {
         (r.mantenimiento || []).forEach(function(d) { if (diasMap[d]) diasMap[d].mantenimiento.push(r.conductor); });
     });
 
-    var html = '<div style="text-align:center; margin-bottom:15px;">' +
-        '<h3 style="color:#17365d;">📅 ' + MESES[String(mesNum)] + ' ' + AÑO + '</h3></div>' +
+    var html = '<div style="text-align:center;margin-bottom:15px;"><h3 style="color:#17365d;">📅 ' + MESES[String(mesNum)] + ' ' + AÑO + '</h3></div>' +
         '<div class="leyenda-calendario">' +
         '<span class="item"><span class="color diurno"></span> Diurno</span>' +
         '<span class="item"><span class="color noche"></span> Noche</span>' +
@@ -2510,7 +1725,6 @@ function cargarCalendarioMensual() {
     for (var dia = 1; dia <= diasMes; dia++) {
         var info = diasMap[dia];
         var total = info.diurno.length + info.noche.length;
-
         var claseBarra = '';
         if (info.diurno.length > 0 && info.noche.length > 0) claseBarra = 'ambos';
         else if (info.diurno.length > 0) claseBarra = 'diurno';
@@ -2530,7 +1744,6 @@ function cargarCalendarioMensual() {
             '<div class="contenido-dia"><div class="numero">' + dia + '</div>' +
             '<div class="contadores">' + contHTML + '</div></div></div>';
     }
-
     html += '</div>';
     contenedor.innerHTML = html;
     window._diasMapActual = diasMap;
@@ -2543,7 +1756,6 @@ function abrirPanelDetalleDia(dia) {
     var info = diasMap[dia] || { diurno: [], noche: [], descanso: [], mantenimiento: [] };
 
     var total = info.diurno.length + info.noche.length + info.descanso.length + info.mantenimiento.length;
-
     $('panelTitulo').textContent = '📅 ' + dia + ' de ' + MESES[String(mesNum)];
     $('panelSubtitulo').textContent = total + ' registro(s)';
 
@@ -2571,14 +1783,14 @@ function abrirPanelDetalleDia(dia) {
 }
 
 function filtrarPanelDetalle() {
-    var query = $('panelBusqueda').value.toLowerCase().trim();
+    var q = $('panelBusqueda').value.toLowerCase().trim();
     document.querySelectorAll('#panelDetalleBody li').forEach(function(li) {
-        var nombre = li.textContent.toLowerCase();
-        li.style.display = (!query || nombre.indexOf(query) >= 0) ? '' : 'none';
+        var n = li.textContent.toLowerCase();
+        li.style.display = (!q || n.indexOf(q) >= 0) ? '' : 'none';
     });
-    document.querySelectorAll('#panelDetalleBody .grupo-turno').forEach(function(grupo) {
-        var visibles = grupo.querySelectorAll('li:not([style*="display: none"])').length;
-        grupo.style.display = visibles > 0 ? '' : 'none';
+    document.querySelectorAll('#panelDetalleBody .grupo-turno').forEach(function(g) {
+        var v = g.querySelectorAll('li:not([style*="display: none"])').length;
+        g.style.display = v > 0 ? '' : 'none';
     });
 }
 
@@ -2587,8 +1799,9 @@ function cerrarPanelDetalle() {
     document.body.style.overflow = '';
 }
 
-
-// -------- EXPORTAR EXCEL --------
+/* ============================================================
+   EXPORTAR
+   ============================================================ */
 function exportarExcel() {
     mostrarToast('📊 Generando...', 'info');
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -2621,14 +1834,9 @@ function exportarExcel() {
         ws.addRow([item.placa, item.conductor, item.mes, item.diurno, item.noche, item.descanso, item.mantenimiento, item.total]);
     });
 
-    ws.getColumn(1).width = 12;
-    ws.getColumn(2).width = 32;
-    ws.getColumn(3).width = 18;
-    ws.getColumn(4).width = 28;
-    ws.getColumn(5).width = 28;
-    ws.getColumn(6).width = 28;
-    ws.getColumn(7).width = 28;
-    ws.getColumn(8).width = 12;
+    ws.getColumn(1).width = 12; ws.getColumn(2).width = 32; ws.getColumn(3).width = 18;
+    ws.getColumn(4).width = 28; ws.getColumn(5).width = 28; ws.getColumn(6).width = 28;
+    ws.getColumn(7).width = 28; ws.getColumn(8).width = 12;
 
     wb.xlsx.writeBuffer().then(function(buffer) {
         saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
@@ -2637,97 +1845,65 @@ function exportarExcel() {
     });
 }
 
-
-// -------- EXPORTAR PDF --------
 function exportarPDF() {
     mostrarToast('📄 Generando...', 'info');
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF('landscape', 'mm', 'a4');
     var pageWidth = doc.internal.pageSize.getWidth();
-
-    doc.setFontSize(20);
-    doc.setTextColor(23, 54, 93);
+    doc.setFontSize(20); doc.setTextColor(23, 54, 93);
     doc.text('TRANSFERMATRI S.A.', pageWidth / 2, 15, { align: 'center' });
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroMes = $('filtroMes').value;
     var data = [];
-
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
-        data.push([
-            r.placa, r.conductor,
-            agruparDias(r.diurno || []) || '—',
-            agruparDias(r.noche || []) || '—',
-            agruparDias(r.descanso || []) || '—',
-            agruparDias(r.mantenimiento || []) || '—',
-            (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)
-        ]);
+        data.push([r.placa, r.conductor, agruparDias(r.diurno || []) || '—', agruparDias(r.noche || []) || '—',
+            agruparDias(r.descanso || []) || '—', agruparDias(r.mantenimiento || []) || '—',
+            (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)]);
     }
-
     if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
 
     doc.autoTable({
         head: [['PLACA', 'CONDUCTOR', 'DIURNO', 'NOCHE', 'DESCANSO', 'MANT.', 'TOTAL']],
-        body: data,
-        startY: 30,
-        styles: { fontSize: 7 },
-        headStyles: { fillColor: [23, 54, 93] }
+        body: data, startY: 30, styles: { fontSize: 7 }, headStyles: { fillColor: [23, 54, 93] }
     });
-
     doc.save('Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.pdf');
     mostrarToast('✅ PDF listo', 'success');
 }
 
-
-// -------- SUBIR A SHEETS --------
 function subirAGoogleSheets(btn) {
     if (!btn) return;
-    var textoOriginal = btn.innerHTML;
-    btn.innerHTML = '⏳...';
-    btn.disabled = true;
-
+    var t = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroMes = $('filtroMes').value;
     var lista = [];
-
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
-        lista.push({
-            placa: r.placa, conductor: r.conductor,
-            mes: MESES[String(r.mes)] + ' ' + AÑO,
-            diurno: (r.diurno || []).join(', '),
-            noche: (r.noche || []).join(', '),
-            descanso: (r.descanso || []).join(', '),
-            mantenimiento: (r.mantenimiento || []).join(', '),
-            total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)
-        });
+        lista.push({ placa: r.placa, conductor: r.conductor, mes: MESES[String(r.mes)] + ' ' + AÑO,
+            diurno: (r.diurno || []).join(', '), noche: (r.noche || []).join(', '),
+            descanso: (r.descanso || []).join(', '), mantenimiento: (r.mantenimiento || []).join(', '),
+            total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0) });
     }
-
-    if (lista.length === 0) { btn.innerHTML = '📭'; setTimeout(function() { btn.innerHTML = textoOriginal; btn.disabled = false; }, 1500); return; }
-
-    var enviados = 0;
+    if (lista.length === 0) { btn.innerHTML = '📭'; setTimeout(function() { btn.innerHTML = t; btn.disabled = false; }, 1500); return; }
+    var e = 0;
     lista.forEach(function(data) {
         enviarASheets(data).then(function() {
-            enviados++;
-            if (enviados === lista.length) {
+            e++;
+            if (e === lista.length) {
                 btn.innerHTML = '✅';
-                mostrarToast('✅ ' + enviados + ' subidos', 'success');
-                setTimeout(function() { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
+                mostrarToast('✅ ' + e + ' subidos', 'success');
+                setTimeout(function() { btn.innerHTML = t; btn.disabled = false; }, 2000);
             }
         });
     });
 }
 
-
-// -------- CAMBIAR VISTA --------
 function cambiarVista(vista) {
     vistaActual = vista;
-    document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
-        btn.classList.toggle('activo', btn.dataset.vista === vista);
-    });
+    document.querySelectorAll('.tab-vista-btn').forEach(function(b) { b.classList.toggle('activo', b.dataset.vista === vista); });
     document.querySelectorAll('.vista-contenido').forEach(function(el) { el.style.display = 'none'; });
 
     if (vista === 'tabla') {
@@ -2741,10 +1917,11 @@ function cambiarVista(vista) {
     }
 }
 
-
-// -------- INICIAR / EVENTOS --------
+/* ============================================================
+   INICIAR
+   ============================================================ */
 function iniciar() {
-    console.log('[boot] v3.1 iniciando...');
+    console.log('[boot] v3.2');
 
     mostrarFechaActual();
     cargarPlacas();
@@ -2756,34 +1933,31 @@ function iniciar() {
     $('btnGuardarYVer').disabled = true;
     $('btnBorrarRegistro').classList.remove('visible');
 
-    // URL admin
     try {
         var params = new URLSearchParams(window.location.search);
         if (params.get('admin') === 'true') setTimeout(abrirModalAdmin, 500);
     } catch (e) {}
 
-    // BOTONES DE LOGIN
-    var btnRolConductor = $('btnRolConductor');
-    if (btnRolConductor) {
-        btnRolConductor.addEventListener('click', function(e) { e.preventDefault(); abrirModalConductor(); });
-    }
-    var btnRolAdmin = $('btnRolAdmin');
-    if (btnRolAdmin) {
-        btnRolAdmin.addEventListener('click', function(e) { e.preventDefault(); abrirModalAdmin(); });
-    }
+    // Botones login
+    if ($('btnRolConductor')) $('btnRolConductor').addEventListener('click', function(e) { e.preventDefault(); abrirModalConductor(); });
+    if ($('btnRolAdmin')) $('btnRolAdmin').addEventListener('click', function(e) { e.preventDefault(); abrirModalAdmin(); });
 
-    // Selects
+    // Modal conductor
     if ($('loginPlaca')) $('loginPlaca').addEventListener('change', cargarConductoresLogin);
     if ($('btnLoginConductor')) $('btnLoginConductor').addEventListener('click', ingresarConductor);
     if ($('btnCancelarConductor')) $('btnCancelarConductor').addEventListener('click', cerrarModalConductor);
+
+    // Modal admin
     if ($('btnIngresarAdmin')) $('btnIngresarAdmin').addEventListener('click', verificarClaveAdmin);
     if ($('btnCancelarAdmin')) $('btnCancelarAdmin').addEventListener('click', cerrarModalAdmin);
     if ($('claveAdmin')) $('claveAdmin').addEventListener('keypress', function(e) { if (e.key === 'Enter') verificarClaveAdmin(); });
 
+    // Selects
     if ($('placa')) ['change', 'input', 'blur'].forEach(function(evt) { $('placa').addEventListener(evt, onPlacaChange); });
     if ($('conductor')) ['change', 'input', 'blur'].forEach(function(evt) { $('conductor').addEventListener(evt, onConductorChange); });
     if ($('mes')) ['change', 'input', 'blur'].forEach(function(evt) { $('mes').addEventListener(evt, onMesChange); });
 
+    // Botones principales
     if ($('btnIngresar')) $('btnIngresar').addEventListener('click', ingresar);
     if ($('btnGuardarYVer')) $('btnGuardarYVer').addEventListener('click', guardarYVer);
     if ($('btnBorrarRegistro')) $('btnBorrarRegistro').addEventListener('click', borrarMiRegistro);
@@ -2797,11 +1971,11 @@ function iniciar() {
     if ($('btnCancelarConfirm')) $('btnCancelarConfirm').addEventListener('click', function() { cerrarConfirm(false); });
     if ($('btnAceptarConfirm')) $('btnAceptarConfirm').addEventListener('click', function() { cerrarConfirm(true); });
 
-    // Tabs principales
+    // Tabs
     if ($('tabBtnRegistrar')) $('tabBtnRegistrar').addEventListener('click', function() { cambiarTab('registrar'); });
     if ($('tabVisualizarBtn')) $('tabVisualizarBtn').addEventListener('click', function() { cambiarTab('visualizar'); });
 
-    // Calendarios (logos)
+    // Calendarios
     if ($('logoDiurnoContainer')) $('logoDiurnoContainer').addEventListener('click', function() { toggleCalendario('diurno'); });
     if ($('logoNocheContainer')) $('logoNocheContainer').addEventListener('click', function() { toggleCalendario('noche'); });
 
@@ -2822,25 +1996,20 @@ function iniciar() {
     if ($('btnSubirSheets')) $('btnSubirSheets').addEventListener('click', function() { subirAGoogleSheets(this); });
 
     // Panel detalle
-    if ($('panelDetalleDia')) {
-        $('panelDetalleDia').addEventListener('click', function(e) { if (e.target === this) cerrarPanelDetalle(); });
-    }
+    if ($('panelDetalleDia')) $('panelDetalleDia').addEventListener('click', function(e) { if (e.target === this) cerrarPanelDetalle(); });
     if ($('btnCerrarPanel')) $('btnCerrarPanel').addEventListener('click', cerrarPanelDetalle);
     if ($('panelBusqueda')) $('panelBusqueda').addEventListener('input', filtrarPanelDetalle);
+
+    // Salir
+    if ($('btnSalirTop')) $('btnSalirTop').addEventListener('click', cerrarSesion);
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && $('panelDetalleDia').classList.contains('active')) cerrarPanelDetalle();
     });
 
-    // Botón salir
-    document.querySelectorAll('.btn-salir').forEach(function(btn) {
-        btn.addEventListener('click', cerrarSesion);
-    });
-
     cambiarVista('tabla');
-    console.log('[boot] ✅ v3.1 lista');
+    console.log('[boot] ✅ v3.2 lista');
 }
-
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', iniciar);
@@ -2848,8 +2017,7 @@ if (document.readyState === 'loading') {
     iniciar();
 }
 
-
-// -------- EXPONER FUNCIONES GLOBALES --------
+// Exponer globales
 window.abrirModalConductor = abrirModalConductor;
 window.cerrarModalConductor = cerrarModalConductor;
 window.cargarConductoresLogin = cargarConductoresLogin;
@@ -2878,7 +2046,6 @@ window.exportarPDF = exportarPDF;
 window.subirAGoogleSheets = subirAGoogleSheets;
 window.cambiarVista = cambiarVista;
 window.mostrarToast = mostrarToast;
-
 </script>
 
 </body>

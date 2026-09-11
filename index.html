@@ -118,6 +118,8 @@
     .logo-operativo-container img {
         display: block; width: 100%; height: auto;
         border: none; pointer-events: none; user-select: none;
+        -webkit-user-drag: none;
+        -webkit-touch-callout: none;
     }
     .logo-operativo-container .click-indicator {
         position: absolute; bottom: 10px; right: 15px;
@@ -978,7 +980,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v2.5</div>
+        <div class="version">Sistema de Disponibilidad v2.6</div>
     </div>
 </header>
 
@@ -1018,7 +1020,7 @@
                     <span class="icono">🔑</span>
                     <div>
                         ADMINISTRADOR
-                        <span class="descripcion">Ver y gestionar todos los registros</span>
+                        <span class="ver descripcion">Ver y gestionar todos los registros</span>
                     </div>
                 </button>
             </div>
@@ -1141,7 +1143,9 @@
                     </select>
                 </div>
                 <div>
-                    <button class="btn-ingresar" id="btnIngresar" disabled onclick="ingresar()">
+                    <button class="btn-ingresar" id="btnIngresar" disabled
+                            onclick="ingresar()"
+                            ontouchstart="ingresarYPrevenir(event)">
                         🚪 INGRESAR
                     </button>
                 </div>
@@ -1157,7 +1161,7 @@
                 👆 Haga clic en la imagen del turno para ver su calendario.
             </p>
             <div id="seccionDiurno" class="turno">
-                <div class="logo-operativo-container" onclick="toggleCalendario('diurno')">
+                <div class="logo-operativo-container" onclick="toggleCalendario('diurno')" ontouchstart="toggleCalendario('diurno', event)">
                     <img src="ChatGPT Image 8 sept 2026, 14_14_17.png" alt="OPERATIVO DIURNO - TRANSFERMATRI SA" id="logoDiurno">
                     <div class="click-indicator">
                         <span class="icono">▼</span> Click para mostrar
@@ -1168,7 +1172,7 @@
                 </div>
             </div>
             <div id="seccionNoche" class="turno">
-                <div class="logo-operativo-container" onclick="toggleCalendario('noche')">
+                <div class="logo-operativo-container" onclick="toggleCalendario('noche')" ontouchstart="toggleCalendario('noche', event)">
                     <img src="ChatGPT Image 8 sept 2026, 14_14_07.png" alt="OPERATIVO NOCTURNO - TRANSFERMATRI SA" id="logoNocturno">
                     <div class="click-indicator">
                         <span class="icono">▼</span> Click para mostrar
@@ -1193,7 +1197,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-guardar" id="btnGuardarYVer" onclick="guardarYVer()">
+                <button class="btn-guardar" id="btnGuardarYVer" onclick="guardarYVer()" ontouchstart="guardarYPrevenir(event)">
                     💾 GUARDAR Y VER DISPONIBILIDAD
                 </button>
                 <button class="btn-borrar-registro" id="btnBorrarRegistro" onclick="borrarMiRegistro()">
@@ -1302,9 +1306,10 @@
 
 const AÑO = 2026;
 const CLAVE_ADMIN = "ADMIN2026";
-const GOOGLE_SHEETS_URL = https://script.google.com/macros/s/AKfycbx1rceOq-XzfpcWL6CR5Bcsg8nHqh8B5cVPoyP1JzZUnVD-JuI4n4I-gGYrHH1MwwWSQg/exec
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
 
 const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 const MESES = {
     '1':'Enero','2':'Febrero','3':'Marzo','4':'Abril','5':'Mayo','6':'Junio',
@@ -1374,9 +1379,11 @@ let _guardandoEnProgreso = false;
 let _confirmCallback = null;
 let _detalleDiaActual = { dia: null, diurno: [], noche: [] };
 
-// Caché de registros: para evitar que al borrar "reaparezca" el dato viejo de Sheets
 let _registrosCache = {};
-let _borradosRecientes = new Set(); // claves con "placa_conductor_mes" borradas en esta sesión
+let _borradosRecientes = new Set();
+
+// Anti-doble-click global para móvil
+let _ingresoEnProgreso = false;
 
 const $ = (id) => document.getElementById(id);
 
@@ -1438,7 +1445,6 @@ function eliminarRegistroLocal(placa, conductor, mes) {
     return false;
 }
 
-// Enviar petición POST (fire & forget, sin esperar respuesta)
 function enviarASheets(data) {
     return fetch(GOOGLE_SHEETS_URL, {
         method: 'POST',
@@ -1446,6 +1452,15 @@ function enviarASheets(data) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     }).catch(err => console.warn('POST warning:', err));
+}
+
+// Logging condicional (solo si está en modo debug)
+const DEBUG = window.location.search.includes('debug=true');
+function log(...args) {
+    if (DEBUG || IS_MOBILE) console.log('[app]', ...args);
+}
+function logErr(...args) {
+    console.error('[app ERROR]', ...args);
 }
 
 
@@ -1723,8 +1738,100 @@ function verificarUrlAdmin() {
 
 
 /* ============================================================
+   INGRESAR (móvil-friendly)
+   ============================================================ */
+
+function ingresarYPrevenir(event) {
+    if (_ingresoEnProgreso) return;
+    _ingresoEnProgreso = true;
+    setTimeout(() => { _ingresoEnProgreso = false; }, 800);
+    try {
+        ingresar();
+    } catch (err) {
+        logErr('Error en ingresarYPrevenir:', err);
+        mostrarToast('Error: ' + err.message, 'error');
+    }
+}
+
+function ingresar() {
+    log('ingresar() ejecutado');
+    log('  rolActual:', rolActual);
+    log('  conductorLogueado:', conductorLogueado);
+    log('  placaSelect.value:', placaSelect.value);
+    log('  conductorSelect.value:', conductorSelect.value);
+
+    try {
+        if (rolActual === 'usuario' && conductorLogueado) {
+            if (!placaLogueada || !conductorLogueado) {
+                mostrarToast("Error: sesión no iniciada", 'error');
+                return;
+            }
+            placaSelect.value = placaLogueada;
+        } else {
+            if (placaSelect.value === "" || conductorSelect.value === "") {
+                mostrarToast("Seleccione una placa y un conductor", 'warning');
+                return;
+            }
+        }
+
+        calendarioVisible = true;
+        $("contenedorCalendario").style.display = "block";
+        $("contenedorCalendario").classList.add("visible");
+        $("contenedorResumen").style.display = "block";
+        $("contenedorResumen").classList.add("visible");
+        $("mensajeInstruccion").textContent = "👆 Haga clic en la imagen del turno para ver su calendario.";
+
+        diurno.clear();
+        noche.clear();
+        cargarDisponibilidadGuardada();
+        crearCalendarios();
+        actualizarResumen();
+        actualizarBotonBorrar();
+        actualizarIdentificacion();
+
+        ['diurno', 'noche'].forEach(function(tipo) {
+            const wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
+            if (wrapper) {
+                wrapper.classList.remove('abierto');
+                wrapper.classList.add('cerrado');
+            }
+            const container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+            if (container) {
+                container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
+            }
+        });
+
+        try {
+            $("contenedorCalendario").scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (e) {
+            $("contenedorCalendario").scrollIntoView(true);
+        }
+
+        log('ingresar() OK');
+    } catch (err) {
+        logErr('Error en ingresar():', err);
+        mostrarToast('Error: ' + err.message, 'error', 5000);
+    }
+}
+
+
+/* ============================================================
    GUARDAR Y VER
    ============================================================ */
+
+let _guardarEnProgreso = false;
+
+function guardarYPrevenir(event) {
+    if (_guardarEnProgreso) return;
+    _guardarEnProgreso = true;
+    setTimeout(() => { _guardarEnProgreso = false; }, 1200);
+    try {
+        guardarYVer();
+    } catch (err) {
+        logErr('Error en guardarYPrevenir:', err);
+        mostrarToast('Error al guardar: ' + err.message, 'error');
+    }
+}
 
 function guardarYVer() {
     if (placaSelect.value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
@@ -1778,10 +1885,7 @@ function _guardarYVerInterno() {
     registros[claveLocal] = registro;
     localStorage.setItem("disponibilidades", JSON.stringify(registros));
 
-    // Actualizar caché local
     _registrosCache[claveRegistro(placaSelect.value, nombreConductor, mesSelect.value)] = registro;
-
-    // Si estaba en borrados recientes, quitarlo
     _borradosRecientes.delete(claveRegistro(placaSelect.value, nombreConductor, mesSelect.value));
 
     const data = {
@@ -1816,7 +1920,7 @@ function _guardarYVerInterno() {
         setTimeout(() => abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value), 300);
     })
     .catch(error => {
-        console.error('❌ Error:', error);
+        logErr('Error:', error);
         mostrarToast('⚠️ Error al guardar (se guardó localmente)', 'error');
         btn.innerHTML = '⚠️ Error';
         btn.style.backgroundColor = '#e74c3c';
@@ -1846,7 +1950,6 @@ function borrarMiRegistro() {
 
             const eliminado = eliminarRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
 
-            // Marcar como borrado reciente (para que no reaparezca desde Sheets)
             const claveR = claveRegistro(placaSelect.value, nombreConductor, mesSelect.value);
             _borradosRecientes.add(claveR);
             delete _registrosCache[claveR];
@@ -1870,7 +1973,6 @@ function borrarMiRegistro() {
                 mostrarToast('🗑️ Borrado localmente (sin conexión)', 'warning');
             });
 
-            // Limpiar UI inmediatamente
             diurno.clear();
             noche.clear();
             crearCalendarios();
@@ -1920,7 +2022,6 @@ function borrarRegistroAdmin(placa, conductor, mes) {
 
             eliminarRegistroLocal(placa, conductor, mes);
 
-            // Marcar como borrado reciente
             const claveR = claveRegistro(placa, conductor, mes);
             _borradosRecientes.add(claveR);
             delete _registrosCache[claveR];
@@ -1940,14 +2041,12 @@ function borrarRegistroAdmin(placa, conductor, mes) {
                 mostrarToast('🗑️ Borrado localmente', 'warning');
             });
 
-            // Refrescar UI sin esperar a Sheets
             refrescarVistaActual();
         },
         'Borrar registro'
     );
 }
 
-// Refresca la vista actual SIN consultar Sheets (usa caché + local)
 function refrescarVistaActual() {
     if (vistaActual === 'tabla') {
         renderizarTablaDesdeCache();
@@ -2137,7 +2236,6 @@ function cambiarVista(vista) {
 
     if (vista === 'tabla') {
         $('vistaTabla').style.display = 'block';
-        // Si hay caché, renderizar inmediato y luego actualizar en background
         if (Object.keys(_registrosCache).length > 0) {
             renderizarTablaDesdeCache();
         } else {
@@ -2172,7 +2270,6 @@ async function cargarVisualizacion(forzarRecarga = false) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-        // Agregar un timestamp para forzar que el navegador no use caché
         const urlConCache = GOOGLE_SHEETS_URL + '?t=' + Date.now();
 
         const response = await fetch(urlConCache, {
@@ -2208,7 +2305,6 @@ async function cargarVisualizacion(forzarRecarga = false) {
                     .split(',').map(s => parseInt(s.trim()))
                     .filter(n => !isNaN(n));
 
-                // Ignorar registros con total=0 (fueron borrados)
                 const total = (row[5] !== undefined) ? Number(row[5]) : (d.length + n.length);
                 if (total === 0 && d.length === 0 && n.length === 0) return;
 
@@ -2219,8 +2315,6 @@ async function cargarVisualizacion(forzarRecarga = false) {
                 else if (mes.includes('Diciembre')) mesNum = "11";
 
                 const claveR = claveRegistro(placa, conductor, mesNum);
-
-                // Ignorar si fue borrado recientemente en esta sesión
                 if (_borradosRecientes.has(claveR)) return;
 
                 const clave = conductor + "_" + placa + "_" + mesNum;
@@ -2228,7 +2322,6 @@ async function cargarVisualizacion(forzarRecarga = false) {
             });
         }
 
-        // Fusionar: locales tienen prioridad
         const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
 
         const registrosFinales = { ...registrosRemotos };
@@ -2236,7 +2329,6 @@ async function cargarVisualizacion(forzarRecarga = false) {
             registrosFinales[k] = locales[k];
         }
 
-        // Guardar en caché
         _registrosCache = {};
         for (const k in registrosFinales) {
             const r = registrosFinales[k];
@@ -2246,13 +2338,12 @@ async function cargarVisualizacion(forzarRecarga = false) {
         renderizarTablaFiltrada(registrosFinales, filtroPlaca, filtroConductor, filtroMes);
 
     } catch (error) {
-        console.error('❌ Error al cargar:', error);
+        logErr('Error al cargar:', error);
 
         const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
         const filtrados = [];
         for (const k in locales) {
-            const r = locales[k];
-            filtrados.push(r);
+            filtrados.push(locales[k]);
         }
 
         if (filtrados.length > 0) {
@@ -2273,6 +2364,7 @@ async function cargarVisualizacion(forzarRecarga = false) {
                 if (String(r.mes) !== String(filtroMes)) return;
                 if (filtroPlaca && r.placa !== filtroPlaca) return;
                 if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase())) return;
+                if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) return;
 
                 const dStr = (r.diurno||[]).slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ') || '<span class="sin-disponibilidad">Ninguno</span>';
                 const nStr = (r.noche||[]).slice().sort((a,b)=>a-b).map(d=>`<span class="disponible-tag">${d}</span>`).join(' ') || '<span class="sin-disponibilidad">Ninguno</span>';
@@ -2328,7 +2420,7 @@ async function cargarVisualizacion(forzarRecarga = false) {
 
 
 /* ============================================================
-   RENDERIZAR TABLA (desde caché, sin consultar Sheets)
+   RENDERIZAR TABLA
    ============================================================ */
 
 function renderizarTablaDesdeCache() {
@@ -2336,14 +2428,12 @@ function renderizarTablaDesdeCache() {
     const filtroConductor = $('filtroConductor').value;
     const filtroMes = $('filtroMes').value;
 
-    // Construir registro a partir de caché
     const registros = {};
     for (const claveR in _registrosCache) {
         const r = _registrosCache[claveR];
         if (_borradosRecientes.has(claveR)) continue;
         registros[r.conductor + "_" + r.placa + "_" + r.mes] = r;
     }
-    // Añadir locales
     const locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     for (const k in locales) {
         registros[k] = locales[k];
@@ -2361,7 +2451,6 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
         if (String(r.mes) !== String(filtroMes)) continue;
         if (filtroPlaca && r.placa !== filtroPlaca) continue;
         if (filtroConductor && !r.conductor.toUpperCase().includes(filtroConductor.toUpperCase().trim())) continue;
-        // Excluir borrados recientes
         if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         filtrados.push(r);
     }
@@ -2791,7 +2880,7 @@ function exportarExcel() {
         saveAs(blob, nombre);
         mostrarToast('✅ Excel descargado', 'success');
     }).catch(err => {
-        console.error(err);
+        logErr(err);
         mostrarToast('Error al generar Excel', 'error');
     });
 }
@@ -2961,7 +3050,7 @@ function subirAGoogleSheets(btn) {
                 }, 2000);
             }
         }).catch(err => {
-            console.error(err);
+            logErr(err);
             btn.innerHTML = '❌ Error';
             setTimeout(() => { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
         });
@@ -2973,10 +3062,29 @@ function subirAGoogleSheets(btn) {
    CALENDARIO REGISTRO
    ============================================================ */
 
-function toggleCalendario(tipo) {
-    if (!calendarioVisible) return;
+function toggleCalendario(tipo, event) {
+    if (event) {
+        // Prevenir doble ejecución (touchstart + click)
+        if (event.type === 'touchstart') {
+            event.preventDefault();
+        }
+        if (event._toggleProcesado) return;
+        event._toggleProcesado = true;
+        setTimeout(() => { if (event._toggleProcesado) event._toggleProcesado = false; }, 500);
+    }
+
+    if (!calendarioVisible) {
+        log('toggleCalendario ignorado: calendarioVisible = false');
+        return;
+    }
+
     const wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
     const container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+
+    if (!wrapper || !container) {
+        logErr('toggleCalendario: wrapper o container no encontrado para', tipo);
+        return;
+    }
 
     if (wrapper.classList.contains('cerrado')) {
         wrapper.classList.remove('cerrado');
@@ -3030,50 +3138,6 @@ function ocultarCalendario() {
             container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
         }
     });
-}
-
-function ingresar() {
-    if (rolActual === 'usuario' && conductorLogueado) {
-        if (!placaLogueada || !conductorLogueado) {
-            mostrarToast("Error: sesión no iniciada", 'error');
-            return;
-        }
-        placaSelect.value = placaLogueada;
-    } else {
-        if (placaSelect.value === "" || conductorSelect.value === "") {
-            mostrarToast("Seleccione una placa y un conductor", 'warning');
-            return;
-        }
-    }
-
-    calendarioVisible = true;
-    $("contenedorCalendario").style.display = "block";
-    $("contenedorCalendario").classList.add("visible");
-    $("contenedorResumen").style.display = "block";
-    $("contenedorResumen").classList.add("visible");
-    $("mensajeInstruccion").textContent = "👆 Haga clic en la imagen del turno para ver su calendario.";
-
-    diurno.clear();
-    noche.clear();
-    cargarDisponibilidadGuardada();
-    crearCalendarios();
-    actualizarResumen();
-    actualizarBotonBorrar();
-    actualizarIdentificacion();
-
-    ['diurno', 'noche'].forEach(tipo => {
-        const wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
-        if (wrapper) {
-            wrapper.classList.remove('abierto');
-            wrapper.classList.add('cerrado');
-        }
-        const container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-        if (container) {
-            container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
-        }
-    });
-
-    $("contenedorCalendario").scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function cargarDisponibilidadGuardada() {
@@ -3137,7 +3201,13 @@ function crearCalendario(elemento, seleccionados, tipo) {
             ${ocupadoPor ? '<div class="ocupado-texto">🚫 Ocupado</div>' : ''}
         `;
 
-        celda.addEventListener("click", function() {
+        // Manejo de click compatible con móvil
+        let _clickProcesado = false;
+        const manejarClick = function(evt) {
+            if (_clickProcesado) return;
+            _clickProcesado = true;
+            setTimeout(() => { _clickProcesado = false; }, 300);
+
             if (ocupadoPor) {
                 mostrarToast("Día ocupado por: " + ocupadoPor, 'warning');
                 return;
@@ -3146,7 +3216,9 @@ function crearCalendario(elemento, seleccionados, tipo) {
             else seleccionados.add(dia);
             crearCalendarios();
             actualizarResumen();
-        });
+        };
+
+        celda.addEventListener("click", manejarClick);
 
         elemento.appendChild(celda);
     }
@@ -3206,41 +3278,69 @@ function cargarFiltroPlacasVisualizacion() {
 
 
 /* ============================================================
-   EVENTOS
+   EVENTOS — COMPATIBLES CON MÓVIL
+   ============================================================
+   En móvil, el evento "change" en <select> puede no dispararse
+   al instante. Añadimos "input" y "blur" como fallbacks.
    ============================================================ */
 
-placaSelect.addEventListener("change", function() {
-    if (rolActual === 'admin') {
-        cargarConductoresPorPlaca(this.value);
-        conductorSelect.value = "";
-        btnIngresar.disabled = (this.value === "" || conductorSelect.value === "");
-        actualizarIdentificacion();
-        ocultarCalendario();
-        actualizarBotonBorrar();
-    }
-});
+function onPlacaChange() {
+    try {
+        const valor = placaSelect.value;
+        log('placa cambió a:', valor);
 
-conductorSelect.addEventListener("change", function() {
-    if (rolActual === 'admin') {
-        btnIngresar.disabled = (placaSelect.value === "" || this.value === "");
-        actualizarIdentificacion();
-        ocultarCalendario();
-        actualizarBotonBorrar();
-    } else {
-        actualizarBotonBorrar();
-    }
-});
-
-mesSelect.addEventListener("change", function() {
-    ocultarCalendario();
-    actualizarIdentificacion();
-    actualizarBotonBorrar();
-    if (rolActual === 'usuario' && conductorLogueado) {
-        const registro = obtenerRegistroLocal(placaSelect.value, conductorLogueado, this.value);
-        if (registro) {
-            ingresar();
+        if (rolActual === 'admin') {
+            cargarConductoresPorPlaca(valor);
+            conductorSelect.value = "";
+            btnIngresar.disabled = (valor === "" || conductorSelect.value === "");
+            actualizarIdentificacion();
+            ocultarCalendario();
+            actualizarBotonBorrar();
+        } else {
+            actualizarBotonBorrar();
         }
+    } catch (err) {
+        logErr('Error en onPlacaChange:', err);
     }
+}
+
+function onConductorChange() {
+    try {
+        const valor = conductorSelect.value;
+        log('conductor cambió a:', valor);
+
+        if (rolActual === 'admin') {
+            btnIngresar.disabled = (placaSelect.value === "" || valor === "");
+            actualizarIdentificacion();
+            ocultarCalendario();
+        }
+        actualizarBotonBorrar();
+    } catch (err) {
+        logErr('Error en onConductorChange:', err);
+    }
+}
+
+function onMesChange() {
+    try {
+        log('mes cambió a:', mesSelect.value);
+        ocultarCalendario();
+        actualizarIdentificacion();
+        actualizarBotonBorrar();
+        if (rolActual === 'usuario' && conductorLogueado) {
+            const registro = obtenerRegistroLocal(placaSelect.value, conductorLogueado, mesSelect.value);
+            if (registro) {
+                ingresar();
+            }
+        }
+    } catch (err) {
+        logErr('Error en onMesChange:', err);
+    }
+}
+
+['change', 'input', 'blur'].forEach(function(evt) {
+    placaSelect.addEventListener(evt, onPlacaChange);
+    conductorSelect.addEventListener(evt, onConductorChange);
+    mesSelect.addEventListener(evt, onMesChange);
 });
 
 $('panelDetalleDia').addEventListener('click', function(e) {
@@ -3259,6 +3359,11 @@ document.addEventListener('keydown', function(e) {
    ============================================================ */
 
 function iniciar() {
+    log('Iniciando app...');
+    log('  IS_MOBILE:', IS_MOBILE);
+    log('  IS_IOS:', IS_IOS);
+    log('  DEBUG:', DEBUG);
+
     mostrarFechaActual();
     cargarPlacas();
     cargarConductoresPorPlaca("");
@@ -3294,6 +3399,8 @@ window.cerrarModalAdmin = cerrarModalAdmin;
 window.verificarClaveAdmin = verificarClaveAdmin;
 window.cerrarSesion = cerrarSesion;
 window.guardarYVer = guardarYVer;
+window.guardarYPrevenir = guardarYPrevenir;
+window.ingresarYPrevenir = ingresarYPrevenir;
 window.abrirDetalleConductor = abrirDetalleConductor;
 window.cambiarVista = cambiarVista;
 window.cargarVisualizacion = cargarVisualizacion;

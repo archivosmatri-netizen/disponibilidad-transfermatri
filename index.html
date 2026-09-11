@@ -7,7 +7,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<!-- ✅ FIX: Anti-caché para móvil -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -154,6 +153,7 @@
     }
     .dia:hover { border-color: #17365d; background-color: #f5f8fc; }
     .dia.seleccionado { background-color: #d9ead3; border: 2px solid #548235; }
+    .dia.seleccionado-noche { background-color: #d4e6f1; border: 2px solid #2980b9; }
     .dia.ocupado {
         background-color: #fce4e4; border: 2px solid #c0392b;
         cursor: not-allowed; opacity: 0.7;
@@ -162,6 +162,10 @@
     .numero { font-weight: bold; font-size: 16px; }
     .disponible {
         margin-top: 8px; color: #38761d;
+        font-size: 12px; font-weight: bold;
+    }
+    .disponible-noche {
+        margin-top: 8px; color: #1a5276;
         font-size: 12px; font-weight: bold;
     }
     .ocupado-texto {
@@ -236,23 +240,148 @@
         border-color: #1a5276; background: #eaf2f8;
     }
 
-    .modal-conductor {
-        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.5); z-index: 1000;
-        justify-content: center; align-items: center;
+    /* ============================================ */
+    /* MODALES                                        */
+    /* ============================================ */
+
+    .modal-conductor,
+    .modal-admin,
+    .modal-confirm,
+    .modal-tipo-dias {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
     }
-    .modal-conductor.active { display: flex; }
-    .modal-conductor .modal-content {
-        background: white; padding: 40px; border-radius: 16px;
-        max-width: 420px; width: 100%; text-align: center;
+
+    .modal-conductor.active,
+    .modal-admin.active,
+    .modal-confirm.active,
+    .modal-tipo-dias.active {
+        display: flex;
+    }
+
+    .modal-conductor .modal-content,
+    .modal-admin .modal-content,
+    .modal-confirm-content,
+    .modal-tipo-dias-content {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        max-width: 440px;
+        width: 100%;
+        text-align: center;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
         animation: modalFadeIn 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
     }
+
     @keyframes modalFadeIn {
         from { transform: scale(0.9); opacity: 0; }
         to { transform: scale(1); opacity: 1; }
     }
-    .modal-conductor .modal-content h3 { color: #17365d; margin-bottom: 8px; }
+
+    .modal-conductor .modal-content h3,
+    .modal-admin .modal-content h3,
+    .modal-confirm-content h3,
+    .modal-tipo-dias-content h3 {
+        color: #17365d;
+        margin: 0 0 10px 0;
+        font-size: 18px;
+    }
+
+    /* Modal tipo de días (Descanso/Mantenimiento) */
+    .modal-tipo-dias-content .dias-lista {
+        background: #fff3cd;
+        color: #856404;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin: 15px 0;
+        word-break: break-word;
+        line-height: 1.5;
+        max-height: 130px;
+        overflow-y: auto;
+        font-size: 14px;
+        text-align: left;
+    }
+
+    .modal-tipo-dias-content .sub-texto-tipo {
+        color: #666;
+        font-size: 14px;
+        margin: 12px 0 15px 0;
+        line-height: 1.4;
+    }
+
+    .btn-tipo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e8e8e8;
+        border-radius: 10px;
+        background: white;
+        cursor: pointer;
+        text-align: left;
+        font-size: 15px;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+    .btn-tipo:hover {
+        border-color: #17365d;
+        background: #f5f8fc;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    .btn-tipo .btn-tipo-icono {
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+    .btn-tipo .btn-tipo-titulo {
+        font-weight: bold;
+        font-size: 16px;
+        color: #17365d;
+        display: block;
+    }
+    .btn-tipo .btn-tipo-desc {
+        font-size: 12px;
+        color: #888;
+        margin-top: 2px;
+        font-weight: normal;
+        display: block;
+    }
+    .btn-tipo.descanso:hover {
+        border-color: #f39c12;
+        background: #fef5e7;
+    }
+    .btn-tipo.mantenimiento:hover {
+        border-color: #e74c3c;
+        background: #fdedec;
+    }
+
+    .btn-cancelar-tipo {
+        margin-top: 10px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        background: #ecf0f1;
+        color: #555;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        width: 100%;
+        font-family: inherit;
+        min-height: 44px;
+    }
+    .btn-cancelar-tipo:hover { background: #d5dbdb; }
+
     .modal-conductor .modal-content .sub-texto {
         color: #666; font-size: 14px; margin-bottom: 20px;
     }
@@ -272,8 +401,8 @@
         padding: 12px 40px; border: none; border-radius: 8px;
         background: #27ae60; color: white; font-weight: bold;
         cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;
+        font-family: inherit;
     }
-    .modal-conductor .modal-content .btn-ingresar-conductor:hover { background: #1e8449; }
     .modal-conductor .modal-content .btn-ingresar-conductor:disabled {
         background: #ccc; cursor: not-allowed;
     }
@@ -281,22 +410,9 @@
         padding: 10px 20px; border: none; border-radius: 8px;
         background: #e74c3c; color: white; cursor: pointer;
         font-size: 14px; margin-top: 10px; width: 100%;
+        font-family: inherit;
     }
-    .modal-conductor .modal-content .btn-cancelar-conductor:hover { background: #c0392b; }
 
-    .modal-admin {
-        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.5); z-index: 1000;
-        justify-content: center; align-items: center;
-    }
-    .modal-admin.active { display: flex; }
-    .modal-admin .modal-content {
-        background: white; padding: 40px; border-radius: 16px;
-        max-width: 400px; width: 100%; text-align: center;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        animation: modalFadeIn 0.3s ease;
-    }
-    .modal-admin .modal-content h3 { color: #17365d; margin-bottom: 10px; }
     .modal-admin .modal-content p { color: #666; font-size: 14px; margin-bottom: 20px; }
     .modal-admin .modal-content .input-clave {
         width: 100%; padding: 12px; border: 2px solid #ddd;
@@ -310,18 +426,30 @@
         padding: 12px 40px; border: none; border-radius: 8px;
         background: #17365d; color: white; font-weight: bold;
         cursor: pointer; font-size: 16px; width: 100%;
+        font-family: inherit;
     }
-    .modal-admin .modal-content .btn-ingresar-admin:hover { background: #0f2745; }
     .modal-admin .modal-content .btn-cancelar-admin {
         padding: 10px 20px; border: none; border-radius: 8px;
         background: #e74c3c; color: white; cursor: pointer;
         font-size: 14px; margin-top: 10px; width: 100%;
+        font-family: inherit;
     }
-    .modal-admin .modal-content .btn-cancelar-admin:hover { background: #c0392b; }
     .modal-admin .modal-content .error-clave {
         color: #e74c3c; font-size: 13px; margin-bottom: 10px; display: none;
     }
     .modal-admin .modal-content .error-clave.visible { display: block; }
+
+    .modal-confirm-content p {
+        color: #555; font-size: 15px; margin: 0 0 20px 0; line-height: 1.4;
+    }
+    .modal-confirm-content .confirm-botones { display: flex; gap: 10px; }
+    .modal-confirm-content .confirm-botones button {
+        flex: 1; padding: 12px; border: none; border-radius: 8px;
+        font-weight: bold; cursor: pointer; font-size: 15px; min-height: 44px;
+        font-family: inherit;
+    }
+    .modal-confirm-content .btn-cancelar-confirm { background: #ecf0f1; color: #555; }
+    .modal-confirm-content .btn-aceptar-confirm { background: #e74c3c; color: white; }
 
     .contenido-principal { display: none; }
     .contenido-principal.visible { display: block; }
@@ -341,12 +469,8 @@
     .barra-rol .rol-info .rol-actual {
         font-weight: bold; padding: 4px 16px; border-radius: 20px; font-size: 14px;
     }
-    .barra-rol .rol-info .rol-actual.usuario {
-        background: #d5f5e3; color: #1a7a3a;
-    }
-    .barra-rol .rol-info .rol-actual.admin {
-        background: #d4e6f1; color: #1a5276;
-    }
+    .barra-rol .rol-info .rol-actual.usuario { background: #d5f5e3; color: #1a7a3a; }
+    .barra-rol .rol-info .rol-actual.admin { background: #d4e6f1; color: #1a5276; }
     .barra-rol .rol-info .conductor-nombre {
         font-weight: bold; color: #17365d; font-size: 14px;
         background: #e8f0fa; padding: 3px 12px; border-radius: 15px;
@@ -355,19 +479,14 @@
         padding: 8px 20px; border: none; border-radius: 7px;
         background: #e74c3c; color: white; cursor: pointer;
         font-weight: bold; font-size: 13px;
+        font-family: inherit;
     }
-    .barra-rol .btn-salir:hover { background: #c0392b; }
 
     .filtros-visualizacion {
         display: grid; grid-template-columns: 1fr 1fr 1fr auto;
         gap: 15px; align-items: end; margin-bottom: 20px;
     }
-    .filtros-visualizacion .grupo-filtro {
-        display: flex; flex-direction: column;
-    }
-    .filtros-visualizacion label {
-        font-weight: bold; display: block; margin-bottom: 7px;
-    }
+    .filtros-visualizacion .grupo-filtro { display: flex; flex-direction: column; }
     .filtros-visualizacion select,
     .filtros-visualizacion input {
         width: 100%; padding: 12px; border-radius: 7px;
@@ -378,8 +497,8 @@
         background-color: #17365d; color: white; font-weight: bold;
         cursor: pointer; font-size: 15px; white-space: nowrap;
         height: 48px; display: flex; align-items: center; justify-content: center;
+        font-family: inherit;
     }
-    .filtros-visualizacion .btn-actualizar:hover { background-color: #0f2745; }
 
     .tabs-visualizacion {
         display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
@@ -389,71 +508,109 @@
         background-color: #e8f0fa; color: #17365d; font-weight: bold;
         cursor: pointer; font-size: 14px; transition: all 0.3s ease;
         display: flex; align-items: center; gap: 8px;
+        font-family: inherit;
     }
-    .tab-vista-btn:hover { background-color: #d0dcee; }
     .tab-vista-btn.activo { background-color: #17365d; color: white; }
     .tab-vista-btn .badge {
         background: rgba(255, 255, 255, 0.3);
         padding: 1px 8px; border-radius: 12px; font-size: 11px;
     }
-    .tab-vista-btn.activo .badge { background: rgba(255, 255, 255, 0.2); }
+
+    /* ============================================ */
+    /* TABLA CON BLOQUES DE DÍAS                     */
+    /* ============================================ */
 
     .tabla-disponibilidad {
-        width: 100%; border-collapse: collapse; font-size: 14px;
+        width: 100%; border-collapse: collapse; font-size: 13px;
     }
     .tabla-disponibilidad th {
-        background-color: #17365d; color: white; padding: 10px;
+        background-color: #17365d; color: white; padding: 10px 8px;
         text-align: left; position: sticky; top: 0; z-index: 10;
+        white-space: nowrap;
     }
-    .tabla-disponibilidad td { padding: 10px; border-bottom: 1px solid #ddd; }
+    .tabla-disponibilidad td {
+        padding: 10px 8px; border-bottom: 1px solid #ddd;
+        vertical-align: top;
+    }
     .tabla-disponibilidad tr:hover { background-color: #f5f7fa; }
-    .tabla-disponibilidad .disponible-tag {
-        display: inline-block; background-color: #d9ead3;
-        color: #38761d; padding: 2px 8px; border-radius: 4px;
-        font-size: 12px; margin: 1px;
+
+    .bloque-dias {
+        display: inline-block;
+        background-color: #d9ead3;
+        color: #38761d;
+        padding: 3px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: bold;
+        margin: 2px 3px 2px 0;
+        white-space: nowrap;
+        line-height: 1.3;
     }
-    .tabla-disponibilidad .sin-disponibilidad {
-        color: #999; font-style: italic;
+    .bloque-dias.noche {
+        background-color: #d4e6f1;
+        color: #1a5276;
+    }
+    .bloque-dias.descanso {
+        background-color: #fce4d6;
+        color: #b85c00;
+    }
+    .bloque-dias.mantenimiento {
+        background-color: #fadbd8;
+        color: #922b21;
+    }
+    .bloque-vacio {
+        color: #999;
+        font-style: italic;
+        font-size: 11px;
+    }
+
+    .contador-tipo {
+        display: inline-block;
+        background: #f0f0f0;
+        color: #333;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        margin-right: 5px;
     }
 
     .acciones-celda {
         display: flex;
-        gap: 6px;
+        gap: 5px;
         flex-wrap: wrap;
     }
 
     .btn-eliminar {
         background-color: #e74c3c; color: white; border: none;
-        padding: 6px 12px; border-radius: 5px;
-        cursor: pointer; font-size: 12px;
+        padding: 5px 10px; border-radius: 5px;
+        cursor: pointer; font-size: 11px;
         font-weight: bold;
-        transition: background-color 0.2s ease;
         white-space: nowrap;
+        font-family: inherit;
     }
-    .btn-eliminar:hover { background-color: #c0392b; }
-
     .btn-editar {
         background-color: #f39c12; color: white; border: none;
-        padding: 6px 12px; border-radius: 5px;
-        cursor: pointer; font-size: 12px;
+        padding: 5px 10px; border-radius: 5px;
+        cursor: pointer; font-size: 11px;
         font-weight: bold;
-        transition: background-color 0.2s ease;
         white-space: nowrap;
+        font-family: inherit;
     }
-    .btn-editar:hover { background-color: #d68910; }
-
     .btn-ver-detalle {
         background-color: #2980b9; color: white; border: none;
-        padding: 6px 12px; border-radius: 5px; cursor: pointer;
-        font-size: 12px; font-weight: bold;
-        transition: background-color 0.2s ease;
+        padding: 5px 10px; border-radius: 5px; cursor: pointer;
+        font-size: 11px; font-weight: bold;
         white-space: nowrap;
+        font-family: inherit;
     }
-    .btn-ver-detalle:hover { background-color: #1a5276; }
 
     .contenedor-tabla {
-        max-height: 500px; overflow-y: auto;
-        border: 1px solid #ddd; border-radius: 8px;
+        max-height: 600px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        -webkit-overflow-scrolling: touch;
     }
 
     .vista-calendario { display: none; }
@@ -462,53 +619,23 @@
     .calendario-mensual {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
+        gap: 5px;
         margin-top: 15px;
     }
-
     .calendario-mensual .header-dia {
-        text-align: center;
-        font-weight: bold;
-        padding: 10px 4px;
-        background: #17365d;
-        color: white;
-        border-radius: 6px;
-        font-size: 12px;
+        text-align: center; font-weight: bold; padding: 10px 4px;
+        background: #17365d; color: white; border-radius: 6px; font-size: 12px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
-
     .calendario-mensual .celda-dia {
-        min-height: 78px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        background: white;
-        font-size: 12px;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        min-height: 80px; border: 1px solid #e0e0e0; border-radius: 8px;
+        background: white; font-size: 12px; position: relative;
+        overflow: hidden; display: flex; flex-direction: column;
     }
-
-    .calendario-mensual .celda-dia.vacia {
-        background: #fafafa;
-        border-color: #f0f0f0;
-    }
-
-    .calendario-mensual .celda-dia.con-conductores {
-        cursor: pointer;
-    }
-
-    .calendario-mensual .celda-dia.con-conductores:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-        transform: translateY(-2px);
-    }
-
+    .calendario-mensual .celda-dia.vacia { background: #fafafa; border-color: #f0f0f0; }
+    .calendario-mensual .celda-dia.con-conductores { cursor: pointer; }
     .calendario-mensual .celda-dia .barra-turno {
-        height: 5px;
-        background: #e8e8e8;
-        border-radius: 8px 8px 0 0;
+        height: 5px; background: #e8e8e8; border-radius: 8px 8px 0 0;
     }
     .calendario-mensual .celda-dia .barra-turno.diurno {
         background: linear-gradient(90deg, #27ae60, #52c07a);
@@ -519,214 +646,91 @@
     .calendario-mensual .celda-dia .barra-turno.ambos {
         background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
     }
-
     .calendario-mensual .celda-dia .contenido-dia {
-        padding: 5px 7px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
-        flex: 1;
-        gap: 3px;
+        padding: 5px 7px; display: flex; flex-direction: column;
+        align-items: flex-start; justify-content: space-between;
+        flex: 1; gap: 3px;
     }
-
     .calendario-mensual .celda-dia .numero {
-        font-weight: bold;
-        font-size: 15px;
-        color: #17365d;
-        line-height: 1;
+        font-weight: bold; font-size: 15px; color: #17365d; line-height: 1;
     }
-
     .calendario-mensual .celda-dia .contadores {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        width: 100%;
-        margin-top: auto;
+        display: flex; flex-direction: column; gap: 2px;
+        width: 100%; margin-top: auto;
     }
-
     .calendario-mensual .celda-dia .contador {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 10px;
-        font-weight: bold;
-        padding: 2px 6px;
-        border-radius: 10px;
-        white-space: nowrap;
-        line-height: 1.2;
-        width: fit-content;
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 10px; font-weight: bold; padding: 2px 6px;
+        border-radius: 10px; white-space: nowrap; width: fit-content;
     }
-    .calendario-mensual .celda-dia .contador.diurno {
-        background: #d9ead3;
-        color: #1a7a3a;
-    }
-    .calendario-mensual .celda-dia .contador.noche {
-        background: #d4e6f1;
-        color: #1a5276;
-    }
+    .calendario-mensual .celda-dia .contador.diurno { background: #d9ead3; color: #1a7a3a; }
+    .calendario-mensual .celda-dia .contador.noche { background: #d4e6f1; color: #1a5276; }
+    .calendario-mensual .celda-dia .contador.descanso { background: #fce4d6; color: #b85c00; }
+    .calendario-mensual .celda-dia .contador.mantenimiento { background: #fadbd8; color: #922b21; }
 
     .panel-detalle-dia {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 5000;
-        justify-content: center;
-        align-items: center;
-        padding: 15px;
+        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5); z-index: 5000;
+        justify-content: center; align-items: center; padding: 15px;
     }
     .panel-detalle-dia.active { display: flex; }
-
     .panel-detalle-content {
-        background: white;
-        border-radius: 14px;
-        max-width: 500px;
-        width: 100%;
-        max-height: 85vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-        animation: modalFadeIn 0.25s ease;
-        overflow: hidden;
+        background: white; border-radius: 14px; max-width: 500px;
+        width: 100%; max-height: 85vh; display: flex;
+        flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        animation: modalFadeIn 0.25s ease; overflow: hidden;
     }
-
     .panel-detalle-header {
         background: linear-gradient(135deg, #17365d 0%, #1a4a7a 100%);
-        color: white;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-shrink: 0;
+        color: white; padding: 15px 20px; display: flex;
+        justify-content: space-between; align-items: center; flex-shrink: 0;
     }
-    .panel-detalle-header h3 {
-        margin: 0;
-        font-size: 16px;
-        line-height: 1.3;
-    }
-    .panel-detalle-header .subtitulo-panel {
-        font-size: 12px;
-        opacity: 0.85;
-        margin-top: 3px;
-        font-weight: normal;
-    }
+    .panel-detalle-header h3 { margin: 0; font-size: 16px; }
     .panel-detalle-header .btn-cerrar-panel {
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        flex-shrink: 0;
-        margin-left: 10px;
+        background: rgba(255,255,255,0.2); border: none; color: white;
+        width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+        font-size: 18px; display: flex; align-items: center;
+        justify-content: center; flex-shrink: 0;
+        font-family: inherit;
     }
-    .panel-detalle-header .btn-cerrar-panel:hover {
-        background: rgba(255,255,255,0.3);
-    }
-
-    .panel-busqueda {
-        padding: 10px 15px;
-        background: #f7f9fb;
-        border-bottom: 1px solid #e0e0e0;
-        flex-shrink: 0;
-    }
-    .panel-busqueda input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 15px;
-        background: white;
-    }
-    .panel-busqueda input:focus {
-        outline: none;
-        border-color: #17365d;
-    }
-
     .panel-detalle-body {
-        padding: 15px;
-        overflow-y: auto;
-        flex: 1;
+        padding: 15px; overflow-y: auto; flex: 1;
         -webkit-overflow-scrolling: touch;
     }
-
-    .panel-detalle-body .grupo-turno {
-        margin-bottom: 18px;
-    }
-    .panel-detalle-body .grupo-turno:last-child {
-        margin-bottom: 0;
-    }
-
+    .panel-detalle-body .grupo-turno { margin-bottom: 15px; }
     .panel-detalle-body .grupo-turno .titulo-grupo {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 0 0 8px 0;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        display: flex; justify-content: space-between; align-items: center;
+        margin: 0 0 8px 0; padding: 8px 12px; border-radius: 8px;
+        font-size: 13px; font-weight: bold; text-transform: uppercase;
     }
-    .panel-detalle-body .grupo-turno.diurno .titulo-grupo {
-        background: #d9ead3;
-        color: #1a7a3a;
-    }
-    .panel-detalle-body .grupo-turno.noche .titulo-grupo {
-        background: #d4e6f1;
-        color: #1a5276;
-    }
+    .panel-detalle-body .grupo-turno.diurno .titulo-grupo { background: #d9ead3; color: #1a7a3a; }
+    .panel-detalle-body .grupo-turno.noche .titulo-grupo { background: #d4e6f1; color: #1a5276; }
+    .panel-detalle-body .grupo-turno.descanso .titulo-grupo { background: #fce4d6; color: #b85c00; }
+    .panel-detalle-body .grupo-turno.mantenimiento .titulo-grupo { background: #fadbd8; color: #922b21; }
     .panel-detalle-body .grupo-turno .titulo-grupo .count {
-        background: rgba(255,255,255,0.6);
-        padding: 2px 10px;
-        border-radius: 12px;
-        font-size: 12px;
+        background: rgba(255,255,255,0.6); padding: 2px 10px;
+        border-radius: 12px; font-size: 12px;
     }
-
-    .panel-detalle-body ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+    .panel-detalle-body ul { list-style: none; padding: 0; margin: 0; }
     .panel-detalle-body ul li {
-        padding: 8px 12px;
-        border-radius: 6px;
-        margin-bottom: 4px;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        line-height: 1.3;
+        padding: 8px 12px; border-radius: 6px; margin-bottom: 4px;
+        font-size: 13px; display: flex; align-items: center; gap: 8px;
     }
     .panel-detalle-body .grupo-turno.diurno ul li {
-        background: #f1f8ed;
-        color: #1a5a2a;
-        border-left: 3px solid #27ae60;
+        background: #f1f8ed; color: #1a5a2a; border-left: 3px solid #27ae60;
     }
     .panel-detalle-body .grupo-turno.noche ul li {
-        background: #eef5fb;
-        color: #1a4a6e;
-        border-left: 3px solid #2980b9;
+        background: #eef5fb; color: #1a4a6e; border-left: 3px solid #2980b9;
     }
-
-    .panel-detalle-body .sin-datos {
-        text-align: center;
-        padding: 30px 15px;
-        color: #999;
-        font-style: italic;
-        font-size: 14px;
+    .panel-detalle-body .grupo-turno.descanso ul li {
+        background: #fef5e7; color: #7e5109; border-left: 3px solid #f39c12;
+    }
+    .panel-detalle-body .grupo-turno.mantenimiento ul li {
+        background: #fdedec; color: #7b241c; border-left: 3px solid #e74c3c;
     }
 
     .leyenda-calendario {
-        display: flex; gap: 20px; margin: 15px 0;
+        display: flex; gap: 15px; margin: 15px 0;
         flex-wrap: wrap; font-size: 12px; justify-content: center;
     }
     .leyenda-calendario .item { display: flex; align-items: center; gap: 6px; }
@@ -735,6 +739,8 @@
     }
     .leyenda-calendario .color.diurno { background: #27ae60; }
     .leyenda-calendario .color.noche { background: #2980b9; }
+    .leyenda-calendario .color.descanso { background: #f39c12; }
+    .leyenda-calendario .color.mantenimiento { background: #e74c3c; }
     .leyenda-calendario .color.ambos {
         background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%);
     }
@@ -744,12 +750,10 @@
         color: white; font-weight: bold; cursor: pointer;
         font-size: 14px; transition: all 0.3s ease;
         display: inline-flex; align-items: center; gap: 8px;
+        font-family: inherit;
     }
     .btn-reporte.excel { background: #27ae60; }
-    .btn-reporte.excel:hover { background: #1e8449; }
     .btn-reporte.pdf { background: #c0392b; }
-    .btn-reporte.pdf:hover { background: #a93226; }
-    .btn-reporte:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .btn-google-sheets {
         background: #4285F4; color: white; border: none;
@@ -757,13 +761,7 @@
         font-weight: bold; font-size: 14px;
         display: inline-flex; align-items: center; gap: 8px;
         transition: all 0.3s ease;
-    }
-    .btn-google-sheets:hover {
-        background: #3367D6; transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
-    }
-    .btn-google-sheets:disabled {
-        opacity: 0.6; cursor: not-allowed; transform: none;
+        font-family: inherit;
     }
 
     .tabs {
@@ -773,9 +771,9 @@
     .tab-btn {
         padding: 10px 20px; border: none; border-radius: 7px 7px 0 0;
         background-color: #e8f0fa; color: #17365d; font-weight: bold;
-        cursor: pointer; font-size: 14px; transition: background-color 0.2s ease;
+        cursor: pointer; font-size: 14px;
+        font-family: inherit;
     }
-    .tab-btn:hover { background-color: #d0dcee; }
     .tab-btn.activo { background-color: #17365d; color: white; }
 
     .tab-contenido { display: none; padding: 10px 0; }
@@ -800,33 +798,20 @@
     .toast.warning { background: #f39c12; }
     .toast.info    { background: #2980b9; }
 
-    .modal-confirm {
-        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.5); z-index: 10000;
-        justify-content: center; align-items: center; padding: 20px;
+    #errorPanel {
+        display: none;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: #c0392b;
+        color: white;
+        padding: 12px;
+        font-size: 12px;
+        font-family: monospace;
+        z-index: 999999;
+        max-height: 40vh;
+        overflow-y: auto;
     }
-    .modal-confirm.active { display: flex; }
-    .modal-confirm-content {
-        background: white; padding: 25px; border-radius: 14px;
-        max-width: 380px; width: 100%; text-align: center;
-        box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-        animation: modalFadeIn 0.25s ease;
-    }
-    .modal-confirm-content h3 {
-        color: #17365d; margin: 0 0 12px 0; font-size: 18px;
-    }
-    .modal-confirm-content p {
-        color: #555; font-size: 15px; margin: 0 0 20px 0; line-height: 1.4;
-    }
-    .modal-confirm-content .confirm-botones { display: flex; gap: 10px; }
-    .modal-confirm-content .confirm-botones button {
-        flex: 1; padding: 12px; border: none; border-radius: 8px;
-        font-weight: bold; cursor: pointer; font-size: 15px; min-height: 44px;
-    }
-    .modal-confirm-content .btn-cancelar-confirm { background: #ecf0f1; color: #555; }
-    .modal-confirm-content .btn-cancelar-confirm:hover { background: #d5dbdb; }
-    .modal-confirm-content .btn-aceptar-confirm { background: #e74c3c; color: white; }
-    .modal-confirm-content .btn-aceptar-confirm:hover { background: #c0392b; }
+    #errorPanel.visible { display: block; }
 
     @media(max-width: 700px) {
         header { flex-direction: column; text-align: center; padding: 12px 15px; gap: 10px; }
@@ -840,7 +825,6 @@
             border-left: none; border-top: 2px solid rgba(255,255,255,0.3);
             padding: 10px 0 0 0; text-align: center; width: 100%;
         }
-        .header-derecha .fecha-actual { font-size: 13px; }
 
         .contenedor { padding: 0 12px; margin: 15px auto; }
         .tarjeta { padding: 15px; border-radius: 10px; }
@@ -848,9 +832,7 @@
 
         .controles { grid-template-columns: 1fr; gap: 12px; }
         .filtros-visualizacion { grid-template-columns: 1fr; gap: 10px; }
-        .filtros-visualizacion .btn-actualizar {
-            height: auto; padding: 14px; min-height: 48px;
-        }
+        .filtros-visualizacion .btn-actualizar { height: auto; padding: 14px; }
         .resumen { grid-template-columns: 1fr; }
 
         .btn-ingresar, .btn-guardar, .btn-ver-detalle, .btn-eliminar,
@@ -861,34 +843,23 @@
         .btn-ingresar { width: 100%; padding: 14px; }
         .btn-borrar-registro { margin-left: 0; width: 100%; }
 
-        .tabs {
+        .tabs, .tabs-visualizacion {
             flex-wrap: nowrap; overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none; padding-bottom: 8px;
         }
-        .tabs::-webkit-scrollbar { display: none; }
-        .tab-btn {
-            flex-shrink: 0; padding: 10px 16px;
-            font-size: 12px; white-space: nowrap;
-        }
-        .tabs-visualizacion {
-            flex-direction: row; flex-wrap: nowrap; overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; padding-bottom: 8px;
-        }
-        .tabs-visualizacion::-webkit-scrollbar { display: none; }
-        .tab-vista-btn {
-            flex-shrink: 0; white-space: nowrap;
-            padding: 10px 14px; font-size: 12px;
+        .tabs::-webkit-scrollbar, .tabs-visualizacion::-webkit-scrollbar { display: none; }
+        .tab-btn, .tab-vista-btn {
+            flex-shrink: 0; white-space: nowrap; padding: 10px 14px; font-size: 12px;
         }
 
         .calendario { gap: 3px; }
         .nombre-dia { font-size: 11px; padding: 5px 2px; }
         .dia { min-height: 48px; padding: 3px; font-size: 12px; border-radius: 6px; }
         .dia .numero { font-size: 14px; }
-        .dia .disponible, .dia .ocupado-texto { font-size: 9px; margin-top: 3px; }
-        .dia .disponible { font-size: 0; }
-        .dia .disponible::before { content: '✓'; font-size: 12px; }
+        .dia .disponible, .dia .disponible-noche, .dia .ocupado-texto {
+            font-size: 9px; margin-top: 3px;
+        }
 
         .logo-operativo-container { border-radius: 10px; border-width: 2px; }
         .logo-operativo-container .click-indicator {
@@ -900,13 +871,12 @@
         .login-container .login-logo img { height: 60px; }
         .login-container h2 { font-size: 20px; }
         .login-container .opciones .btn-rol { padding: 14px 15px; font-size: 14px; }
-        .login-container .opciones .btn-rol .icono { font-size: 20px; }
-        .login-container .opciones .btn-rol .descripcion { font-size: 11px; }
 
-        .modal-conductor.active, .modal-admin.active {
+        .modal-conductor.active, .modal-admin.active, .modal-tipo-dias.active {
             align-items: flex-start; padding: 20px 12px; overflow-y: auto;
         }
-        .modal-conductor .modal-content, .modal-admin .modal-content {
+        .modal-conductor .modal-content, .modal-admin .modal-content,
+        .modal-tipo-dias-content {
             padding: 20px; margin: 0 auto; border-radius: 12px;
         }
 
@@ -914,17 +884,15 @@
             flex-direction: column; text-align: center;
             padding: 12px 15px; gap: 10px;
         }
-        .barra-rol .rol-info { justify-content: center; gap: 8px; }
         .barra-rol .btn-salir { width: 100%; padding: 12px; }
 
         .contenedor-tabla {
             overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 60vh;
         }
-        .tabla-disponibilidad { font-size: 12px; min-width: 750px; }
+        .tabla-disponibilidad { font-size: 12px; min-width: 800px; }
         .tabla-disponibilidad th, .tabla-disponibilidad td {
             padding: 8px 6px; white-space: nowrap;
         }
-        .tabla-disponibilidad .disponible-tag { font-size: 10px; padding: 1px 5px; }
 
         .acciones-celda { flex-direction: column; gap: 4px; }
 
@@ -941,62 +909,15 @@
             max-width: 100%; max-height: 90vh;
             border-radius: 14px 14px 0 0;
         }
-        .panel-detalle-header h3 { font-size: 15px; }
-        .panel-detalle-body ul li { font-size: 12px; padding: 7px 10px; }
 
-        .leyenda-calendario { gap: 10px; font-size: 11px; }
-        .leyenda-calendario .color { width: 16px; height: 16px; }
+        .leyenda-calendario { gap: 8px; font-size: 10px; }
+        .leyenda-calendario .color { width: 14px; height: 14px; }
 
         .btn-reporte, .btn-google-sheets {
             width: 100%; justify-content: center; padding: 14px;
         }
 
         .identificacion { font-size: 14px; padding: 10px; }
-    }
-
-    @media(max-width: 400px) {
-        .header-texto h1 { font-size: 15px; }
-        .header-logo img { height: 45px; }
-        .tarjeta { padding: 12px; }
-        .dia { min-height: 42px; }
-        .dia .numero { font-size: 13px; }
-        .nombre-dia { font-size: 10px; }
-        .tab-btn, .tab-vista-btn { font-size: 11px; padding: 8px 12px; }
-        .calendario-mensual .celda-dia { min-height: 55px; }
-        .calendario-mensual .celda-dia .numero { font-size: 12px; }
-    }
-
-    /* ✅ FIX: Panel de errores visible en móvil */
-    #errorPanel {
-        display: none;
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        background: #c0392b;
-        color: white;
-        padding: 12px;
-        font-size: 12px;
-        font-family: monospace;
-        z-index: 999999;
-        max-height: 40vh;
-        overflow-y: auto;
-        border-top: 3px solid #fff;
-    }
-    #errorPanel.visible { display: block; }
-    #errorPanel .cerrar-error {
-        position: absolute;
-        top: 5px; right: 10px;
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        width: 28px; height: 28px;
-        border-radius: 50%;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    #errorPanel pre {
-        margin: 5px 0;
-        white-space: pre-wrap;
-        word-break: break-all;
     }
 </style>
 
@@ -1005,9 +926,7 @@
 
 <body>
 
-<!-- ✅ FIX: Panel de errores visible -->
 <div id="errorPanel">
-    <button class="cerrar-error" onclick="document.getElementById('errorPanel').classList.remove('visible')">×</button>
     <strong>⚠️ Error detectado:</strong>
     <pre id="errorTexto"></pre>
 </div>
@@ -1026,7 +945,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v2.7</div>
+        <div class="version">Sistema de Disponibilidad v3.0</div>
     </div>
 </header>
 
@@ -1123,6 +1042,36 @@
 </div>
 
 
+<div class="modal-tipo-dias" id="modalTipoDias">
+    <div class="modal-tipo-dias-content">
+        <h3>⚠️ DÍAS SIN MARCAR</h3>
+        <p class="sub-texto-tipo">Tienes los siguientes días sin disponibilidad registrada:</p>
+        <div class="dias-lista" id="diasSinMarcarLista"></div>
+        <p class="sub-texto-tipo"><strong>Debes indicar qué representan esos días para poder guardar:</strong></p>
+
+        <button class="btn-tipo descanso" onclick="elegirTipoDias('descanso')">
+            <span class="btn-tipo-icono">🛌</span>
+            <div>
+                <span class="btn-tipo-titulo">DESCANSO</span>
+                <span class="btn-tipo-desc">Días libres normales</span>
+            </div>
+        </button>
+
+        <button class="btn-tipo mantenimiento" onclick="elegirTipoDias('mantenimiento')">
+            <span class="btn-tipo-icono">🔧</span>
+            <div>
+                <span class="btn-tipo-titulo">MANTENIMIENTO</span>
+                <span class="btn-tipo-desc">Unidad en taller</span>
+            </div>
+        </button>
+
+        <button class="btn-cancelar-tipo" onclick="cerrarModalTipoDias()">
+            ❌ CANCELAR (no guardar)
+        </button>
+    </div>
+</div>
+
+
 <div class="modal-confirm" id="modalConfirm">
     <div class="modal-confirm-content">
         <h3 id="confirmTitulo">Confirmar</h3>
@@ -1144,8 +1093,8 @@
             </div>
             <button class="btn-cerrar-panel" onclick="cerrarPanelDetalle()">✕</button>
         </div>
-        <div class="panel-busqueda">
-            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." oninput="filtrarPanelDetalle()">
+        <div class="panel-busqueda" style="padding:10px 15px;background:#f7f9fb;border-bottom:1px solid #e0e0e0;">
+            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." oninput="filtrarPanelDetalle()" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;">
         </div>
         <div class="panel-detalle-body" id="panelDetalleBody"></div>
     </div>
@@ -1326,6 +1275,7 @@
                             <p style="font-size:13px; color:#666; margin:5px 0;"><strong>📌 Incluye:</strong></p>
                             <p style="font-size:12px; color:#888; margin:3px 0;">• Placa y conductor</p>
                             <p style="font-size:12px; color:#888; margin:3px 0;">• Días disponibles (Diurno y Noche)</p>
+                            <p style="font-size:12px; color:#888; margin:3px 0;">• Días de descanso y mantenimiento</p>
                             <p style="font-size:12px; color:#888; margin:3px 0;">• Total de días por conductor</p>
                             <p style="font-size:12px; color:#888; margin:3px 0;">• Resumen general del mes</p>
                         </div>
@@ -1339,10 +1289,9 @@
 
 </div>
 
-
 <script>
 /* ============================================================
-   ✅ FIX: Captura global de errores ANTES de todo
+   CAPTURA GLOBAL DE ERRORES
    ============================================================ */
 window.addEventListener('error', function(e) {
     var panel = document.getElementById('errorPanel');
@@ -1357,8 +1306,9 @@ window.addEventListener('error', function(e) {
 
 
 /* ============================================================
-   ✅ FIX: Esperar a que el DOM esté listo
+   PARTE 2 - NÚCLEO DE LA APLICACIÓN
    ============================================================ */
+
 (function() {
 'use strict';
 
@@ -1427,7 +1377,7 @@ var CONDUCTORES = [
 
 
 /* ============================================================
-   ESTADO
+   ESTADO GLOBAL
    ============================================================ */
 
 var rolActual = 'usuario';
@@ -1439,9 +1389,12 @@ var calendarioVisible = false;
 var vistaActual = 'tabla';
 var _guardandoEnProgreso = false;
 var _confirmCallback = null;
-var _detalleDiaActual = { dia: null, diurno: [], noche: [] };
 var _registrosCache = {};
 var _borradosRecientes = new Set();
+
+// Estado del modal de tipo de días
+var _diasPendientes = [];
+var _registroPendiente = null;
 
 var $ = function(id) { return document.getElementById(id); };
 
@@ -1503,6 +1456,27 @@ function enviarASheets(data) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     }).catch(function(err) { console.warn('POST warning:', err); });
+}
+
+// Convierte array de días [1,2,3,5,6,7,10] → "1-3, 5-7, 10"
+function agruparDias(dias) {
+    if (!dias || dias.length === 0) return '';
+    var ordenados = dias.slice().sort(function(a,b) { return a - b; });
+    var bloques = [];
+    var inicio = ordenados[0];
+    var anterior = ordenados[0];
+
+    for (var i = 1; i < ordenados.length; i++) {
+        if (ordenados[i] === anterior + 1) {
+            anterior = ordenados[i];
+        } else {
+            bloques.push(inicio === anterior ? String(inicio) : inicio + '-' + anterior);
+            inicio = ordenados[i];
+            anterior = ordenados[i];
+        }
+    }
+    bloques.push(inicio === anterior ? String(inicio) : inicio + '-' + anterior);
+    return bloques.join(', ');
 }
 
 function log() {
@@ -1761,7 +1735,10 @@ function actualizarIdentificacion() {
 
     if (registro) {
         var totalDias = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
-        id.textContent = '🚗 ' + placaSelect.value + ' — 👤 ' + conductor + ' — 📋 Ya registrado (' + totalDias + ' días)';
+        var extra = '';
+        if (registro.descanso && registro.descanso.length) extra += ' 🛌' + registro.descanso.length;
+        if (registro.mantenimiento && registro.mantenimiento.length) extra += ' 🔧' + registro.mantenimiento.length;
+        id.textContent = '🚗 ' + placaSelect.value + ' — 👤 ' + conductor + ' — 📋 Ya registrado (' + totalDias + ' días)' + extra;
         id.classList.add('con-registro');
     } else {
         id.textContent = '🚗 ' + placaSelect.value + ' — 👤 ' + conductor + ' — 🆕 Sin registro previo';
@@ -1793,16 +1770,9 @@ function cerrarSesion() {
     }, 'Cerrar Sesión');
 }
 
-function verificarUrlAdmin() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('admin') === 'true') {
-        setTimeout(abrirModalAdmin, 500);
-    }
-}
-
 
 /* ============================================================
-   INGRESAR
+   INGRESAR (cargar calendario)
    ============================================================ */
 
 function ingresar() {
@@ -1810,7 +1780,6 @@ function ingresar() {
 
     var placaSelect = $("placa");
     var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
 
     try {
         if (rolActual === 'usuario' && conductorLogueado) {
@@ -1865,9 +1834,145 @@ function ingresar() {
     }
 }
 
+function cargarDisponibilidadGuardada() {
+    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var conductor = lista[parseInt($("conductor").value)];
+    if (!conductor) return;
+    var clave = conductor.nombre + "_" + $("placa").value + "_" + $("mes").value;
+    if (registros[clave]) {
+        diurno = new Set(registros[clave].diurno || []);
+        noche = new Set(registros[clave].noche || []);
+    }
+}
+
 
 /* ============================================================
-   GUARDAR Y VER
+   CALENDARIO DE REGISTRO
+   ============================================================ */
+
+function toggleCalendario(tipo) {
+    if (!calendarioVisible) return;
+
+    var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
+    var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+
+    if (!wrapper || !container) return;
+
+    if (wrapper.classList.contains('cerrado')) {
+        wrapper.classList.remove('cerrado');
+        wrapper.classList.add('abierto');
+        container.querySelector('.click-indicator').innerHTML = '<span class="icono">▲</span> Click para ocultar';
+    } else {
+        wrapper.classList.remove('abierto');
+        wrapper.classList.add('cerrado');
+        container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
+    }
+}
+
+function crearCalendario(elemento, seleccionados, tipo) {
+    elemento.innerHTML = "";
+
+    DIAS_SEMANA.forEach(function(nombre) {
+        var d = document.createElement("div");
+        d.className = "nombre-dia";
+        d.textContent = nombre;
+        elemento.appendChild(d);
+    });
+
+    var mesNum = Number($("mes").value);
+    var cantDias = diasDelMes(AÑO, mesNum);
+    var posIni = posicionInicial(AÑO, mesNum);
+
+    for (var i = 0; i < posIni; i++) {
+        elemento.appendChild(document.createElement("div"));
+    }
+
+    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var conductor = lista[parseInt($("conductor").value)];
+    var nombreActual = conductor ? conductor.nombre : '';
+
+    for (var dia = 1; dia <= cantDias; dia++) {
+        (function(dia) {
+            var celda = document.createElement("div");
+            celda.className = "dia";
+
+            // Verificar si otro conductor ya marcó ese día en este turno
+            var ocupadoPor = null;
+            for (var k in registros) {
+                var r = registros[k];
+                if (r.placa === $("placa").value &&
+                    String(r.mes) === String($("mes").value) &&
+                    r.conductor !== nombreActual) {
+                    var dias = tipo === 'diurno' ? r.diurno : r.noche;
+                    if (dias && dias.indexOf(dia) >= 0) { ocupadoPor = r.conductor; break; }
+                }
+            }
+
+            if (ocupadoPor) {
+                celda.classList.add("ocupado");
+                celda.title = "Ocupado por: " + ocupadoPor;
+            }
+
+            // Aplicar clase según el turno
+            if (seleccionados.has(dia)) {
+                if (tipo === 'diurno') celda.classList.add("seleccionado");
+                else celda.classList.add("seleccionado-noche");
+            }
+
+            var label = tipo === 'diurno' ? '✓ Disponible' : '✓ Disponible';
+            var claseLabel = tipo === 'diurno' ? 'disponible' : 'disponible-noche';
+
+            celda.innerHTML = '<div class="numero">' + dia + '</div>' +
+                (seleccionados.has(dia) ? '<div class="' + claseLabel + '">' + label + '</div>' : '') +
+                (ocupadoPor ? '<div class="ocupado-texto">🚫 Ocupado</div>' : '');
+
+            celda.addEventListener("click", function() {
+                if (ocupadoPor) {
+                    mostrarToast("Día ocupado por: " + ocupadoPor, 'warning');
+                    return;
+                }
+
+                // Toggle: si ya está en este turno, quitarlo
+                if (seleccionados.has(dia)) {
+                    seleccionados.delete(dia);
+                } else {
+                    // Regla: un día NO puede estar en diurno Y noche a la vez
+                    if (tipo === 'diurno' && noche.has(dia)) {
+                        noche.delete(dia);
+                        mostrarToast("Día movido de Noche a Diurno", 'info', 1500);
+                    } else if (tipo === 'noche' && diurno.has(dia)) {
+                        diurno.delete(dia);
+                        mostrarToast("Día movido de Diurno a Noche", 'info', 1500);
+                    }
+                    seleccionados.add(dia);
+                }
+
+                crearCalendarios();
+                actualizarResumen();
+            });
+
+            elemento.appendChild(celda);
+        })(dia);
+    }
+}
+
+function crearCalendarios() {
+    crearCalendario($("calendarioDiurno"), diurno, 'diurno');
+    crearCalendario($("calendarioNoche"), noche, 'noche');
+}
+
+function actualizarResumen() {
+    var lD = Array.from(diurno).sort(function(a,b) { return a - b; });
+    var lN = Array.from(noche).sort(function(a,b) { return a - b; });
+    $("resumenDiurno").textContent = lD.length > 0 ? agruparDias(lD) : "Ningún día seleccionado";
+    $("resumenNoche").textContent = lN.length > 0 ? agruparDias(lN) : "Ningún día seleccionado";
+}
+
+
+/* ============================================================
+   GUARDAR — con detección de días blancos
    ============================================================ */
 
 function guardarYVer() {
@@ -1878,68 +1983,95 @@ function guardarYVer() {
     if (placaSelect.value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if (conductorSelect.value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
 
-    if (diurno.size === 0 && noche.size === 0) {
-        mostrarConfirm(
-            'No has seleccionado ningún día. ¿Guardar de todos modos?',
-            function(ok) { if (ok) _guardarYVerInterno(); },
-            'Sin días seleccionados'
-        );
-        return;
+    // Calcular días blancos (sin diurno ni noche)
+    var mesNum = Number(mesSelect.value);
+    var cantDias = diasDelMes(AÑO, mesNum);
+    var diasBlancos = [];
+    for (var d = 1; d <= cantDias; d++) {
+        if (!diurno.has(d) && !noche.has(d)) {
+            diasBlancos.push(d);
+        }
     }
 
+    // Guardar los días blancos para después
+    _diasPendientes = diasBlancos;
+
+    // Preparar registro (sin descanso ni mantenimiento todavía)
     var lista = obtenerConductoresPorPlaca(placaSelect.value);
     var nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
-    var registroExistente = obtenerRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
 
-    if (registroExistente) {
-        mostrarConfirm(
-            'Ya tienes un registro para este mes. ¿Deseas reemplazarlo con la nueva selección?',
-            function(ok) { if (ok) _guardarYVerInterno(); },
-            'Sobrescribir registro'
-        );
+    _registroPendiente = {
+        conductor: nombreConductor,
+        placa: placaSelect.value,
+        mes: mesSelect.value,
+        diurno: Array.from(diurno).sort(function(a,b) { return a - b; }),
+        noche: Array.from(noche).sort(function(a,b) { return a - b; }),
+        descanso: [],
+        mantenimiento: []
+    };
+
+    // Si NO hay días blancos → guardar directo
+    if (diasBlancos.length === 0) {
+        _guardarRegistro(_registroPendiente);
         return;
     }
 
-    _guardarYVerInterno();
+    // Si hay días blancos → mostrar modal
+    var listaHTML = '';
+    if (diasBlancos.length > 0) {
+        listaHTML = agruparDias(diasBlancos);
+    }
+    $('diasSinMarcarLista').textContent = '📅 ' + listaHTML;
+    $('modalTipoDias').classList.add('active');
 }
 
-function _guardarYVerInterno() {
+function elegirTipoDias(tipo) {
+    if (!_registroPendiente) return;
+
+    if (tipo === 'descanso') {
+        _registroPendiente.descanso = _diasPendientes.slice();
+        _registroPendiente.mantenimiento = [];
+    } else if (tipo === 'mantenimiento') {
+        _registroPendiente.mantenimiento = _diasPendientes.slice();
+        _registroPendiente.descanso = [];
+    }
+
+    cerrarModalTipoDias();
+    _guardarRegistro(_registroPendiente);
+}
+
+function cerrarModalTipoDias() {
+    $('modalTipoDias').classList.remove('active');
+    _registroPendiente = null;
+    _diasPendientes = [];
+}
+
+function _guardarRegistro(registro) {
     if (_guardandoEnProgreso) {
         mostrarToast('⏳ Guardando, espere...', 'info');
         return;
     }
     _guardandoEnProgreso = true;
 
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
-
-    var lista = obtenerConductoresPorPlaca(placaSelect.value);
-    var nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
-
-    var registro = {
-        conductor: nombreConductor,
-        placa: placaSelect.value,
-        mes: mesSelect.value,
-        diurno: Array.from(diurno).sort(function(a,b){ return a-b; }),
-        noche: Array.from(noche).sort(function(a,b){ return a-b; })
-    };
-
+    // Guardar en localStorage
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var claveLocal = nombreConductor + "_" + placaSelect.value + "_" + mesSelect.value;
+    var claveLocal = registro.conductor + "_" + registro.placa + "_" + registro.mes;
     registros[claveLocal] = registro;
     localStorage.setItem("disponibilidades", JSON.stringify(registros));
 
-    _registrosCache[claveRegistro(placaSelect.value, nombreConductor, mesSelect.value)] = registro;
-    _borradosRecientes.delete(claveRegistro(placaSelect.value, nombreConductor, mesSelect.value));
+    _registrosCache[claveRegistro(registro.placa, registro.conductor, registro.mes)] = registro;
+    _borradosRecientes.delete(claveRegistro(registro.placa, registro.conductor, registro.mes));
 
+    // Preparar data para Sheets
     var data = {
-        placa: placaSelect.value,
-        conductor: nombreConductor,
-        mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
-        diurno: Array.from(diurno).sort(function(a,b){ return a-b; }).join(', '),
-        noche: Array.from(noche).sort(function(a,b){ return a-b; }).join(', '),
-        total: diurno.size + noche.size
+        placa: registro.placa,
+        conductor: registro.conductor,
+        mes: MESES[String(registro.mes)] + ' ' + AÑO,
+        diurno: registro.diurno.join(', '),
+        noche: registro.noche.join(', '),
+        descanso: registro.descanso.join(', '),
+        mantenimiento: registro.mantenimiento.join(', '),
+        total: registro.diurno.length + registro.noche.length
     };
 
     var btn = $("btnGuardarYVer");
@@ -1962,7 +2094,7 @@ function _guardarYVerInterno() {
         btn.innerHTML = '✅ ¡GUARDADO!';
         btn.style.backgroundColor = '#27ae60';
         setTimeout(restaurar, 2000);
-        setTimeout(function() { abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value); }, 300);
+        setTimeout(function() { abrirDetalleConductor(registro.placa, registro.conductor, registro.mes); }, 400);
     })
     .catch(function(error) {
         logErr('Error:', error);
@@ -1970,7 +2102,7 @@ function _guardarYVerInterno() {
         btn.innerHTML = '⚠️ Error';
         btn.style.backgroundColor = '#e74c3c';
         setTimeout(restaurar, 3000);
-        setTimeout(function() { abrirDetalleConductor(placaSelect.value, nombreConductor, mesSelect.value); }, 300);
+        setTimeout(function() { abrirDetalleConductor(registro.placa, registro.conductor, registro.mes); }, 400);
     });
 }
 
@@ -2009,6 +2141,8 @@ function borrarMiRegistro() {
                 mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
                 diurno: '',
                 noche: '',
+                descanso: '',
+                mantenimiento: '',
                 total: 0
             };
 
@@ -2066,7 +2200,7 @@ function borrarRegistroAdmin(placa, conductor, mes) {
     var nombreMes = MESES[String(mes)] || 'Mes ' + mes;
 
     mostrarConfirm(
-        '¿Borrar el registro de "' + conductor + '" (' + placa + ') para ' + nombreMes + '? Esta acción no se puede deshacer.',
+        '¿Borrar el registro de "' + conductor + '" (' + placa + ') para ' + nombreMes + '?',
         function(ok) {
             if (!ok) return;
 
@@ -2082,8 +2216,9 @@ function borrarRegistroAdmin(placa, conductor, mes) {
                 mes: nombreMes + ' ' + AÑO,
                 diurno: '',
                 noche: '',
-                total: 0
-            };
+                descanso: '',
+                mantenimiento: '',
+                total: 0            };
 
             enviarASheets(data).then(function() {
                 mostrarToast('🗑️ Registro borrado', 'success');
@@ -2137,171 +2272,136 @@ function editarRegistroAdmin(placa, conductor, mes) {
 
 
 /* ============================================================
-   DETALLE DEL CONDUCTOR
+   TABS
    ============================================================ */
 
-function abrirDetalleConductor(placa, conductor, mes) {
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var clave = conductor + "_" + placa + "_" + mes;
-    var registro = registros[clave];
+function cambiarTab(tab) {
+    document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
+    document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
 
-    if (!registro) {
-        mostrarToast("No se encontró disponibilidad", 'error');
-        return;
-    }
-
-    var diurnoStr = registro.diurno && registro.diurno.length
-        ? registro.diurno.slice().sort(function(a,b){ return a-b; }).join(', ') : 'Ninguno';
-    var nocheStr = registro.noche && registro.noche.length
-        ? registro.noche.slice().sort(function(a,b){ return a-b; }).join(', ') : 'Ninguno';
-    var total = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
-
-    var mesNumero = parseInt(registro.mes);
-    var nombreMes = (MESES[String(mesNumero)] || 'Mes ' + registro.mes) + ' ' + AÑO;
-
-    var diasMes = diasDelMes(AÑO, mesNumero);
-    var posIni = posicionInicial(AÑO, mesNumero);
-
-    var calHTML = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:500px; margin:15px auto;">';
-    DIAS_SEMANA.forEach(function(d) {
-        calHTML += '<div style="text-align:center; font-weight:bold; padding:5px; background:#e8f0fa; border-radius:4px; font-size:12px;">' + d + '</div>';
-    });
-    for (var i = 0; i < posIni; i++) calHTML += '<div style="padding:5px;"></div>';
-
-    var setD = new Set(registro.diurno || []);
-    var setN = new Set(registro.noche || []);
-
-    for (var dia = 1; dia <= diasMes; dia++) {
-        var color = '', label = '';
-        if (setD.has(dia) && setN.has(dia)) {
-            color = 'background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%); border:2px solid #1a7a3a;';
-            label = '☀️🌙';
-        } else if (setD.has(dia)) {
-            color = 'background:#d9ead3; border:2px solid #27ae60;';
-            label = '☀️';
-        } else if (setN.has(dia)) {
-            color = 'background:#d4e6f1; border:2px solid #2980b9;';
-            label = '🌙';
-        } else {
-            color = 'background:#f5f5f5; opacity:0.5;';
-        }
-        calHTML += '<div style="padding:8px; text-align:center; border-radius:6px; ' + color + ' font-weight:bold; font-size:14px;">' + dia + (label ? '<br><span style="font-size:10px;">' + label + '</span>' : '') + '</div>';
-    }
-    calHTML += '</div>';
-
-    var contenido = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-        '<title>Detalle - ' + escapeHtml(conductor) + '</title>' +
-        '<style>' +
-        '*{box-sizing:border-box}' +
-        'body{font-family:Arial,sans-serif;background:#f2f4f7;margin:0;padding:20px}' +
-        '.header{background:linear-gradient(135deg,#17365d 0%,#1a4a7a 100%);color:white;padding:15px 30px;border-radius:12px;margin-bottom:20px;text-align:center}' +
-        '.header h1{margin:0;font-size:20px}' +
-        '.header p{margin:3px 0 0 0;font-size:13px;opacity:0.8}' +
-        '.tarjeta{background:white;padding:25px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.08);max-width:700px;margin:0 auto}' +
-        '.info-conductor{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;background:#e8f0fa;padding:15px;border-radius:8px;margin-bottom:20px;text-align:center}' +
-        '.info-conductor .label{font-size:11px;color:#666;font-weight:bold;text-transform:uppercase}' +
-        '.info-conductor .valor{font-weight:bold;font-size:16px;color:#17365d}' +
-        '.resumen-dias{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:15px 0}' +
-        '.resumen-dias .box{padding:12px;border-radius:8px;text-align:center}' +
-        '.resumen-dias .box.diurno{background:#d9ead3;border:2px solid #27ae60}' +
-        '.resumen-dias .box.noche{background:#d4e6f1;border:2px solid #2980b9}' +
-        '.resumen-dias .box .titulo{font-weight:bold;font-size:12px;text-transform:uppercase}' +
-        '.resumen-dias .box .dias{font-size:14px;margin-top:5px}' +
-        '.resumen-dias .box .dias.sin{color:#999;font-style:italic}' +
-        '.leyenda{display:flex;justify-content:center;gap:20px;margin:15px 0;font-size:12px;flex-wrap:wrap}' +
-        '.leyenda span{display:flex;align-items:center;gap:5px}' +
-        '.leyenda .color{display:inline-block;width:16px;height:16px;border-radius:4px}' +
-        '.leyenda .color.diurno{background:#d9ead3;border:1px solid #27ae60}' +
-        '.leyenda .color.noche{background:#d4e6f1;border:1px solid #2980b9}' +
-        '.leyenda .color.ambos{background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%);border:1px solid #1a7a3a}' +
-        '.btn-cerrar{padding:12px 30px;border:none;border-radius:7px;background:#e74c3c;color:white;font-weight:bold;cursor:pointer;font-size:15px;margin-top:20px;width:100%}' +
-        '.btn-cerrar:hover{background:#c0392b}' +
-        '.total-dias{text-align:center;font-size:18px;font-weight:bold;color:#17365d;padding:10px;background:#f7f9fb;border-radius:8px}' +
-        '.calendario-titulo{text-align:center;font-weight:bold;margin:15px 0 5px 0;color:#17365d}' +
-        '@media(max-width:700px){.info-conductor{grid-template-columns:1fr;gap:8px}.resumen-dias{grid-template-columns:1fr}.header h1{font-size:16px}.tarjeta{padding:15px}}' +
-        '</style></head><body>' +
-        '<div class="header"><h1>TRANSFERMATRI S.A.</h1><p>COMPAÑÍA DE TRANSPORTE DE CARGA PESADA</p></div>' +
-        '<div class="tarjeta">' +
-        '<h2 style="text-align:center;margin-top:0;color:#17365d;">📋 Detalle de Disponibilidad</h2>' +
-        '<div class="info-conductor">' +
-        '<div><div class="label">🚗 Placa</div><div class="valor">' + escapeHtml(registro.placa) + '</div></div>' +
-        '<div><div class="label">👤 Conductor</div><div class="valor">' + escapeHtml(registro.conductor) + '</div></div>' +
-        '<div><div class="label">📅 Mes</div><div class="valor">' + escapeHtml(nombreMes) + '</div></div>' +
-        '</div>' +
-        '<div class="resumen-dias">' +
-        '<div class="box diurno"><div class="titulo">☀️ DIURNO</div><div class="dias ' + (diurnoStr === 'Ninguno' ? 'sin' : '') + '">' + escapeHtml(diurnoStr) + '</div></div>' +
-        '<div class="box noche"><div class="titulo">🌙 NOCHE</div><div class="dias ' + (nocheStr === 'Ninguno' ? 'sin' : '') + '">' + escapeHtml(nocheStr) + '</div></div>' +
-        '</div>' +
-        '<div class="total-dias">📊 Total: <span style="color:#27ae60;">' + total + ' días</span></div>' +
-        '<div class="calendario-titulo">📅 Calendario del Mes</div>' +
-        calHTML +
-        '<div class="leyenda">' +
-        '<span><span class="color diurno"></span> Diurno</span>' +
-        '<span><span class="color noche"></span> Noche</span>' +
-        '<span><span class="color ambos"></span> Ambos</span>' +
-        '</div>' +
-        '<button class="btn-cerrar" onclick="window.close()">❌ CERRAR VENTANA</button>' +
-        '</div></body></html>';
-
-    var blob = new Blob([contenido], { type: 'text/html;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-    var nombreArchivo = 'Detalle_' + conductor.replace(/\s+/g, '_') + '_' + mes + '.html';
-
-    if (IS_IOS) {
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = nombreArchivo;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        mostrarToast('📄 Detalle descargado. Ábrelo desde Archivos.', 'success', 5000);
+    if (tab === 'registrar') {
+        $('tabRegistrar').classList.add('activo');
+        document.querySelector('.tab-btn').classList.add('activo');
     } else {
-        var ventana = window.open(url, '_blank');
-        if (!ventana) {
-            mostrarToast('⚠️ Permita las ventanas emergentes', 'warning', 5000);
-            URL.revokeObjectURL(url);
-            return;
+        if (rolActual === 'admin') {
+            $('tabVisualizar').classList.add('activo');
+            document.querySelectorAll('.tab-btn')[1].classList.add('activo');
+            cambiarVista(vistaActual);
+        } else {
+            mostrarToast('⛔ Solo administradores', 'warning');
+            cambiarTab('registrar');
         }
     }
-    setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
 
 /* ============================================================
-   CAMBIAR VISTA
+   OCULTAR CALENDARIO
    ============================================================ */
 
-function cambiarVista(vista) {
-    vistaActual = vista;
+function ocultarCalendario() {
+    calendarioVisible = false;
+    $("contenedorCalendario").classList.remove("visible");
+    $("contenedorCalendario").style.display = "none";
+    $("contenedorResumen").classList.remove("visible");
+    $("contenedorResumen").style.display = "none";
+    $("btnBorrarRegistro").classList.remove('visible');
 
-    document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
-        btn.classList.toggle('activo', btn.dataset.vista === vista);
-    });
-
-    document.querySelectorAll('.vista-contenido').forEach(function(el) {
-        el.style.display = 'none';
-    });
-
-    if (vista === 'tabla') {
-        $('vistaTabla').style.display = 'block';
-        if (Object.keys(_registrosCache).length > 0) {
-            renderizarTablaDesdeCache();
-        } else {
-            cargarVisualizacion();
+    ['diurno', 'noche'].forEach(function(tipo) {
+        var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
+        if (wrapper) {
+            wrapper.classList.remove('abierto');
+            wrapper.classList.add('cerrado');
         }
-    } else if (vista === 'calendario') {
-        $('vistaCalendario').style.display = 'block';
-        cargarCalendarioMensual();
-    } else if (vista === 'reporte') {
-        $('vistaReporte').style.display = 'block';
+        var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
+        if (container) {
+            container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
+        }
+    });
+}
+
+
+/* ============================================================
+   CARGA DE PLACAS / CONDUCTORES
+   ============================================================ */
+
+function cargarPlacas() {
+    $("placa").innerHTML = '<option value="">Seleccione una placa</option>';
+    obtenerPlacasUnicas().forEach(function(p) {
+        var op = document.createElement("option");
+        op.value = p;
+        op.textContent = p;
+        $("placa").appendChild(op);
+    });
+}
+
+function cargarConductoresPorPlaca(placa) {
+    var conductorSelect = $("conductor");
+    conductorSelect.innerHTML = '<option value="">Seleccione un conductor</option>';
+    if (placa === "") { $("btnIngresar").disabled = true; return; }
+    obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
+        var op = document.createElement("option");
+        op.value = i;
+        op.textContent = item.nombre;
+        conductorSelect.appendChild(op);
+    });
+    $("btnIngresar").disabled = true;
+}
+
+function cargarFiltroPlacasVisualizacion() {
+    var sel = $('filtroPlaca');
+    sel.innerHTML = '<option value="">Todas las placas</option>';
+    obtenerPlacasUnicas().forEach(function(p) {
+        var op = document.createElement("option");
+        op.value = p;
+        op.textContent = p;
+        sel.appendChild(op);
+    });
+}
+
+
+/* ============================================================
+   EVENTOS SELECTS
+   ============================================================ */
+
+function onPlacaChange() {
+    var placaSelect = $("placa");
+    var conductorSelect = $("conductor");
+
+    if (rolActual === 'admin') {
+        cargarConductoresPorPlaca(placaSelect.value);
+        conductorSelect.value = "";
+        $("btnIngresar").disabled = (placaSelect.value === "" || conductorSelect.value === "");
+        actualizarIdentificacion();
+        ocultarCalendario();
+        actualizarBotonBorrar();
+    } else {
+        actualizarBotonBorrar();
+    }
+}
+
+function onConductorChange() {
+    if (rolActual === 'admin') {
+        $("btnIngresar").disabled = ($("placa").value === "" || $("conductor").value === "");
+        actualizarIdentificacion();
+        ocultarCalendario();
+    }
+    actualizarBotonBorrar();
+}
+
+function onMesChange() {
+    ocultarCalendario();
+    actualizarIdentificacion();
+    actualizarBotonBorrar();
+    if (rolActual === 'usuario' && conductorLogueado) {
+        var registro = obtenerRegistroLocal($("placa").value, conductorLogueado, $("mes").value);
+        if (registro) ingresar();
     }
 }
 
 
 /* ============================================================
-   CARGAR VISUALIZACIÓN
+   CARGAR VISUALIZACIÓN (tabla)
    ============================================================ */
 
 async function cargarVisualizacion(forzarRecarga) {
@@ -2348,15 +2448,15 @@ async function cargarVisualizacion(forzarRecarga) {
                 if (!placa || !conductor) return;
                 if (placa.toUpperCase() === 'PLACA') return;
 
-                var d = String(row[3] || '')
-                    .split(',').map(function(s) { return parseInt(s.trim()); })
-                    .filter(function(n) { return !isNaN(n); });
-                var n = String(row[4] || '')
-                    .split(',').map(function(s) { return parseInt(s.trim()); })
-                    .filter(function(n) { return !isNaN(n); });
+                var d = String(row[3] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+                var n = String(row[4] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
 
-                var total = (row[5] !== undefined) ? Number(row[5]) : (d.length + n.length);
-                if (total === 0 && d.length === 0 && n.length === 0) return;
+                // NUEVAS columnas: descanso (index 5), mantenimiento (index 6), total (index 7)
+                var dsc = String(row[5] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+                var mnt = String(row[6] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+
+                var total = (row[7] !== undefined) ? Number(row[7]) : (d.length + n.length);
+                if (total === 0 && d.length === 0 && n.length === 0 && dsc.length === 0 && mnt.length === 0) return;
 
                 var mesNum = "8";
                 if (mes.indexOf('Septiembre') >= 0) mesNum = "8";
@@ -2368,7 +2468,10 @@ async function cargarVisualizacion(forzarRecarga) {
                 if (_borradosRecientes.has(claveR)) return;
 
                 var clave = conductor + "_" + placa + "_" + mesNum;
-                registrosRemotos[clave] = { conductor: conductor, placa: placa, mes: mesNum, diurno: d, noche: n };
+                registrosRemotos[clave] = {
+                    conductor: conductor, placa: placa, mes: mesNum,
+                    diurno: d, noche: n, descanso: dsc, mantenimiento: mnt
+                };
             });
         }
 
@@ -2398,9 +2501,9 @@ async function cargarVisualizacion(forzarRecarga) {
         if (filtrados.length > 0) {
             var contenedor2 = $('contenedorVisualizacion');
             var htmlFB = '<div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:12px 15px; border-radius:8px; margin-bottom:15px; font-size:13px;">' +
-                '⚠️ Sin conexión con Google Sheets. Mostrando datos locales (' + filtrados.length + ').<br><small>Error: ' + escapeHtml(error.message) + '</small></div>' +
+                '⚠️ Sin conexión con Google Sheets. Mostrando datos locales (' + filtrados.length + ').</div>' +
                 '<div class="contenedor-tabla"><table class="tabla-disponibilidad"><thead><tr>' +
-                '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th><th>☀️ Diurno</th><th>🌙 Noche</th><th>📊 Total</th><th>Acciones</th>' +
+                '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th><th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
                 '</tr></thead><tbody>';
 
             filtrados.forEach(function(r) {
@@ -2408,7 +2511,6 @@ async function cargarVisualizacion(forzarRecarga) {
                 if (filtroPlaca && r.placa !== filtroPlaca) return;
                 if (filtroConductor && r.conductor.toUpperCase().indexOf(filtroConductor.toUpperCase()) < 0) return;
                 if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) return;
-
                 htmlFB += construirFilaTabla(r);
             });
 
@@ -2418,12 +2520,10 @@ async function cargarVisualizacion(forzarRecarga) {
             contenedor2.innerHTML = htmlFB;
         } else {
             $('contenedorVisualizacion').innerHTML = '<div style="text-align:center; padding:40px; color:#e74c3c;">' +
-                '<h3>⚠️ Error al cargar los datos</h3><p>' + escapeHtml(error.message) + '</p>' +
-                '<button class="btn-ver-detalle" onclick="cargarVisualizacion(true)" style="background:#2980b9; padding:10px 20px; margin-top:15px;">🔄 Reintentar</button></div>';
+                '<h3>⚠️ Error al cargar los datos</h3><p>' + escapeHtml(error.message) + '</p></div>';
         }
     }
 }
-
 
 /* ============================================================
    RENDERIZAR TABLA
@@ -2431,11 +2531,21 @@ async function cargarVisualizacion(forzarRecarga) {
 
 function construirFilaTabla(r) {
     var dStr = r.diurno && r.diurno.length
-        ? r.diurno.slice().sort(function(a,b){ return a-b; }).map(function(d){ return '<span class="disponible-tag">' + d + '</span>'; }).join(' ')
-        : '<span class="sin-disponibilidad">Ninguno</span>';
+        ? agruparDias(r.diurno).split(', ').map(function(b) { return '<span class="bloque-dias">' + b + '</span>'; }).join('')
+        : '<span class="bloque-vacio">Ninguno</span>';
+
     var nStr = r.noche && r.noche.length
-        ? r.noche.slice().sort(function(a,b){ return a-b; }).map(function(d){ return '<span class="disponible-tag">' + d + '</span>'; }).join(' ')
-        : '<span class="sin-disponibilidad">Ninguno</span>';
+        ? agruparDias(r.noche).split(', ').map(function(b) { return '<span class="bloque-dias noche">' + b + '</span>'; }).join('')
+        : '<span class="bloque-vacio">Ninguno</span>';
+
+    var dscStr = r.descanso && r.descanso.length
+        ? agruparDias(r.descanso).split(', ').map(function(b) { return '<span class="bloque-dias descanso">' + b + '</span>'; }).join('')
+        : '<span class="bloque-vacio">—</span>';
+
+    var mntStr = r.mantenimiento && r.mantenimiento.length
+        ? agruparDias(r.mantenimiento).split(', ').map(function(b) { return '<span class="bloque-dias mantenimiento">' + b + '</span>'; }).join('')
+        : '<span class="bloque-vacio">—</span>';
+
     var total = (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0);
     var nombreMes = (MESES[String(r.mes)] || 'Mes ' + r.mes) + ' ' + AÑO;
 
@@ -2445,7 +2555,9 @@ function construirFilaTabla(r) {
         '<td>' + escapeHtml(nombreMes) + '</td>' +
         '<td>' + dStr + '</td>' +
         '<td>' + nStr + '</td>' +
-        '<td>' + total + ' días</td>' +
+        '<td>' + dscStr + '</td>' +
+        '<td>' + mntStr + '</td>' +
+        '<td><strong>' + total + '</strong></td>' +
         '<td><div class="acciones-celda">' +
         '<button class="btn-ver-detalle" onclick="abrirDetalleConductor(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">📋 Ver</button>' +
         '<button class="btn-editar" onclick="editarRegistroAdmin(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">✏️ Editar</button>' +
@@ -2499,7 +2611,8 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
     }
 
     var html = '<div class="contenedor-tabla"><table class="tabla-disponibilidad"><thead><tr>' +
-        '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th><th>☀️ Diurno</th><th>🌙 Noche</th><th>📊 Total</th><th>Acciones</th>' +
+        '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th>' +
+        '<th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
         '</tr></thead><tbody>';
 
     filtrados.forEach(function(r) {
@@ -2511,24 +2624,220 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
 
     contenedor.innerHTML = html;
 }
+})();
+</script>
+
+<script>
+/* ============================================================
+   PARTE 3 - FUNCIONES SECUNDARIAS (detalle, calendario mensual, exportar)
+   ============================================================ */
+
+(function() {
+'use strict';
+
+var $ = function(id) { return document.getElementById(id); };
+
+var MESES = {
+    '1':'Enero','2':'Febrero','3':'Marzo','4':'Abril','5':'Mayo','6':'Junio',
+    '7':'Julio','8':'Septiembre','9':'Octubre','10':'Noviembre','11':'Diciembre','12':'Enero'
+};
+var DIAS_SEMANA = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+var AÑO = 2026;
 
 
 /* ============================================================
-   CALENDARIO MENSUAL
+   DETALLE DEL CONDUCTOR
+   ============================================================ */
+
+function abrirDetalleConductor(placa, conductor, mes) {
+    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    var clave = conductor + "_" + placa + "_" + mes;
+    var registro = registros[clave];
+
+    if (!registro) {
+        mostrarToast("No se encontró disponibilidad", 'error');
+        return;
+    }
+
+    var diurnoArr = registro.diurno || [];
+    var nocheArr = registro.noche || [];
+    var descansoArr = registro.descanso || [];
+    var mantenimientoArr = registro.mantenimiento || [];
+
+    var mesNumero = parseInt(registro.mes);
+    var nombreMes = (MESES[String(mesNumero)] || 'Mes ' + registro.mes) + ' ' + AÑO;
+
+    var diasMes = new Date(AÑO, mesNumero + 1, 0).getDate();
+    var primerDia = new Date(AÑO, mesNumero, 1);
+    var posIni = (primerDia.getDay() + 6) % 7;
+
+    // Calendario visual
+    var calHTML = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:520px; margin:15px auto;">';
+    DIAS_SEMANA.forEach(function(d) {
+        calHTML += '<div style="text-align:center; font-weight:bold; padding:5px; background:#e8f0fa; border-radius:4px; font-size:12px;">' + d + '</div>';
+    });
+    for (var i = 0; i < posIni; i++) calHTML += '<div style="padding:5px;"></div>';
+
+    var setD = new Set(diurnoArr);
+    var setN = new Set(nocheArr);
+    var setDsc = new Set(descansoArr);
+    var setMnt = new Set(mantenimientoArr);
+
+    for (var dia = 1; dia <= diasMes; dia++) {
+        var color = '', label = '';
+        if (setMnt.has(dia)) {
+            color = 'background:#fadbd8; border:2px solid #e74c3c;';
+            label = '🔧';
+        } else if (setDsc.has(dia)) {
+            color = 'background:#fce4d6; border:2px solid #f39c12;';
+            label = '🛌';
+        } else if (setD.has(dia) && setN.has(dia)) {
+            color = 'background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%); border:2px solid #1a7a3a;';
+            label = '☀️🌙';
+        } else if (setD.has(dia)) {
+            color = 'background:#d9ead3; border:2px solid #27ae60;';
+            label = '☀️';
+        } else if (setN.has(dia)) {
+            color = 'background:#d4e6f1; border:2px solid #2980b9;';
+            label = '🌙';
+        } else {
+            color = 'background:#f5f5f5; opacity:0.5;';
+        }
+        calHTML += '<div style="padding:8px 4px; text-align:center; border-radius:6px; ' + color + ' font-weight:bold; font-size:13px;">' + dia + (label ? '<br><span style="font-size:10px;">' + label + '</span>' : '') + '</div>';
+    }
+    calHTML += '</div>';
+
+    function getColor(tipo) {
+        if (tipo === 'diurno') return '#1a7a3a';
+        if (tipo === 'noche') return '#1a5276';
+        if (tipo === 'descanso') return '#b85c00';
+        if (tipo === 'mantenimiento') return '#922b21';
+        return '#333';
+    }
+    function getBgColor(tipo) {
+        if (tipo === 'diurno') return '#d9ead3';
+        if (tipo === 'noche') return '#d4e6f1';
+        if (tipo === 'descanso') return '#fce4d6';
+        if (tipo === 'mantenimiento') return '#fadbd8';
+        return '#eee';
+    }
+
+    function seccionHTML(titulo, icono, dias, tipo) {
+        var tiene = dias && dias.length > 0;
+        var bloquesHTML = tiene
+            ? agruparDias(dias).split(', ').map(function(b) {
+                return '<span style="display:inline-block; background:' + getBgColor(tipo) + '; color:' + getColor(tipo) + '; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px; margin:3px;">' + b + '</span>';
+            }).join('')
+            : '<span style="color:#999; font-style:italic;">Ninguno</span>';
+
+        return '<div style="margin:12px 0; border-left:5px solid ' + getColor(tipo) + '; background:#f9f9f9; border-radius:8px; padding:12px 15px;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+            '<strong style="color:' + getColor(tipo) + '; font-size:15px;">' + icono + ' ' + titulo + '</strong>' +
+            '<span style="background:' + getBgColor(tipo) + '; color:' + getColor(tipo) + '; padding:3px 12px; border-radius:12px; font-weight:bold; font-size:13px;">' + (dias ? dias.length : 0) + ' días</span>' +
+            '</div>' +
+            '<div>' + bloquesHTML + '</div>' +
+            '</div>';
+    }
+
+    var totalTrabajo = diurnoArr.length + nocheArr.length;
+    var totalNoTrabajo = descansoArr.length + mantenimientoArr.length;
+
+    var contenido = '<!DOCTYPE html>' +
+        '<html lang="es"><head><meta charset="UTF-8">' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+        '<title>Detalle - ' + escapeHtml(conductor) + '</title>' +
+        '<style>' +
+        '*{box-sizing:border-box}' +
+        'body{font-family:Arial,sans-serif;background:#f2f4f7;margin:0;padding:15px}' +
+        '.header{background:linear-gradient(135deg,#17365d 0%,#1a4a7a 100%);color:white;padding:15px 25px;border-radius:12px;margin-bottom:15px;text-align:center}' +
+        '.header h1{margin:0;font-size:18px}' +
+        '.header p{margin:3px 0 0 0;font-size:12px;opacity:0.8}' +
+        '.tarjeta{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.08);max-width:600px;margin:0 auto}' +
+        '.info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:#e8f0fa;padding:12px;border-radius:8px;margin-bottom:15px;text-align:center}' +
+        '.info .label{font-size:10px;color:#666;font-weight:bold;text-transform:uppercase}' +
+        '.info .valor{font-weight:bold;font-size:14px;color:#17365d;word-break:break-word}' +
+        '.total-box{background:#17365d;color:white;padding:15px;border-radius:10px;text-align:center;margin:15px 0}' +
+        '.total-box .num{font-size:28px;font-weight:bold}' +
+        '.total-box .txt{font-size:12px;opacity:0.8}' +
+        '.calendario-titulo{text-align:center;font-weight:bold;margin:20px 0 5px 0;color:#17365d;font-size:15px}' +
+        '.leyenda{display:flex;justify-content:center;gap:12px;margin:15px 0;font-size:11px;flex-wrap:wrap}' +
+        '.leyenda span{display:flex;align-items:center;gap:4px}' +
+        '.leyenda .c{display:inline-block;width:14px;height:14px;border-radius:3px}' +
+        '.btn-cerrar{padding:12px 25px;border:none;border-radius:8px;background:#e74c3c;color:white;font-weight:bold;cursor:pointer;font-size:14px;margin-top:15px;width:100%}' +
+        '@media(max-width:600px){.info{grid-template-columns:1fr;gap:6px}.header h1{font-size:15px}.tarjeta{padding:15px}}' +
+        '</style></head><body>' +
+        '<div class="header"><h1>TRANSFERMATRI S.A.</h1><p>COMPAÑÍA DE TRANSPORTE DE CARGA PESADA</p></div>' +
+        '<div class="tarjeta">' +
+        '<h2 style="text-align:center;margin-top:0;color:#17365d;font-size:17px;">📋 Detalle de Disponibilidad</h2>' +
+        '<div class="info">' +
+        '<div><div class="label">🚗 Placa</div><div class="valor">' + escapeHtml(registro.placa) + '</div></div>' +
+        '<div><div class="label">👤 Conductor</div><div class="valor">' + escapeHtml(registro.conductor) + '</div></div>' +
+        '<div><div class="label">📅 Mes</div><div class="valor">' + escapeHtml(nombreMes) + '</div></div>' +
+        '</div>' +
+
+        seccionHTML('DIURNO', '☀️', diurnoArr, 'diurno') +
+        seccionHTML('NOCHE', '🌙', nocheArr, 'noche') +
+        seccionHTML('DESCANSO', '🛌', descansoArr, 'descanso') +
+        seccionHTML('MANTENIMIENTO', '🔧', mantenimientoArr, 'mantenimiento') +
+
+        '<div class="total-box">' +
+        '<div class="num">' + totalTrabajo + ' días</div>' +
+        '<div class="txt">de trabajo</div>' +
+        (totalNoTrabajo > 0 ? '<div style="margin-top:5px;font-size:12px;opacity:0.9;">+ ' + totalNoTrabajo + ' días sin trabajo (descanso/mant.)</div>' : '') +
+        '</div>' +
+
+        '<div class="calendario-titulo">📅 Calendario del Mes</div>' +
+        calHTML +
+        '<div class="leyenda">' +
+        '<span><span class="c" style="background:#27ae60;"></span> Diurno</span>' +
+        '<span><span class="c" style="background:#2980b9;"></span> Noche</span>' +
+        '<span><span class="c" style="background:#f39c12;"></span> Descanso</span>' +
+        '<span><span class="c" style="background:#e74c3c;"></span> Mantenimiento</span>' +
+        '</div>' +
+        '<button class="btn-cerrar" onclick="window.close()">❌ CERRAR</button>' +
+        '</div></body></html>';
+
+    var blob = new Blob([contenido], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var nombreArchivo = 'Detalle_' + conductor.replace(/\s+/g, '_') + '_' + mes + '.html';
+    var IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (IS_IOS) {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = nombreArchivo;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        mostrarToast('📄 Detalle descargado. Ábrelo desde Archivos.', 'success', 5000);
+    } else {
+        var ventana = window.open(url, '_blank');
+        if (!ventana) {
+            mostrarToast('⚠️ Permita las ventanas emergentes', 'warning', 5000);
+            URL.revokeObjectURL(url);
+            return;
+        }
+    }
+    setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+}
+
+
+/* ============================================================
+   CALENDARIO MENSUAL (Admin)
    ============================================================ */
 
 function cargarCalendarioMensual() {
-    if (rolActual !== 'admin') return;
-
-    var contenedor = $('contenedorCalendarioMensual');
+    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroPlaca = $('filtroPlaca').value;
     var filtroConductor = $('filtroConductor').value;
     var filtroMes = $('filtroMes').value;
 
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    var contenedor = $('contenedorCalendarioMensual');
     var mesNum = parseInt(filtroMes);
-    var diasMes = diasDelMes(AÑO, mesNum);
-    var posIni = posicionInicial(AÑO, mesNum);
+    var diasMes = new Date(AÑO, mesNum + 1, 0).getDate();
+    var primerDia = new Date(AÑO, mesNum, 1);
+    var posIni = (primerDia.getDay() + 6) % 7;
 
     var filtrados = [];
     for (var k in registros) {
@@ -2536,67 +2845,64 @@ function cargarCalendarioMensual() {
         if (String(r.mes) !== String(filtroMes)) continue;
         if (filtroPlaca && r.placa !== filtroPlaca) continue;
         if (filtroConductor && r.conductor.toUpperCase().indexOf(filtroConductor.toUpperCase()) < 0) continue;
-        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         filtrados.push(r);
     }
 
     if (filtrados.length === 0) {
         contenedor.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">' +
-            '<h3>📭 No hay disponibilidades registradas</h3>' +
-            '<p>Para el mes y filtros seleccionados, no se encontraron registros.</p></div>';
+            '<h3>📭 No hay disponibilidades registradas</h3></div>';
         return;
     }
 
     var diasMap = {};
     for (var d = 1; d <= diasMes; d++) {
-        diasMap[d] = { diurno: [], noche: [] };
+        diasMap[d] = { diurno: [], noche: [], descanso: [], mantenimiento: [] };
     }
 
     filtrados.forEach(function(r) {
-        (r.diurno || []).forEach(function(d) {
-            if (diasMap[d]) diasMap[d].diurno.push(r.conductor);
-        });
-        (r.noche || []).forEach(function(d) {
-            if (diasMap[d]) diasMap[d].noche.push(r.conductor);
-        });
+        (r.diurno || []).forEach(function(d) { if (diasMap[d]) diasMap[d].diurno.push(r.conductor); });
+        (r.noche || []).forEach(function(d) { if (diasMap[d]) diasMap[d].noche.push(r.conductor); });
+        (r.descanso || []).forEach(function(d) { if (diasMap[d]) diasMap[d].descanso.push(r.conductor); });
+        (r.mantenimiento || []).forEach(function(d) { if (diasMap[d]) diasMap[d].mantenimiento.push(r.conductor); });
     });
 
     var html = '<div style="text-align:center; margin-bottom:15px;">' +
         '<h3 style="color:#17365d;">📅 ' + MESES[String(mesNum)] + ' ' + AÑO + '</h3>' +
-        '<span style="font-size:13px; color:#888;">' + filtrados.length + ' conductores registrados</span></div>' +
+        '<span style="font-size:13px; color:#888;">' + filtrados.length + ' conductores</span></div>' +
         '<div class="leyenda-calendario">' +
         '<span class="item"><span class="color diurno"></span> Diurno</span>' +
         '<span class="item"><span class="color noche"></span> Noche</span>' +
-        '<span class="item"><span class="color ambos"></span> Ambos turnos</span>' +
+        '<span class="item"><span class="color descanso"></span> Descanso</span>' +
+        '<span class="item"><span class="color mantenimiento"></span> Mantenimiento</span>' +
         '</div><div class="calendario-mensual">';
 
     DIAS_SEMANA.forEach(function(d) { html += '<div class="header-dia">' + d + '</div>'; });
-    for (var i = 0; i < posIni; i++) {
-        html += '<div class="celda-dia vacia"></div>';
-    }
+    for (var i = 0; i < posIni; i++) html += '<div class="celda-dia vacia"></div>';
 
     for (var dia = 1; dia <= diasMes; dia++) {
         var info = diasMap[dia];
         var tieneD = info.diurno.length > 0;
         var tieneN = info.noche.length > 0;
-        var totalConductores = info.diurno.length + info.noche.length;
+        var total = info.diurno.length + info.noche.length;
 
         var claseBarra = '';
         if (tieneD && tieneN) claseBarra = 'ambos';
         else if (tieneD) claseBarra = 'diurno';
         else if (tieneN) claseBarra = 'noche';
 
-        var clickable = totalConductores > 0 ? 'con-conductores' : '';
-        var onclick = totalConductores > 0 ? 'onclick="abrirPanelDetalleDia(' + dia + ')"' : '';
+        var clickable = total > 0 ? 'con-conductores' : '';
+        var onclick = total > 0 ? 'onclick="abrirPanelDetalleDia(' + dia + ')"' : '';
 
-        var contadoresHTML = '';
-        if (tieneD) contadoresHTML += '<span class="contador diurno">☀️ ' + info.diurno.length + '</span>';
-        if (tieneN) contadoresHTML += '<span class="contador noche">🌙 ' + info.noche.length + '</span>';
+        var contHTML = '';
+        if (tieneD) contHTML += '<span class="contador diurno">☀️ ' + info.diurno.length + '</span>';
+        if (tieneN) contHTML += '<span class="contador noche">🌙 ' + info.noche.length + '</span>';
+        if (info.descanso.length > 0) contHTML += '<span class="contador descanso">🛌 ' + info.descanso.length + '</span>';
+        if (info.mantenimiento.length > 0) contHTML += '<span class="contador mantenimiento">🔧 ' + info.mantenimiento.length + '</span>';
 
         html += '<div class="celda-dia ' + clickable + '" ' + onclick + '>' +
             '<div class="barra-turno ' + claseBarra + '"></div>' +
             '<div class="contenido-dia"><div class="numero">' + dia + '</div>' +
-            '<div class="contadores">' + contadoresHTML + '</div></div></div>';
+            '<div class="contadores">' + contHTML + '</div></div></div>';
     }
 
     html += '</div>';
@@ -2614,70 +2920,57 @@ function cargarCalendarioMensual() {
 function abrirPanelDetalleDia(dia) {
     var diasMap = window._diasMapActual || {};
     var mesNum = window._mesActualCalendario || 8;
-    var info = diasMap[dia] || { diurno: [], noche: [] };
+    var info = diasMap[dia] || { diurno: [], noche: [], descanso: [], mantenimiento: [] };
 
-    _detalleDiaActual = {
+    var detalle = {
         dia: dia,
         diurno: info.diurno.slice().sort(),
         noche: info.noche.slice().sort(),
+        descanso: info.descanso.slice().sort(),
+        mantenimiento: info.mantenimiento.slice().sort(),
         mesNum: mesNum
     };
 
-    var nombreMes = MESES[String(mesNum)] + ' ' + AÑO;
-    var totalDiurno = _detalleDiaActual.diurno.length;
-    var totalNoche = _detalleDiaActual.noche.length;
+    var total = detalle.diurno.length + detalle.noche.length + detalle.descanso.length + detalle.mantenimiento.length;
 
     $('panelTitulo').textContent = '📅 ' + dia + ' de ' + MESES[String(mesNum)];
-    $('panelSubtitulo').textContent = nombreMes + ' • ' + (totalDiurno + totalNoche) + ' conductor(es)';
+    $('panelSubtitulo').textContent = MESES[String(mesNum)] + ' ' + AÑO + ' • ' + total + ' registro(s)';
 
-    renderPanelDetalle();
+    var body = $('panelDetalleBody');
+    var html = '';
 
+    function renderGrupo(titulo, icono, lista, clase) {
+        if (lista.length === 0) return '';
+        var h = '<div class="grupo-turno ' + clase + '"><div class="titulo-grupo">' +
+            '<span>' + icono + ' ' + titulo + '</span>' +
+            '<span class="count">' + lista.length + '</span></div><ul>';
+        lista.forEach(function(nombre) {
+            h += '<li>' + escapeHtml(nombre) + '</li>';
+        });
+        h += '</ul></div>';
+        return h;
+    }
+
+    html += renderGrupo('Diurno', '☀️', detalle.diurno, 'diurno');
+    html += renderGrupo('Noche', '🌙', detalle.noche, 'noche');
+    html += renderGrupo('Descanso', '🛌', detalle.descanso, 'descanso');
+    html += renderGrupo('Mantenimiento', '🔧', detalle.mantenimiento, 'mantenimiento');
+
+    if (html === '') html = '<div style="text-align:center;padding:30px;color:#999;font-style:italic;">Sin registros este día</div>';
+
+    body.innerHTML = html;
     $('panelBusqueda').value = '';
     $('panelDetalleDia').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-function renderPanelDetalle() {
-    var diurnoLista = _detalleDiaActual.diurno;
-    var nocheLista = _detalleDiaActual.noche;
-    var body = $('panelDetalleBody');
-
-    var html = '';
-
-    if (diurnoLista.length === 0 && nocheLista.length === 0) {
-        html = '<div class="sin-datos">📭 No hay conductores disponibles este día</div>';
-    } else {
-        if (diurnoLista.length > 0) {
-            html += '<div class="grupo-turno diurno"><div class="titulo-grupo">' +
-                '<span>☀️ Turno Diurno</span><span class="count">' + diurnoLista.length + '</span></div><ul>';
-            diurnoLista.forEach(function(nombre) {
-                html += '<li data-nombre="' + escapeHtml(nombre.toLowerCase()) + '">' + escapeHtml(nombre) + '</li>';
-            });
-            html += '</ul></div>';
-        }
-        if (nocheLista.length > 0) {
-            html += '<div class="grupo-turno noche"><div class="titulo-grupo">' +
-                '<span>🌙 Turno Noche</span><span class="count">' + nocheLista.length + '</span></div><ul>';
-            nocheLista.forEach(function(nombre) {
-                html += '<li data-nombre="' + escapeHtml(nombre.toLowerCase()) + '">' + escapeHtml(nombre) + '</li>';
-            });
-            html += '</ul></div>';
-        }
-    }
-
-    body.innerHTML = html;
-    filtrarPanelDetalle();
-}
-
 function filtrarPanelDetalle() {
     var query = $('panelBusqueda').value.toLowerCase().trim();
     var items = document.querySelectorAll('#panelDetalleBody li');
-
     items.forEach(function(li) {
-        var nombre = li.dataset.nombre || '';
+        var nombre = li.textContent.toLowerCase();
         li.style.display = (!query || nombre.indexOf(query) >= 0) ? '' : 'none';
     });
-
     document.querySelectorAll('#panelDetalleBody .grupo-turno').forEach(function(grupo) {
         var visibles = grupo.querySelectorAll('li:not([style*="display: none"])').length;
         grupo.style.display = visibles > 0 ? '' : 'none';
@@ -2691,7 +2984,7 @@ function cerrarPanelDetalle() {
 
 
 /* ============================================================
-   EXPORTAR EXCEL (simplificado por espacio)
+   EXPORTAR EXCEL
    ============================================================ */
 
 function exportarExcel() {
@@ -2701,41 +2994,74 @@ function exportarExcel() {
     var filtroMes = $('filtroMes').value;
 
     var data = [];
-    var totalD = 0, totalN = 0;
+    var totalD = 0, totalN = 0, totalDsc = 0, totalMnt = 0;
 
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
-        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         var dc = r.diurno ? r.diurno.length : 0;
         var nc = r.noche ? r.noche.length : 0;
-        totalD += dc; totalN += nc;
+        var dsc = r.descanso ? r.descanso.length : 0;
+        var mnt = r.mantenimiento ? r.mantenimiento.length : 0;
+        totalD += dc; totalN += nc; totalDsc += dsc; totalMnt += mnt;
 
-        data.push([
-            r.placa,
-            r.conductor,
-            MESES[String(r.mes)] + ' ' + AÑO,
-            (r.diurno || []).slice().sort(function(a,b){ return a-b; }).join(', ') || 'Ninguno',
-            (r.noche || []).slice().sort(function(a,b){ return a-b; }).join(', ') || 'Ninguno',
-            dc + nc
-        ]);
+        data.push({
+            placa: r.placa,
+            conductor: r.conductor,
+            mes: MESES[String(r.mes)] + ' ' + AÑO,
+            diurno: agruparDias(r.diurno || []) || 'Ninguno',
+            noche: agruparDias(r.noche || []) || 'Ninguno',
+            descanso: agruparDias(r.descanso || []) || '—',
+            mantenimiento: agruparDias(r.mantenimiento || []) || '—',
+            total: dc + nc,
+            diasDsc: dsc,
+            diasMnt: mnt
+        });
     }
 
     if (data.length === 0) { mostrarToast('No hay datos para exportar', 'warning'); return; }
 
     var wb = new ExcelJS.Workbook();
+    wb.creator = 'TRANSFERMATRI S.A.';
     var ws = wb.addWorksheet('Disponibilidad');
-    ws.addRow(['PLACA', 'CONDUCTOR', 'MES', 'DIAS DIURNO', 'DIAS NOCHE', 'TOTAL']);
-    ws.getRow(1).font = { bold: true };
 
-    data.forEach(function(row) { ws.addRow(row); });
+    ws.addRow(['TRANSFERMATRI S.A.']).getCell(1).font = { bold: true, size: 16, color: { argb: 'FF17365D' } };
+    ws.mergeCells('A1:I1');
+    ws.getRow(1).alignment = { horizontal: 'center' };
+    ws.addRow([]);
 
-    ws.getColumn(1).width = 15;
-    ws.getColumn(2).width = 35;
-    ws.getColumn(3).width = 20;
-    ws.getColumn(4).width = 30;
-    ws.getColumn(5).width = 30;
-    ws.getColumn(6).width = 12;
+    var hr = ws.addRow(['PLACA', 'CONDUCTOR', 'MES', 'DIAS DIURNO', 'DIAS NOCHE', 'DESCANSO', 'MANTENIMIENTO', 'TOTAL TRABAJO', 'TOTAL DÍAS']);
+    hr.eachCell(function(cell) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF17365D' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    });
+
+    data.forEach(function(item, idx) {
+        var row = ws.addRow([item.placa, item.conductor, item.mes, item.diurno, item.noche, item.descanso, item.mantenimiento, item.total, item.diasDsc + item.diasMnt]);
+        var fill = idx % 2 === 0 ? 'FFF5F7FA' : 'FFFFFFFF';
+        row.eachCell(function(cell) {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
+        });
+    });
+
+    ws.getColumn(1).width = 12;
+    ws.getColumn(2).width = 32;
+    ws.getColumn(3).width = 18;
+    ws.getColumn(4).width = 28;
+    ws.getColumn(5).width = 28;
+    ws.getColumn(6).width = 28;
+    ws.getColumn(7).width = 28;
+    ws.getColumn(8).width = 14;
+    ws.getColumn(9).width = 12;
+
+    ws.addRow([]);
+    ws.addRow(['RESUMEN DEL MES']).getCell(1).font = { bold: true, size: 14, color: { argb: 'FF17365D' } };
+    ws.addRow(['Total días diurno', totalD]);
+    ws.addRow(['Total días noche', totalN]);
+    ws.addRow(['Total días descanso', totalDsc]);
+    ws.addRow(['Total días mantenimiento', totalMnt]);
+    ws.addRow(['Total general', totalD + totalN]);
 
     var nombre = 'Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.xlsx';
     wb.xlsx.writeBuffer().then(function(buffer) {
@@ -2743,7 +3069,7 @@ function exportarExcel() {
         saveAs(blob, nombre);
         mostrarToast('✅ Excel descargado', 'success');
     }).catch(function(err) {
-        logErr(err);
+        console.error(err);
         mostrarToast('Error al generar Excel', 'error');
     });
 }
@@ -2760,27 +3086,33 @@ function exportarPDF() {
     var doc = new jsPDF('landscape', 'mm', 'a4');
     var pageWidth = doc.internal.pageSize.getWidth();
 
-    doc.setFontSize(22);
+    doc.setFontSize(20);
     doc.setTextColor(23, 54, 93);
-    doc.text('TRANSFERMATRI S.A.', pageWidth / 2, 18, { align: 'center' });
+    doc.text('TRANSFERMATRI S.A.', pageWidth / 2, 15, { align: 'center' });
 
-    doc.setFontSize(13);
+    doc.setFontSize(11);
     doc.setTextColor(80, 80, 80);
-    doc.text('COMPAÑÍA DE TRANSPORTE DE CARGA PESADA', pageWidth / 2, 26, { align: 'center' });
+    doc.text('COMPAÑÍA DE TRANSPORTE DE CARGA PESADA', pageWidth / 2, 22, { align: 'center' });
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroMes = $('filtroMes').value;
-    var data = [];
+    var mesTexto = MESES[String(filtroMes)] + ' ' + AÑO;
 
+    doc.setFontSize(13);
+    doc.setTextColor(23, 54, 93);
+    doc.text('Disponibilidad - ' + mesTexto, pageWidth / 2, 30, { align: 'center' });
+
+    var data = [];
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
-        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         data.push([
             r.placa,
             r.conductor,
-            (r.diurno || []).slice().sort(function(a,b){ return a-b; }).join(', ') || '--',
-            (r.noche || []).slice().sort(function(a,b){ return a-b; }).join(', ') || '--',
+            agruparDias(r.diurno || []) || '—',
+            agruparDias(r.noche || []) || '—',
+            agruparDias(r.descanso || []) || '—',
+            agruparDias(r.mantenimiento || []) || '—',
             (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)
         ]);
     }
@@ -2788,10 +3120,20 @@ function exportarPDF() {
     if (data.length === 0) { mostrarToast('No hay datos para exportar', 'warning'); return; }
 
     doc.autoTable({
-        head: [['PLACA', 'CONDUCTOR', 'DIAS DIURNO', 'DIAS NOCHE', 'TOTAL']],
+        head: [['PLACA', 'CONDUCTOR', 'DIURNO', 'NOCHE', 'DESCANSO', 'MANT.', 'TOTAL']],
         body: data,
         startY: 40,
-        styles: { fontSize: 8 }
+        styles: { fontSize: 7, cellPadding: 2 },
+        headStyles: { fillColor: [23, 54, 93], textColor: [255, 255, 255] },
+        columnStyles: {
+            0: { cellWidth: 22 },
+            1: { cellWidth: 45 },
+            2: { cellWidth: 38 },
+            3: { cellWidth: 38 },
+            4: { cellWidth: 30 },
+            5: { cellWidth: 30 },
+            6: { cellWidth: 15 }
+        }
     });
 
     doc.save('Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.pdf');
@@ -2820,8 +3162,10 @@ function subirAGoogleSheets(btn) {
             placa: r.placa,
             conductor: r.conductor,
             mes: MESES[String(r.mes)] + ' ' + AÑO,
-            diurno: (r.diurno || []).slice().sort(function(a,b){ return a-b; }).join(', '),
-            noche: (r.noche || []).slice().sort(function(a,b){ return a-b; }).join(', '),
+            diurno: (r.diurno || []).join(', '),
+            noche: (r.noche || []).join(', '),
+            descanso: (r.descanso || []).join(', '),
+            mantenimiento: (r.mantenimiento || []).join(', '),
             total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)
         });
     }
@@ -2833,8 +3177,15 @@ function subirAGoogleSheets(btn) {
     }
 
     var enviados = 0;
+    var GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyf25jwmACm6SwqeEZt0bodDIeEJqLemkNWRPRpN7ISDyzDJ96JHEGCtrsBGOJhRifJ/exec";
+
     lista.forEach(function(data) {
-        enviarASheets(data).then(function() {
+        fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(function() {
             enviados++;
             if (enviados === lista.length) {
                 btn.innerHTML = '✅ ¡SUBIDO!';
@@ -2853,318 +3204,27 @@ function subirAGoogleSheets(btn) {
 
 
 /* ============================================================
-   CALENDARIO REGISTRO
+   CAMBIAR VISTA
    ============================================================ */
 
-function toggleCalendario(tipo) {
-    if (!calendarioVisible) return;
-
-    var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
-    var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-
-    if (!wrapper || !container) return;
-
-    if (wrapper.classList.contains('cerrado')) {
-        wrapper.classList.remove('cerrado');
-        wrapper.classList.add('abierto');
-        container.querySelector('.click-indicator').innerHTML = '<span class="icono">▲</span> Click para ocultar';
-    } else {
-        wrapper.classList.remove('abierto');
-        wrapper.classList.add('cerrado');
-        container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
-    }
-}
-
-function cargarPlacas() {
-    $("placa").innerHTML = '<option value="">Seleccione una placa</option>';
-    obtenerPlacasUnicas().forEach(function(p) {
-        var op = document.createElement("option");
-        op.value = p;
-        op.textContent = p;
-        $("placa").appendChild(op);
-    });
-}
-
-function cargarConductoresPorPlaca(placa) {
-    var conductorSelect = $("conductor");
-    conductorSelect.innerHTML = '<option value="">Seleccione un conductor</option>';
-    if (placa === "") { $("btnIngresar").disabled = true; return; }
-    obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
-        var op = document.createElement("option");
-        op.value = i;
-        op.textContent = item.nombre;
-        conductorSelect.appendChild(op);
-    });
-    $("btnIngresar").disabled = true;
-}
-
-function ocultarCalendario() {
-    calendarioVisible = false;
-    $("contenedorCalendario").classList.remove("visible");
-    $("contenedorCalendario").style.display = "none";
-    $("contenedorResumen").classList.remove("visible");
-    $("contenedorResumen").style.display = "none";
-    $("btnBorrarRegistro").classList.remove('visible');
-
-    ['diurno', 'noche'].forEach(function(tipo) {
-        var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
-        if (wrapper) {
-            wrapper.classList.remove('abierto');
-            wrapper.classList.add('cerrado');
-        }
-        var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-        if (container) {
-            container.querySelector('.click-indicator').innerHTML = '<span class="icono">▼</span> Click para mostrar';
-        }
-    });
-}
-
-function cargarDisponibilidadGuardada() {
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var lista = obtenerConductoresPorPlaca($("placa").value);
-    var conductor = lista[parseInt($("conductor").value)];
-    if (!conductor) return;
-    var clave = conductor.nombre + "_" + $("placa").value + "_" + $("mes").value;
-    if (registros[clave]) {
-        diurno = new Set(registros[clave].diurno || []);
-        noche = new Set(registros[clave].noche || []);
-    }
-}
-
-function crearCalendario(elemento, seleccionados, tipo) {
-    elemento.innerHTML = "";
-
-    DIAS_SEMANA.forEach(function(nombre) {
-        var d = document.createElement("div");
-        d.className = "nombre-dia";
-        d.textContent = nombre;
-        elemento.appendChild(d);
+function cambiarVista(vista) {
+    document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
+        btn.classList.toggle('activo', btn.dataset.vista === vista);
     });
 
-    var mesNum = Number($("mes").value);
-    var cantDias = diasDelMes(AÑO, mesNum);
-    var posIni = posicionInicial(AÑO, mesNum);
-
-    for (var i = 0; i < posIni; i++) {
-        elemento.appendChild(document.createElement("div"));
-    }
-
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var lista = obtenerConductoresPorPlaca($("placa").value);
-    var conductor = lista[parseInt($("conductor").value)];
-    var nombreActual = conductor ? conductor.nombre : '';
-
-    for (var dia = 1; dia <= cantDias; dia++) {
-        (function(dia) {
-            var celda = document.createElement("div");
-            celda.className = "dia";
-
-            var ocupadoPor = null;
-            for (var k in registros) {
-                var r = registros[k];
-                if (r.placa === $("placa").value &&
-                    String(r.mes) === String($("mes").value) &&
-                    r.conductor !== nombreActual) {
-                    var dias = tipo === 'diurno' ? r.diurno : r.noche;
-                    if (dias && dias.indexOf(dia) >= 0) { ocupadoPor = r.conductor; break; }
-                }
-            }
-
-            if (ocupadoPor) {
-                celda.classList.add("ocupado");
-                celda.title = "Ocupado por: " + ocupadoPor;
-            }
-            if (seleccionados.has(dia)) celda.classList.add("seleccionado");
-
-            celda.innerHTML = '<div class="numero">' + dia + '</div>' +
-                (seleccionados.has(dia) ? '<div class="disponible">✓ Disponible</div>' : '') +
-                (ocupadoPor ? '<div class="ocupado-texto">🚫 Ocupado</div>' : '');
-
-            celda.addEventListener("click", function() {
-                if (ocupadoPor) {
-                    mostrarToast("Día ocupado por: " + ocupadoPor, 'warning');
-                    return;
-                }
-                if (seleccionados.has(dia)) seleccionados.delete(dia);
-                else seleccionados.add(dia);
-                crearCalendarios();
-                actualizarResumen();
-            });
-
-            elemento.appendChild(celda);
-        })(dia);
-    }
-}
-
-function crearCalendarios() {
-    crearCalendario($("calendarioDiurno"), diurno, 'diurno');
-    crearCalendario($("calendarioNoche"), noche, 'noche');
-}
-
-function actualizarResumen() {
-    var lD = Array.from(diurno).sort(function(a,b){ return a-b; });
-    var lN = Array.from(noche).sort(function(a,b){ return a-b; });
-    $("resumenDiurno").textContent = lD.length > 0 ? lD.join(", ") : "Ningún día seleccionado";
-    $("resumenNoche").textContent = lN.length > 0 ? lN.join(", ") : "Ningún día seleccionado";
-}
-
-
-/* ============================================================
-   TABS
-   ============================================================ */
-
-function cambiarTab(tab) {
-    document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
-    document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
-
-    if (tab === 'registrar') {
-        $('tabRegistrar').classList.add('activo');
-        document.querySelector('.tab-btn').classList.add('activo');
-    } else {
-        if (rolActual === 'admin') {
-            $('tabVisualizar').classList.add('activo');
-            document.querySelectorAll('.tab-btn')[1].classList.add('activo');
-            cambiarVista(vistaActual);
-        } else {
-            mostrarToast('⛔ Solo administradores', 'warning');
-            cambiarTab('registrar');
-        }
-    }
-}
-
-
-/* ============================================================
-   FILTRO DE PLACAS
-   ============================================================ */
-
-function cargarFiltroPlacasVisualizacion() {
-    var sel = $('filtroPlaca');
-    sel.innerHTML = '<option value="">Todas las placas</option>';
-    obtenerPlacasUnicas().forEach(function(p) {
-        var op = document.createElement("option");
-        op.value = p;
-        op.textContent = p;
-        sel.appendChild(op);
-    });
-}
-
-
-/* ============================================================
-   EVENTOS
-   ============================================================ */
-
-function onPlacaChange() {
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-
-    if (rolActual === 'admin') {
-        cargarConductoresPorPlaca(placaSelect.value);
-        conductorSelect.value = "";
-        $("btnIngresar").disabled = (placaSelect.value === "" || conductorSelect.value === "");
-        actualizarIdentificacion();
-        ocultarCalendario();
-        actualizarBotonBorrar();
-    } else {
-        actualizarBotonBorrar();
-    }
-}
-
-function onConductorChange() {
-    if (rolActual === 'admin') {
-        $("btnIngresar").disabled = ($("placa").value === "" || $("conductor").value === "");
-        actualizarIdentificacion();
-        ocultarCalendario();
-    }
-    actualizarBotonBorrar();
-}
-
-function onMesChange() {
-    ocultarCalendario();
-    actualizarIdentificacion();
-    actualizarBotonBorrar();
-    if (rolActual === 'usuario' && conductorLogueado) {
-        var registro = obtenerRegistroLocal($("placa").value, conductorLogueado, $("mes").value);
-        if (registro) ingresar();
-    }
-}
-
-
-/* ============================================================
-   INICIAR
-   ============================================================ */
-
-function iniciar() {
-    log('Iniciando app...');
-    log('  IS_MOBILE:', IS_MOBILE);
-    log('  IS_IOS:', IS_IOS);
-
-    mostrarFechaActual();
-    cargarPlacas();
-    cargarConductoresPorPlaca("");
-    cargarFiltroPlacasVisualizacion();
-    ocultarCalendario();
-
-    $('tabVisualizarBtn').style.display = 'none';
-    $("btnGuardarYVer").disabled = true;
-    $("btnBorrarRegistro").classList.remove('visible');
-
-    verificarUrlAdmin();
-
-    // ✅ FIX: Registrar eventos con addEventListener (más confiable que onclick inline)
-    var btnRolConductor = $('btnRolConductor');
-    var btnRolAdmin = $('btnRolAdmin');
-
-    if (btnRolConductor) {
-        btnRolConductor.addEventListener('click', function(e) {
-            e.preventDefault();
-            log('Click en CONDUCTOR');
-            abrirModalConductor();
-        });
-    } else {
-        logErr('btnRolConductor no encontrado');
-    }
-
-    if (btnRolAdmin) {
-        btnRolAdmin.addEventListener('click', function(e) {
-            e.preventDefault();
-            log('Click en ADMINISTRADOR');
-            abrirModalAdmin();
-        });
-    } else {
-        logErr('btnRolAdmin no encontrado');
-    }
-
-    // Selects con múltiples eventos
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
-
-    ['change', 'input', 'blur'].forEach(function(evt) {
-        placaSelect.addEventListener(evt, onPlacaChange);
-        conductorSelect.addEventListener(evt, onConductorChange);
-        mesSelect.addEventListener(evt, onMesChange);
+    document.querySelectorAll('.vista-contenido').forEach(function(el) {
+        el.style.display = 'none';
     });
 
-    $('panelDetalleDia').addEventListener('click', function(e) {
-        if (e.target === this) cerrarPanelDetalle();
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if ($('panelDetalleDia').classList.contains('active')) cerrarPanelDetalle();
-        }
-    });
-
-    if ($('pantallaLogin').style.display !== 'none') {
-        document.querySelectorAll('.contenido-principal').forEach(function(el) {
-            el.classList.remove('visible');
-        });
-        $('pantallaLogin').style.display = 'block';
+    if (vista === 'tabla') {
+        $('vistaTabla').style.display = 'block';
+        try { renderizarTablaDesdeCache(); } catch(e) { cargarVisualizacion(); }
+    } else if (vista === 'calendario') {
+        $('vistaCalendario').style.display = 'block';
+        cargarCalendarioMensual();
+    } else if (vista === 'reporte') {
+        $('vistaReporte').style.display = 'block';
     }
-
-    cambiarVista('tabla');
-
-    log('✅ App iniciada correctamente');
 }
 
 
@@ -3172,31 +3232,231 @@ function iniciar() {
    EXPONER FUNCIONES AL SCOPE GLOBAL
    ============================================================ */
 
-window.abrirModalConductor = abrirModalConductor;
-window.cerrarModalConductor = cerrarModalConductor;
-window.cargarConductoresLogin = cargarConductoresLogin;
-window.ingresarConductor = ingresarConductor;
-window.abrirModalAdmin = abrirModalAdmin;
-window.cerrarModalAdmin = cerrarModalAdmin;
-window.verificarClaveAdmin = verificarClaveAdmin;
-window.cerrarSesion = cerrarSesion;
-window.guardarYVer = guardarYVer;
 window.abrirDetalleConductor = abrirDetalleConductor;
-window.cambiarVista = cambiarVista;
-window.cargarVisualizacion = cargarVisualizacion;
-window.cambiarTab = cambiarTab;
-window.toggleCalendario = toggleCalendario;
-window.ingresar = ingresar;
+window.cargarCalendarioMensual = cargarCalendarioMensual;
+window.abrirPanelDetalleDia = abrirPanelDetalleDia;
+window.filtrarPanelDetalle = filtrarPanelDetalle;
+window.cerrarPanelDetalle = cerrarPanelDetalle;
 window.exportarExcel = exportarExcel;
 window.exportarPDF = exportarPDF;
 window.subirAGoogleSheets = subirAGoogleSheets;
-window.cerrarConfirm = cerrarConfirm;
-window.abrirPanelDetalleDia = abrirPanelDetalleDia;
-window.cerrarPanelDetalle = cerrarPanelDetalle;
-window.filtrarPanelDetalle = filtrarPanelDetalle;
-window.borrarMiRegistro = borrarMiRegistro;
-window.borrarRegistroAdmin = borrarRegistroAdmin;
-window.editarRegistroAdmin = editarRegistroAdmin;
+window.cambiarVista = cambiarVista;
+
+})();
+</script>
+
+<script>
+/* ============================================================
+   PARTE 4 - BOOT / EVENTOS GLOBALES
+   ============================================================ */
+
+(function() {
+'use strict';
+
+var $ = function(id) { return document.getElementById(id); };
+
+
+/* ============================================================
+   EXPONER FUNCIONES BÁSICAS AL SCOPE GLOBAL
+   ============================================================ */
+
+window.cerrarSesion = window.cerrarSesion || function() {};
+window.abrirModalConductor = window.abrirModalConductor || function() {};
+window.abrirModalAdmin = window.abrirModalAdmin || function() {};
+window.cargarConductoresLogin = window.cargarConductoresLogin || function() {};
+window.ingresarConductor = window.ingresarConductor || function() {};
+window.cerrarModalConductor = window.cerrarModalConductor || function() {};
+window.cerrarModalAdmin = window.cerrarModalAdmin || function() {};
+window.verificarClaveAdmin = window.verificarClaveAdmin || function() {};
+window.guardarYVer = window.guardarYVer || function() {};
+window.ingresar = window.ingresar || function() {};
+window.cambiarTab = window.cambiarTab || function() {};
+window.toggleCalendario = window.toggleCalendario || function() {};
+window.borrarMiRegistro = window.borrarMiRegistro || function() {};
+window.borrarRegistroAdmin = window.borrarRegistroAdmin || function() {};
+window.editarRegistroAdmin = window.editarRegistroAdmin || function() {};
+window.cargarVisualizacion = window.cargarVisualizacion || function() {};
+window.cerrarConfirm = window.cerrarConfirm || function() {};
+window.elegirTipoDias = window.elegirTipoDias || function() {};
+window.cerrarModalTipoDias = window.cerrarModalTipoDias || function() {};
+
+
+/* ============================================================
+   INICIAR APP
+   ============================================================ */
+
+function iniciar() {
+    console.log('[boot] Iniciando app...');
+
+    // 1. Fecha actual
+    try {
+        var ahora = new Date();
+        var opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        $('fechaActual').textContent = ahora.toLocaleDateString('es-ES', opciones);
+    } catch (e) { console.error(e); }
+
+    // 2. Cargar placas y conductores iniciales
+    try {
+        if (typeof window.cargarPlacas === 'function') window.cargarPlacas();
+    } catch (e) { console.error(e); }
+
+    // 3. Cargar filtros
+    try {
+        if (typeof window.cargarFiltroPlacasVisualizacion === 'function') {
+            window.cargarFiltroPlacasVisualizacion();
+        }
+    } catch (e) { console.error(e); }
+
+    // 4. Ocultar calendario
+    try {
+        if (typeof window.ocultarCalendario === 'function') window.ocultarCalendario();
+    } catch (e) { console.error(e); }
+
+    // 5. Botón visualizar oculto por defecto
+    var tabVizBtn = $('tabVisualizarBtn');
+    if (tabVizBtn) tabVizBtn.style.display = 'none';
+
+    var btnGuardar = $('btnGuardarYVer');
+    if (btnGuardar) btnGuardar.disabled = true;
+
+    var btnBorrar = $('btnBorrarRegistro');
+    if (btnBorrar) btnBorrar.classList.remove('visible');
+
+    // 6. Verificar si hay ?admin=true en URL
+    try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('admin') === 'true') {
+            setTimeout(function() {
+                if (typeof window.abrirModalAdmin === 'function') window.abrirModalAdmin();
+            }, 500);
+        }
+    } catch (e) { console.error(e); }
+
+    // 7. Registrar eventos de botones de login
+    registrarEventosLogin();
+
+    // 8. Registrar eventos de selects
+    registrarEventosSelects();
+
+    // 9. Cerrar panel al hacer click fuera
+    registrarEventosPanel();
+
+    console.log('[boot] ✅ App iniciada correctamente');
+}
+
+
+/* ============================================================
+   REGISTRAR EVENTOS DE BOTONES DE LOGIN
+   ============================================================ */
+
+function registrarEventosLogin() {
+    // Botón CONDUCTOR
+    var btnRolConductor = $('btnRolConductor');
+    if (btnRolConductor) {
+        btnRolConductor.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('[boot] Click en CONDUCTOR');
+            if (typeof window.abrirModalConductor === 'function') {
+                window.abrirModalConductor();
+            } else {
+                alert('Error: función abrirModalConductor no está definida. Revisa la consola.');
+            }
+        });
+        console.log('[boot] ✅ Evento CONDUCTOR registrado');
+    } else {
+        console.error('[boot] ❌ btnRolConductor no encontrado');
+    }
+
+    // Botón ADMINISTRADOR
+    var btnRolAdmin = $('btnRolAdmin');
+    if (btnRolAdmin) {
+        btnRolAdmin.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('[boot] Click en ADMINISTRADOR');
+            if (typeof window.abrirModalAdmin === 'function') {
+                window.abrirModalAdmin();
+            } else {
+                alert('Error: función abrirModalAdmin no está definida. Revisa la consola.');
+            }
+        });
+        console.log('[boot] ✅ Evento ADMINISTRADOR registrado');
+    } else {
+        console.error('[boot] ❌ btnRolAdmin no encontrado');
+    }
+}
+
+
+/* ============================================================
+   REGISTRAR EVENTOS DE SELECTS
+   ============================================================ */
+
+function registrarEventosSelects() {
+    var placaSelect = $('placa');
+    var conductorSelect = $('conductor');
+    var mesSelect = $('mes');
+
+    if (placaSelect) {
+        ['change', 'input', 'blur'].forEach(function(evt) {
+            placaSelect.addEventListener(evt, function() {
+                console.log('[select] placa:', placaSelect.value);
+                if (typeof window.onPlacaChange === 'function') {
+                    window.onPlacaChange();
+                }
+            });
+        });
+    }
+
+    if (conductorSelect) {
+        ['change', 'input', 'blur'].forEach(function(evt) {
+            conductorSelect.addEventListener(evt, function() {
+                console.log('[select] conductor:', conductorSelect.value);
+                if (typeof window.onConductorChange === 'function') {
+                    window.onConductorChange();
+                }
+            });
+        });
+    }
+
+    if (mesSelect) {
+        ['change', 'input', 'blur'].forEach(function(evt) {
+            mesSelect.addEventListener(evt, function() {
+                console.log('[select] mes:', mesSelect.value);
+                if (typeof window.onMesChange === 'function') {
+                    window.onMesChange();
+                }
+            });
+        });
+    }
+}
+
+
+/* ============================================================
+   REGISTRAR EVENTOS DEL PANEL DE DETALLE
+   ============================================================ */
+
+function registrarEventosPanel() {
+    var panel = $('panelDetalleDia');
+    if (panel) {
+        panel.addEventListener('click', function(e) {
+            if (e.target === panel) {
+                if (typeof window.cerrarPanelDetalle === 'function') {
+                    window.cerrarPanelDetalle();
+                }
+            }
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var p = $('panelDetalleDia');
+            if (p && p.classList.contains('active')) {
+                if (typeof window.cerrarPanelDetalle === 'function') {
+                    window.cerrarPanelDetalle();
+                }
+            }
+        }
+    });
+}
 
 
 /* ============================================================
@@ -3213,5 +3473,4 @@ if (document.readyState === 'loading') {
 </script>
 
 </body>
-
 </html>

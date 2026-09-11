@@ -7,13 +7,25 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+<meta http-equiv="Expires" content="-1">
 
 <meta name="theme-color" content="#17365d">
 
 <title>Disponibilidad Mensual - TRANSFERMATRI SA</title>
+
+<script>
+// Detectar si la URL no tiene ?v=3.1 y recargar con el parámetro
+(function() {
+    var url = window.location.href;
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('v') !== '3.1') {
+        params.set('v', '3.1');
+        window.location.replace(window.location.pathname + '?' + params.toString());
+    }
+})();
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -143,14 +155,41 @@
     }
     .calendario-wrapper.abierto { max-height: 1500px; opacity: 1; margin-top: 15px; }
 
-    .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; }
-    .nombre-dia { text-align: center; font-weight: bold; padding: 8px; color: #555; }
+    .calendario {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 7px;
+        width: 100%;
+    }
+
+    .nombre-dia {
+        text-align: center;
+        font-weight: bold;
+        padding: 8px 2px;
+        color: #555;
+        font-size: 13px;
+    }
+
     .dia {
-        min-height: 65px; border: 1px solid #ddd; border-radius: 8px;
-        padding: 8px; cursor: pointer; background-color: white;
+        aspect-ratio: 1 / 1;
+        min-height: 0;
+        max-height: 100px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 6px;
+        cursor: pointer;
+        background-color: white;
         box-sizing: border-box;
         transition: background-color 0.2s ease, border-color 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        min-width: 0;
     }
+
     .dia:hover { border-color: #17365d; background-color: #f5f8fc; }
     .dia.seleccionado { background-color: #d9ead3; border: 2px solid #548235; }
     .dia.seleccionado-noche { background-color: #d4e6f1; border: 2px solid #2980b9; }
@@ -159,19 +198,33 @@
         cursor: not-allowed; opacity: 0.7;
     }
     .dia.ocupado:hover { border-color: #c0392b; background-color: #fce4e4; }
-    .numero { font-weight: bold; font-size: 16px; }
-    .disponible {
-        margin-top: 8px; color: #38761d;
-        font-size: 12px; font-weight: bold;
+
+    .numero {
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1;
+        color: #17365d;
     }
-    .disponible-noche {
-        margin-top: 8px; color: #1a5276;
-        font-size: 12px; font-weight: bold;
-    }
+
+    .disponible,
+    .disponible-noche,
     .ocupado-texto {
-        margin-top: 8px; color: #c0392b;
-        font-size: 11px; font-weight: bold;
+        position: absolute;
+        bottom: 4px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 9px;
+        font-weight: bold;
+        padding: 0 2px;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
+    .disponible { color: #38761d; }
+    .disponible-noche { color: #1a5276; }
+    .ocupado-texto { color: #c0392b; font-size: 8px; }
 
     .resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .resumen-box { background-color: #f7f9fb; padding: 15px; border-radius: 8px; }
@@ -195,7 +248,6 @@
         font-weight: bold;
         cursor: pointer;
         font-size: 15px;
-        transition: background-color 0.3s ease;
         display: none;
     }
     .btn-borrar-registro.visible { display: inline-block; }
@@ -220,6 +272,7 @@
         background: white; cursor: pointer; font-size: 16px; font-weight: bold;
         transition: all 0.3s ease; display: flex;
         align-items: center; justify-content: center; gap: 12px;
+        font-family: inherit;
     }
     .login-container .opciones .btn-rol:hover {
         border-color: #17365d; background: #f5f8fc;
@@ -292,87 +345,49 @@
     }
 
     .modal-tipo-dias-content .dias-lista {
-        background: #fff3cd;
-        color: #856404;
-        padding: 12px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        margin: 15px 0;
-        word-break: break-word;
-        line-height: 1.5;
-        max-height: 130px;
-        overflow-y: auto;
-        font-size: 14px;
-        text-align: left;
+        background: #fff3cd; color: #856404;
+        padding: 12px 15px; border-radius: 8px;
+        font-weight: bold; margin: 15px 0;
+        word-break: break-word; line-height: 1.5;
+        max-height: 130px; overflow-y: auto;
+        font-size: 14px; text-align: left;
     }
 
     .modal-tipo-dias-content .sub-texto-tipo {
-        color: #666;
-        font-size: 14px;
-        margin: 12px 0 15px 0;
-        line-height: 1.4;
+        color: #666; font-size: 14px;
+        margin: 12px 0 15px 0; line-height: 1.4;
     }
 
     .btn-tipo {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        width: 100%;
-        padding: 14px 18px;
-        border: 2px solid #e8e8e8;
-        border-radius: 10px;
-        background: white;
-        cursor: pointer;
-        text-align: left;
-        font-size: 15px;
-        margin-bottom: 10px;
-        transition: all 0.2s ease;
+        display: flex; align-items: center; gap: 15px;
+        width: 100%; padding: 14px 18px;
+        border: 2px solid #e8e8e8; border-radius: 10px;
+        background: white; cursor: pointer;
+        text-align: left; font-size: 15px;
+        margin-bottom: 10px; transition: all 0.2s ease;
         font-family: inherit;
     }
     .btn-tipo:hover {
-        border-color: #17365d;
-        background: #f5f8fc;
+        border-color: #17365d; background: #f5f8fc;
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
-    .btn-tipo .btn-tipo-icono {
-        font-size: 28px;
-        flex-shrink: 0;
-    }
+    .btn-tipo .btn-tipo-icono { font-size: 28px; flex-shrink: 0; }
     .btn-tipo .btn-tipo-titulo {
-        font-weight: bold;
-        font-size: 16px;
-        color: #17365d;
-        display: block;
+        font-weight: bold; font-size: 16px; color: #17365d; display: block;
     }
     .btn-tipo .btn-tipo-desc {
-        font-size: 12px;
-        color: #888;
-        margin-top: 2px;
-        font-weight: normal;
-        display: block;
+        font-size: 12px; color: #888; margin-top: 2px;
+        font-weight: normal; display: block;
     }
-    .btn-tipo.descanso:hover {
-        border-color: #f39c12;
-        background: #fef5e7;
-    }
-    .btn-tipo.mantenimiento:hover {
-        border-color: #e74c3c;
-        background: #fdedec;
-    }
+    .btn-tipo.descanso:hover { border-color: #f39c12; background: #fef5e7; }
+    .btn-tipo.mantenimiento:hover { border-color: #e74c3c; background: #fdedec; }
 
     .btn-cancelar-tipo {
-        margin-top: 10px;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        background: #ecf0f1;
-        color: #555;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-        width: 100%;
-        font-family: inherit;
+        margin-top: 10px; padding: 12px 20px;
+        border: none; border-radius: 8px; background: #ecf0f1;
+        color: #555; cursor: pointer; font-size: 14px;
+        font-weight: bold; width: 100%; font-family: inherit;
         min-height: 44px;
     }
     .btn-cancelar-tipo:hover { background: #d5dbdb; }
@@ -511,60 +526,44 @@
         padding: 1px 8px; border-radius: 12px; font-size: 11px;
     }
 
-    .tabla-disponibilidad {
-        width: 100%; border-collapse: collapse; font-size: 13px;
-    }
+    .tabla-disponibilidad { width: 100%; border-collapse: collapse; font-size: 13px; }
     .tabla-disponibilidad th {
         background-color: #17365d; color: white; padding: 10px 8px;
         text-align: left; position: sticky; top: 0; z-index: 10;
         white-space: nowrap;
     }
     .tabla-disponibilidad td {
-        padding: 10px 8px; border-bottom: 1px solid #ddd;
-        vertical-align: top;
+        padding: 10px 8px; border-bottom: 1px solid #ddd; vertical-align: top;
     }
     .tabla-disponibilidad tr:hover { background-color: #f5f7fa; }
 
     .bloque-dias {
-        display: inline-block;
-        background-color: #d9ead3;
-        color: #38761d;
-        padding: 3px 8px;
-        border-radius: 5px;
-        font-size: 11px;
-        font-weight: bold;
-        margin: 2px 3px 2px 0;
-        white-space: nowrap;
-        line-height: 1.3;
+        display: inline-block; background-color: #d9ead3; color: #38761d;
+        padding: 3px 8px; border-radius: 5px; font-size: 11px;
+        font-weight: bold; margin: 2px 3px 2px 0;
+        white-space: nowrap; line-height: 1.3;
     }
     .bloque-dias.noche { background-color: #d4e6f1; color: #1a5276; }
     .bloque-dias.descanso { background-color: #fce4d6; color: #b85c00; }
     .bloque-dias.mantenimiento { background-color: #fadbd8; color: #922b21; }
-    .bloque-vacio {
-        color: #999; font-style: italic; font-size: 11px;
-    }
+    .bloque-vacio { color: #999; font-style: italic; font-size: 11px; }
 
-    .acciones-celda {
-        display: flex; gap: 5px; flex-wrap: wrap;
-    }
+    .acciones-celda { display: flex; gap: 5px; flex-wrap: wrap; }
 
     .btn-eliminar {
         background-color: #e74c3c; color: white; border: none;
-        padding: 5px 10px; border-radius: 5px;
-        cursor: pointer; font-size: 11px; font-weight: bold;
-        white-space: nowrap; font-family: inherit;
+        padding: 5px 10px; border-radius: 5px; cursor: pointer;
+        font-size: 11px; font-weight: bold; font-family: inherit;
     }
     .btn-editar {
         background-color: #f39c12; color: white; border: none;
-        padding: 5px 10px; border-radius: 5px;
-        cursor: pointer; font-size: 11px; font-weight: bold;
-        white-space: nowrap; font-family: inherit;
+        padding: 5px 10px; border-radius: 5px; cursor: pointer;
+        font-size: 11px; font-weight: bold; font-family: inherit;
     }
     .btn-ver-detalle {
         background-color: #2980b9; color: white; border: none;
         padding: 5px 10px; border-radius: 5px; cursor: pointer;
-        font-size: 11px; font-weight: bold;
-        white-space: nowrap; font-family: inherit;
+        font-size: 11px; font-weight: bold; font-family: inherit;
     }
 
     .contenedor-tabla {
@@ -799,13 +798,13 @@
             flex-shrink: 0; white-space: nowrap; padding: 10px 14px; font-size: 12px;
         }
 
-        .calendario { gap: 3px; }
+        /* Calendario móvil: ajustes */
+        .calendario { gap: 4px; }
         .nombre-dia { font-size: 11px; padding: 5px 2px; }
-        .dia { min-height: 48px; padding: 3px; font-size: 12px; border-radius: 6px; }
+        .dia { max-height: 70px; padding: 4px; border-radius: 6px; }
         .dia .numero { font-size: 14px; }
-        .dia .disponible, .dia .disponible-noche, .dia .ocupado-texto {
-            font-size: 9px; margin-top: 3px;
-        }
+        .disponible, .disponible-noche { font-size: 8px; bottom: 3px; }
+        .ocupado-texto { font-size: 7px; bottom: 3px; }
 
         .logo-operativo-container { border-radius: 10px; border-width: 2px; }
         .logo-operativo-container .click-indicator {
@@ -890,7 +889,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v3.0</div>
+        <div class="version">Sistema de Disponibilidad v3.1</div>
     </div>
 </header>
 
@@ -952,7 +951,7 @@
 
         <div class="grupo-placa">
             <label>🚗 Selecciona tu Placa</label>
-            <select id="loginPlaca" onchange="cargarConductoresLogin()">
+            <select id="loginPlaca">
                 <option value="">-- Seleccione una placa --</option>
             </select>
         </div>
@@ -964,11 +963,11 @@
             </select>
         </div>
 
-        <button class="btn-ingresar-conductor" id="btnLoginConductor" disabled onclick="ingresarConductor()">
+        <button class="btn-ingresar-conductor" id="btnLoginConductor" disabled>
             🚪 INGRESAR
         </button>
 
-        <button class="btn-cancelar-conductor" onclick="cerrarModalConductor()">
+        <button class="btn-cancelar-conductor" id="btnCancelarConductor">
             ❌ Cancelar
         </button>
     </div>
@@ -981,8 +980,8 @@
         <p>Ingrese la clave de administrador para acceder al panel de control</p>
         <div class="error-clave" id="errorClave">❌ Clave incorrecta. Intente nuevamente.</div>
         <input type="password" class="input-clave" id="claveAdmin" placeholder="Ingrese la clave..." maxlength="20">
-        <button class="btn-ingresar-admin" onclick="verificarClaveAdmin()">🔓 INGRESAR</button>
-        <button class="btn-cancelar-admin" onclick="cerrarModalAdmin()">❌ Cancelar</button>
+        <button class="btn-ingresar-admin" id="btnIngresarAdmin">🔓 INGRESAR</button>
+        <button class="btn-cancelar-admin" id="btnCancelarAdmin">❌ Cancelar</button>
     </div>
 </div>
 
@@ -994,7 +993,7 @@
         <div class="dias-lista" id="diasSinMarcarLista"></div>
         <p class="sub-texto-tipo"><strong>Debes indicar qué representan esos días para poder guardar:</strong></p>
 
-        <button class="btn-tipo descanso" onclick="elegirTipoDias('descanso')">
+        <button class="btn-tipo descanso" id="btnTipoDescanso">
             <span class="btn-tipo-icono">🛌</span>
             <div>
                 <span class="btn-tipo-titulo">DESCANSO</span>
@@ -1002,7 +1001,7 @@
             </div>
         </button>
 
-        <button class="btn-tipo mantenimiento" onclick="elegirTipoDias('mantenimiento')">
+        <button class="btn-tipo mantenimiento" id="btnTipoMantenimiento">
             <span class="btn-tipo-icono">🔧</span>
             <div>
                 <span class="btn-tipo-titulo">MANTENIMIENTO</span>
@@ -1010,7 +1009,7 @@
             </div>
         </button>
 
-        <button class="btn-cancelar-tipo" onclick="cerrarModalTipoDias()">
+        <button class="btn-cancelar-tipo" id="btnCancelarTipo">
             ❌ CANCELAR (no guardar)
         </button>
     </div>
@@ -1022,8 +1021,8 @@
         <h3 id="confirmTitulo">Confirmar</h3>
         <p id="confirmMensaje">¿Está seguro?</p>
         <div class="confirm-botones">
-            <button class="btn-cancelar-confirm" onclick="cerrarConfirm(false)">Cancelar</button>
-            <button class="btn-aceptar-confirm" onclick="cerrarConfirm(true)">Aceptar</button>
+            <button class="btn-cancelar-confirm" id="btnCancelarConfirm">Cancelar</button>
+            <button class="btn-aceptar-confirm" id="btnAceptarConfirm">Aceptar</button>
         </div>
     </div>
 </div>
@@ -1034,12 +1033,12 @@
         <div class="panel-detalle-header">
             <div>
                 <h3 id="panelTitulo">Día 1</h3>
-                <div class="subtitulo-panel" id="panelSubtitulo">Detalle de disponibilidad</div>
+                <div class="subtitulo-panel" id="panelSubtitulo">Detalle</div>
             </div>
-            <button class="btn-cerrar-panel" onclick="cerrarPanelDetalle()">✕</button>
+            <button class="btn-cerrar-panel" id="btnCerrarPanel">✕</button>
         </div>
         <div class="panel-busqueda" style="padding:10px 15px;background:#f7f9fb;border-bottom:1px solid #e0e0e0;">
-            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." oninput="filtrarPanelDetalle()" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;">
+            <input type="text" id="panelBusqueda" placeholder="🔍 Buscar conductor..." style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:8px;font-size:15px;">
         </div>
         <div class="panel-detalle-body" id="panelDetalleBody"></div>
     </div>
@@ -1050,8 +1049,8 @@
 
     <div class="tarjeta" style="padding: 15px 25px;">
         <div class="tabs" id="tabsContainer">
-            <button class="tab-btn activo" onclick="cambiarTab('registrar')">📝 Registrar Disponibilidad</button>
-            <button class="tab-btn" id="tabVisualizarBtn" onclick="cambiarTab('visualizar')">👀 Visualizar Disponibilidad</button>
+            <button class="tab-btn activo" id="tabBtnRegistrar">📝 Registrar Disponibilidad</button>
+            <button class="tab-btn" id="tabVisualizarBtn">👀 Visualizar Disponibilidad</button>
         </div>
     </div>
 
@@ -1083,9 +1082,7 @@
                     </select>
                 </div>
                 <div>
-                    <button class="btn-ingresar" id="btnIngresar" disabled onclick="ingresar()">
-                        🚪 INGRESAR
-                    </button>
+                    <button class="btn-ingresar" id="btnIngresar" disabled>🚪 INGRESAR</button>
                 </div>
             </div>
             <div class="identificacion" id="identificacion">
@@ -1099,8 +1096,8 @@
                 👆 Haga clic en la imagen del turno para ver su calendario.
             </p>
             <div id="seccionDiurno" class="turno">
-                <div class="logo-operativo-container" onclick="toggleCalendario('diurno')">
-                    <img src="ChatGPT Image 8 sept 2026, 14_14_17.png" alt="OPERATIVO DIURNO - TRANSFERMATRI SA" id="logoDiurno">
+                <div class="logo-operativo-container" id="logoDiurnoContainer">
+                    <img src="ChatGPT Image 8 sept 2026, 14_14_17.png" alt="OPERATIVO DIURNO" id="logoDiurno">
                     <div class="click-indicator">
                         <span class="icono">▼</span> Click para mostrar
                     </div>
@@ -1110,8 +1107,8 @@
                 </div>
             </div>
             <div id="seccionNoche" class="turno">
-                <div class="logo-operativo-container" onclick="toggleCalendario('noche')">
-                    <img src="ChatGPT Image 8 sept 2026, 14_14_07.png" alt="OPERATIVO NOCTURNO - TRANSFERMATRI SA" id="logoNocturno">
+                <div class="logo-operativo-container" id="logoNocheContainer">
+                    <img src="ChatGPT Image 8 sept 2026, 14_14_07.png" alt="OPERATIVO NOCTURNO" id="logoNocturno">
                     <div class="click-indicator">
                         <span class="icono">▼</span> Click para mostrar
                     </div>
@@ -1135,12 +1132,8 @@
                 </div>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-guardar" id="btnGuardarYVer" onclick="guardarYVer()">
-                    💾 GUARDAR Y VER DISPONIBILIDAD
-                </button>
-                <button class="btn-borrar-registro" id="btnBorrarRegistro" onclick="borrarMiRegistro()">
-                    🗑️ BORRAR MI REGISTRO
-                </button>
+                <button class="btn-guardar" id="btnGuardarYVer">💾 GUARDAR Y VER DISPONIBILIDAD</button>
+                <button class="btn-borrar-registro" id="btnBorrarRegistro">🗑️ BORRAR MI REGISTRO</button>
             </div>
         </div>
 
@@ -1156,17 +1149,17 @@
             <div class="filtros-visualizacion">
                 <div class="grupo-filtro">
                     <label>🚗 Filtrar por Placa</label>
-                    <select id="filtroPlaca" onchange="cargarVisualizacion()">
+                    <select id="filtroPlaca">
                         <option value="">Todas las placas</option>
                     </select>
                 </div>
                 <div class="grupo-filtro">
                     <label>👤 Filtrar por Conductor</label>
-                    <input type="text" id="filtroConductor" placeholder="Buscar conductor..." oninput="cargarVisualizacion()">
+                    <input type="text" id="filtroConductor" placeholder="Buscar conductor...">
                 </div>
                 <div class="grupo-filtro">
                     <label>📅 Mes</label>
-                    <select id="filtroMes" onchange="cargarVisualizacion()">
+                    <select id="filtroMes">
                         <option value="8">Septiembre 2026</option>
                         <option value="9">Octubre 2026</option>
                         <option value="10">Noviembre 2026</option>
@@ -1174,21 +1167,19 @@
                     </select>
                 </div>
                 <div class="grupo-filtro">
-                    <button class="btn-actualizar" onclick="cargarVisualizacion(true)">
-                        🔄 ACTUALIZAR
-                    </button>
+                    <button class="btn-actualizar" id="btnActualizar">🔄 ACTUALIZAR</button>
                 </div>
             </div>
 
             <div style="margin-top:20px;">
                 <div class="tabs-visualizacion">
-                    <button class="tab-vista-btn activo" data-vista="tabla" onclick="cambiarVista('tabla')">
+                    <button class="tab-vista-btn activo" data-vista="tabla" id="tabVistaTabla">
                         📋 TABLA <span class="badge">Resumen</span>
                     </button>
-                    <button class="tab-vista-btn" data-vista="calendario" onclick="cambiarVista('calendario')">
+                    <button class="tab-vista-btn" data-vista="calendario" id="tabVistaCalendario">
                         📅 CALENDARIO <span class="badge">Mensual</span>
                     </button>
-                    <button class="tab-vista-btn" data-vista="reporte" onclick="cambiarVista('reporte')">
+                    <button class="tab-vista-btn" data-vista="reporte" id="tabVistaReporte">
                         📊 REPORTE <span class="badge">Descargar</span>
                     </button>
                 </div>
@@ -1208,21 +1199,11 @@
                 <div id="vistaReporte" class="vista-contenido vista-calendario">
                     <div style="text-align:center; padding:30px;">
                         <h3 style="color:#17365d;">📊 Exportar Reporte</h3>
-                        <p style="color:#666; margin-bottom:20px;">
-                            Descarga los datos de disponibilidad en formato Excel, PDF o súbelos a Google Sheets.
-                        </p>
+                        <p style="color:#666; margin-bottom:20px;">Descarga los datos en formato Excel o PDF.</p>
                         <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
-                            <button class="btn-reporte excel" onclick="exportarExcel()">📊 DESCARGAR EXCEL</button>
-                            <button class="btn-reporte pdf" onclick="exportarPDF()">📄 DESCARGAR PDF</button>
-                            <button class="btn-google-sheets" onclick="subirAGoogleSheets(this)">☁️ SUBIR A GOOGLE SHEETS</button>
-                        </div>
-                        <div style="margin-top:20px; padding:15px; background:#f7f9fb; border-radius:8px; text-align:left; max-width:500px; margin-left:auto; margin-right:auto;">
-                            <p style="font-size:13px; color:#666; margin:5px 0;"><strong>📌 Incluye:</strong></p>
-                            <p style="font-size:12px; color:#888; margin:3px 0;">• Placa y conductor</p>
-                            <p style="font-size:12px; color:#888; margin:3px 0;">• Días disponibles (Diurno y Noche)</p>
-                            <p style="font-size:12px; color:#888; margin:3px 0;">• Días de descanso y mantenimiento</p>
-                            <p style="font-size:12px; color:#888; margin:3px 0;">• Total de días por conductor</p>
-                            <p style="font-size:12px; color:#888; margin:3px 0;">• Resumen general del mes</p>
+                            <button class="btn-reporte excel" id="btnExportarExcel">📊 DESCARGAR EXCEL</button>
+                            <button class="btn-reporte pdf" id="btnExportarPDF">📄 DESCARGAR PDF</button>
+                            <button class="btn-google-sheets" id="btnSubirSheets">☁️ SUBIR A GOOGLE SHEETS</button>
                         </div>
                     </div>
                 </div>
@@ -1237,30 +1218,26 @@
 
 <script>
 /* ============================================================
-   CAPTURA GLOBAL DE ERRORES
+   v3.1 - FUNCIONES GLOBALES (sin IIFE, todo en window)
    ============================================================ */
+
+// -------- CAPTURA DE ERRORES --------
 window.addEventListener('error', function(e) {
     var panel = document.getElementById('errorPanel');
     var texto = document.getElementById('errorTexto');
     if (panel && texto) {
-        texto.textContent = (e.message || 'Error desconocido') +
-            '\n' + (e.filename || '') + ':' + (e.lineno || '');
+        texto.textContent = (e.message || 'Error') + '\n' + (e.filename || '') + ':' + (e.lineno || '');
         panel.classList.add('visible');
     }
-    console.error('[GLOBAL ERROR]', e.message, e.filename, e.lineno);
+    console.error('[ERROR]', e.message, e.filename, e.lineno);
 });
 
 
-/* ============================================================
-   PARTE 2 — NÚCLEO (global, sin IIFE para que todo sea accesible)
-   ============================================================ */
-
-// ============ CONSTANTES ============
+// -------- CONSTANTES --------
 var AÑO = 2026;
 var CLAVE_ADMIN = "ADMIN2026";
 var GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwc4a5SBXXMu5-1lDyhplLxDy9aUmHSvAW_CfM4TJsSgGhnv_UHHmBOPvaUsp_TYv7ynQ/exec";
 var IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-var IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 var MESES = {
     '1':'Enero','2':'Febrero','3':'Marzo','4':'Abril','5':'Mayo','6':'Junio',
@@ -1315,7 +1292,7 @@ var CONDUCTORES = [
 ];
 
 
-// ============ ESTADO ============
+// -------- ESTADO --------
 var rolActual = 'usuario';
 var conductorLogueado = null;
 var placaLogueada = null;
@@ -1330,10 +1307,10 @@ var _borradosRecientes = new Set();
 var _diasPendientes = [];
 var _registroPendiente = null;
 
+
+// -------- HELPERS --------
 function $(id) { return document.getElementById(id); }
 
-
-// ============ UTILIDADES ============
 function escapeHtml(texto) {
     var div = document.createElement('div');
     div.textContent = String(texto == null ? '' : texto);
@@ -1409,16 +1386,11 @@ function agruparDias(dias) {
     return bloques.join(', ');
 }
 
-function log() {
-    console.log.apply(console, ['[app]'].concat(Array.prototype.slice.call(arguments)));
-}
 
-
-// ============ TOAST / CONFIRM ============
+// -------- TOAST --------
 function mostrarToast(mensaje, tipo, duracion) {
     tipo = tipo || 'info';
     duracion = duracion || 3000;
-
     var toast = $('toastGlobal');
     if (!toast) {
         toast = document.createElement('div');
@@ -1450,7 +1422,7 @@ function cerrarConfirm(aceptar) {
 }
 
 
-// ============ FECHA ============
+// -------- FECHA --------
 function mostrarFechaActual() {
     var ahora = new Date();
     var opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1458,7 +1430,7 @@ function mostrarFechaActual() {
 }
 
 
-// ============ LOGIN ============
+// -------- LOGIN --------
 function cargarPlacasLogin() {
     var select = $('loginPlaca');
     select.innerHTML = '<option value="">-- Seleccione una placa --</option>';
@@ -1517,7 +1489,6 @@ function ingresarConductor() {
 }
 
 function abrirModalConductor() {
-    log('abrirModalConductor()');
     $('modalConductor').classList.add('active');
     $('loginPlaca').value = '';
     $('loginConductor').innerHTML = '<option value="">-- Primero seleccione una placa --</option>';
@@ -1531,7 +1502,6 @@ function cerrarModalConductor() {
 }
 
 function abrirModalAdmin() {
-    log('abrirModalAdmin()');
     $('modalAdmin').classList.add('active');
     $('claveAdmin').value = '';
     $('errorClave').classList.remove('visible');
@@ -1559,26 +1529,21 @@ function iniciarSesionUsuario(nombre, placa) {
     mostrarContenidoPrincipal();
     actualizarBarraRol(nombre, placa);
 
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var btnIngresar = $("btnIngresar");
-    var btnGuardarYVer = $("btnGuardarYVer");
+    $("placa").value = placa;
+    $("placa").disabled = true;
+    $("conductor").disabled = true;
 
-    placaSelect.value = placa;
-    placaSelect.disabled = true;
-    conductorSelect.disabled = true;
-
-    conductorSelect.innerHTML = '';
+    $("conductor").innerHTML = '';
     obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
         var op = document.createElement("option");
         op.value = i;
         op.textContent = item.nombre;
-        conductorSelect.appendChild(op);
-        if (item.nombre === nombre) conductorSelect.value = i;
+        $("conductor").appendChild(op);
+        if (item.nombre === nombre) $("conductor").value = i;
     });
 
-    btnIngresar.disabled = false;
-    btnGuardarYVer.disabled = false;
+    $("btnIngresar").disabled = false;
+    $("btnGuardarYVer").disabled = false;
 
     actualizarIdentificacion();
     $('tabVisualizarBtn').style.display = 'none';
@@ -1588,7 +1553,7 @@ function iniciarSesionUsuario(nombre, placa) {
         var registro = obtenerRegistroLocal(placa, nombre, $("mes").value);
         if (registro) {
             ingresar();
-            mostrarToast('👋 Ya tienes un registro guardado. Puedes editarlo.', 'info', 4000);
+            mostrarToast('👋 Ya tienes un registro guardado.', 'info', 4000);
         }
     }, 300);
 }
@@ -1637,29 +1602,22 @@ function actualizarBarraRol(nombre, placa) {
 
 function actualizarIdentificacion() {
     var id = $('identificacion');
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
-
-    if (rolActual !== 'usuario' || !placaSelect.value || conductorSelect.value === '') {
-        id.textContent = "👋 Seleccione una placa y un conductor, luego presione INGRESAR";
+    if (rolActual !== 'usuario' || !$("placa").value || $("conductor").value === '') {
+        id.textContent = "👋 Seleccione una placa y un conductor";
         id.classList.remove('con-registro');
         return;
     }
 
-    var lista = obtenerConductoresPorPlaca(placaSelect.value);
-    var conductor = lista[parseInt(conductorSelect.value)] ? lista[parseInt(conductorSelect.value)].nombre : '';
-    var registro = obtenerRegistroLocal(placaSelect.value, conductor, mesSelect.value);
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var conductor = lista[parseInt($("conductor").value)] ? lista[parseInt($("conductor").value)].nombre : '';
+    var registro = obtenerRegistroLocal($("placa").value, conductor, $("mes").value);
 
     if (registro) {
         var totalDias = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
-        var extra = '';
-        if (registro.descanso && registro.descanso.length) extra += ' 🛌' + registro.descanso.length;
-        if (registro.mantenimiento && registro.mantenimiento.length) extra += ' 🔧' + registro.mantenimiento.length;
-        id.textContent = '🚗 ' + placaSelect.value + ' — 👤 ' + conductor + ' — 📋 Ya registrado (' + totalDias + ' días)' + extra;
+        id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 📋 Registrado (' + totalDias + ' días)';
         id.classList.add('con-registro');
     } else {
-        id.textContent = '🚗 ' + placaSelect.value + ' — 👤 ' + conductor + ' — 🆕 Sin registro previo';
+        id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 🆕 Sin registro';
         id.classList.remove('con-registro');
     }
 }
@@ -1689,22 +1647,17 @@ function cerrarSesion() {
 }
 
 
-// ============ INGRESAR ============
+// -------- INGRESAR --------
 function ingresar() {
-    log('ingresar()');
-
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-
     try {
         if (rolActual === 'usuario' && conductorLogueado) {
             if (!placaLogueada || !conductorLogueado) {
                 mostrarToast("Error: sesión no iniciada", 'error');
                 return;
             }
-            placaSelect.value = placaLogueada;
+            $("placa").value = placaLogueada;
         } else {
-            if (placaSelect.value === "" || conductorSelect.value === "") {
+            if ($("placa").value === "" || $("conductor").value === "") {
                 mostrarToast("Seleccione una placa y un conductor", 'warning');
                 return;
             }
@@ -1761,13 +1714,11 @@ function cargarDisponibilidadGuardada() {
 }
 
 
-// ============ CALENDARIO REGISTRO ============
+// -------- CALENDARIO REGISTRO --------
 function toggleCalendario(tipo) {
     if (!calendarioVisible) return;
-
     var wrapper = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
     var container = document.querySelector('#seccion' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + ' .logo-operativo-container');
-
     if (!wrapper || !container) return;
 
     if (wrapper.classList.contains('cerrado')) {
@@ -1833,8 +1784,8 @@ function crearCalendario(elemento, seleccionados, tipo) {
             var claseLabel = tipo === 'diurno' ? 'disponible' : 'disponible-noche';
 
             celda.innerHTML = '<div class="numero">' + dia + '</div>' +
-                (seleccionados.has(dia) ? '<div class="' + claseLabel + '">✓ Disponible</div>' : '') +
-                (ocupadoPor ? '<div class="ocupado-texto">🚫 Ocupado</div>' : '');
+                (seleccionados.has(dia) ? '<div class="' + claseLabel + '">✓</div>' : '') +
+                (ocupadoPor ? '<div class="ocupado-texto">🚫</div>' : '');
 
             celda.addEventListener("click", function() {
                 if (ocupadoPor) {
@@ -1847,10 +1798,8 @@ function crearCalendario(elemento, seleccionados, tipo) {
                 } else {
                     if (tipo === 'diurno' && noche.has(dia)) {
                         noche.delete(dia);
-                        mostrarToast("Día movido de Noche a Diurno", 'info', 1500);
                     } else if (tipo === 'noche' && diurno.has(dia)) {
                         diurno.delete(dia);
-                        mostrarToast("Día movido de Diurno a Noche", 'info', 1500);
                     }
                     seleccionados.add(dia);
                 }
@@ -1870,40 +1819,38 @@ function crearCalendarios() {
 }
 
 function actualizarResumen() {
-    var lD = Array.from(diurno).sort(function(a,b) { return a - b; });
-    var lN = Array.from(noche).sort(function(a,b) { return a - b; });
-    $("resumenDiurno").textContent = lD.length > 0 ? agruparDias(lD) : "Ningún día seleccionado";
-    $("resumenNoche").textContent = lN.length > 0 ? agruparDias(lN) : "Ningún día seleccionado";
+    try {
+        var lD = Array.from(diurno).sort(function(a,b) { return a - b; });
+        var lN = Array.from(noche).sort(function(a,b) { return a - b; });
+        if ($("resumenDiurno")) $("resumenDiurno").textContent = lD.length > 0 ? agruparDias(lD) : "Ningún día seleccionado";
+        if ($("resumenNoche")) $("resumenNoche").textContent = lN.length > 0 ? agruparDias(lN) : "Ningún día seleccionado";
+    } catch (e) {
+        console.error('Error en actualizarResumen:', e);
+    }
 }
 
 
-// ============ GUARDAR con modal tipo días ============
+// -------- GUARDAR con modal tipo días --------
 function guardarYVer() {
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
+    if ($("placa").value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
+    if ($("conductor").value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
 
-    if (placaSelect.value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
-    if (conductorSelect.value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
-
-    var mesNum = Number(mesSelect.value);
+    var mesNum = Number($("mes").value);
     var cantDias = diasDelMes(AÑO, mesNum);
     var diasBlancos = [];
     for (var d = 1; d <= cantDias; d++) {
-        if (!diurno.has(d) && !noche.has(d)) {
-            diasBlancos.push(d);
-        }
+        if (!diurno.has(d) && !noche.has(d)) diasBlancos.push(d);
     }
 
     _diasPendientes = diasBlancos;
 
-    var lista = obtenerConductoresPorPlaca(placaSelect.value);
-    var nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var nombreConductor = lista[parseInt($("conductor").value)].nombre;
 
     _registroPendiente = {
         conductor: nombreConductor,
-        placa: placaSelect.value,
-        mes: mesSelect.value,
+        placa: $("placa").value,
+        mes: $("mes").value,
         diurno: Array.from(diurno).sort(function(a,b) { return a - b; }),
         noche: Array.from(noche).sort(function(a,b) { return a - b; }),
         descanso: [],
@@ -1942,7 +1889,7 @@ function cerrarModalTipoDias() {
 
 function _guardarRegistro(registro) {
     if (_guardandoEnProgreso) {
-        mostrarToast('⏳ Guardando, espere...', 'info');
+        mostrarToast('⏳ Guardando...', 'info');
         return;
     }
     _guardandoEnProgreso = true;
@@ -1990,7 +1937,7 @@ function _guardarRegistro(registro) {
     })
     .catch(function(error) {
         console.error('Error:', error);
-        mostrarToast('⚠️ Error al guardar (se guardó localmente)', 'error');
+        mostrarToast('⚠️ Error (se guardó localmente)', 'error');
         btn.innerHTML = '⚠️ Error';
         btn.style.backgroundColor = '#e74c3c';
         setTimeout(restaurar, 3000);
@@ -1999,147 +1946,87 @@ function _guardarRegistro(registro) {
 }
 
 
-// ============ BORRAR REGISTRO PROPIO ============
+// -------- BORRAR REGISTROS --------
 function borrarMiRegistro() {
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
-
-    if (placaSelect.value === "" || conductorSelect.value === "") {
+    if ($("placa").value === "" || $("conductor").value === "") {
         mostrarToast("No hay registro seleccionado", 'warning');
         return;
     }
 
-    var lista = obtenerConductoresPorPlaca(placaSelect.value);
-    var nombreConductor = lista[parseInt(conductorSelect.value)].nombre;
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var nombreConductor = lista[parseInt($("conductor").value)].nombre;
 
-    mostrarConfirm(
-        '¿Estás seguro de borrar tu registro de ' + MESES[String(mesSelect.value)] + '?',
-        function(ok) {
-            if (!ok) return;
+    mostrarConfirm('¿Borrar tu registro de ' + MESES[String($("mes").value)] + '?', function(ok) {
+        if (!ok) return;
 
-            eliminarRegistroLocal(placaSelect.value, nombreConductor, mesSelect.value);
+        eliminarRegistroLocal($("placa").value, nombreConductor, $("mes").value);
 
-            var claveR = claveRegistro(placaSelect.value, nombreConductor, mesSelect.value);
-            _borradosRecientes.add(claveR);
-            delete _registrosCache[claveR];
+        var claveR = claveRegistro($("placa").value, nombreConductor, $("mes").value);
+        _borradosRecientes.add(claveR);
+        delete _registrosCache[claveR];
 
-            var data = {
-                placa: placaSelect.value,
-                conductor: nombreConductor,
-                mes: MESES[String(mesSelect.value)] + ' ' + AÑO,
-                diurno: '',
-                noche: '',
-                descanso: '',
-                mantenimiento: '',
-                total: 0
-            };
+        enviarASheets({
+            placa: $("placa").value,
+            conductor: nombreConductor,
+            mes: MESES[String($("mes").value)] + ' ' + AÑO,
+            diurno: '', noche: '', descanso: '', mantenimiento: '', total: 0
+        });
 
-            enviarASheets(data).then(function() {
-                mostrarToast('🗑️ Registro borrado correctamente', 'success');
-            }).catch(function() {
-                mostrarToast('🗑️ Borrado localmente', 'warning');
-            });
-
-            diurno.clear();
-            noche.clear();
-            crearCalendarios();
-            actualizarResumen();
-            actualizarIdentificacion();
-            actualizarBotonBorrar();
-        },
-        'Borrar mi registro'
-    );
+        mostrarToast('🗑️ Registro borrado', 'success');
+        diurno.clear();
+        noche.clear();
+        crearCalendarios();
+        actualizarResumen();
+        actualizarIdentificacion();
+        actualizarBotonBorrar();
+    }, 'Borrar mi registro');
 }
 
 function actualizarBotonBorrar() {
     var btnBorrarRegistro = $("btnBorrarRegistro");
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-    var mesSelect = $("mes");
+    if (rolActual !== 'usuario') { btnBorrarRegistro.classList.remove('visible'); return; }
+    if ($("placa").value === "" || $("conductor").value === "") { btnBorrarRegistro.classList.remove('visible'); return; }
 
-    if (rolActual !== 'usuario') {
-        btnBorrarRegistro.classList.remove('visible');
-        return;
-    }
-    if (placaSelect.value === "" || conductorSelect.value === "") {
-        btnBorrarRegistro.classList.remove('visible');
-        return;
-    }
-    var lista = obtenerConductoresPorPlaca(placaSelect.value);
-    var conductor = lista[parseInt(conductorSelect.value)];
-    if (!conductor) {
-        btnBorrarRegistro.classList.remove('visible');
-        return;
-    }
-    var registro = obtenerRegistroLocal(placaSelect.value, conductor.nombre, mesSelect.value);
-    if (registro) {
-        btnBorrarRegistro.classList.add('visible');
-    } else {
-        btnBorrarRegistro.classList.remove('visible');
-    }
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var conductor = lista[parseInt($("conductor").value)];
+    if (!conductor) { btnBorrarRegistro.classList.remove('visible'); return; }
+
+    var registro = obtenerRegistroLocal($("placa").value, conductor.nombre, $("mes").value);
+    if (registro) btnBorrarRegistro.classList.add('visible');
+    else btnBorrarRegistro.classList.remove('visible');
 }
 
-
-// ============ BORRAR REGISTRO ADMIN ============
 function borrarRegistroAdmin(placa, conductor, mes) {
     var nombreMes = MESES[String(mes)] || 'Mes ' + mes;
+    mostrarConfirm('¿Borrar "' + conductor + '" (' + placa + ') ' + nombreMes + '?', function(ok) {
+        if (!ok) return;
+        eliminarRegistroLocal(placa, conductor, mes);
+        var claveR = claveRegistro(placa, conductor, mes);
+        _borradosRecientes.add(claveR);
+        delete _registrosCache[claveR];
 
-    mostrarConfirm(
-        '¿Borrar el registro de "' + conductor + '" (' + placa + ') para ' + nombreMes + '?',
-        function(ok) {
-            if (!ok) return;
+        enviarASheets({
+            placa: placa, conductor: conductor, mes: nombreMes + ' ' + AÑO,
+            diurno: '', noche: '', descanso: '', mantenimiento: '', total: 0
+        });
 
-            eliminarRegistroLocal(placa, conductor, mes);
-
-            var claveR = claveRegistro(placa, conductor, mes);
-            _borradosRecientes.add(claveR);
-            delete _registrosCache[claveR];
-
-            var data = {
-                placa: placa,
-                conductor: conductor,
-                mes: nombreMes + ' ' + AÑO,
-                diurno: '',
-                noche: '',
-                descanso: '',
-                mantenimiento: '',
-                total: 0
-            };
-
-            enviarASheets(data).then(function() {
-                mostrarToast('🗑️ Registro borrado', 'success');
-            }).catch(function() {
-                mostrarToast('🗑️ Borrado localmente', 'warning');
-            });
-
-            refrescarVistaActual();
-        },
-        'Borrar registro'
-    );
+        mostrarToast('🗑️ Registro borrado', 'success');
+        refrescarVistaActual();
+    }, 'Borrar registro');
 }
 
 function refrescarVistaActual() {
-    if (vistaActual === 'tabla') {
-        renderizarTablaDesdeCache();
-    } else if (vistaActual === 'calendario') {
-        cargarCalendarioMensual();
-    }
+    if (vistaActual === 'tabla') renderizarTablaDesdeCache();
+    else if (vistaActual === 'calendario') cargarCalendarioMensual();
 }
 
-
-// ============ EDITAR REGISTRO ADMIN ============
 function editarRegistroAdmin(placa, conductor, mes) {
     var lista = obtenerConductoresPorPlaca(placa);
     var indice = -1;
     for (var i = 0; i < lista.length; i++) {
         if (lista[i].nombre === conductor) { indice = i; break; }
     }
-
-    if (indice === -1) {
-        mostrarToast('Conductor no encontrado', 'error');
-        return;
-    }
+    if (indice === -1) { mostrarToast('Conductor no encontrado', 'error'); return; }
 
     $("placa").value = placa;
     cargarConductoresPorPlaca(placa);
@@ -2147,15 +2034,14 @@ function editarRegistroAdmin(placa, conductor, mes) {
     $("mes").value = mes;
 
     cambiarTab('registrar');
-
     setTimeout(function() {
         ingresar();
-        mostrarToast('✏️ Editando registro. Modifica y guarda para actualizar.', 'info', 4000);
+        mostrarToast('✏️ Editando registro...', 'info', 4000);
     }, 200);
 }
 
 
-// ============ TABS ============
+// -------- TABS --------
 function cambiarTab(tab) {
     document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
     document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
@@ -2176,7 +2062,7 @@ function cambiarTab(tab) {
 }
 
 
-// ============ OCULTAR CALENDARIO ============
+// -------- OCULTAR CALENDARIO --------
 function ocultarCalendario() {
     calendarioVisible = false;
     $("contenedorCalendario").classList.remove("visible");
@@ -2199,7 +2085,7 @@ function ocultarCalendario() {
 }
 
 
-// ============ CARGAR PLACAS / CONDUCTORES ============
+// -------- CARGAS --------
 function cargarPlacas() {
     $("placa").innerHTML = '<option value="">Seleccione una placa</option>';
     obtenerPlacasUnicas().forEach(function(p) {
@@ -2211,14 +2097,13 @@ function cargarPlacas() {
 }
 
 function cargarConductoresPorPlaca(placa) {
-    var conductorSelect = $("conductor");
-    conductorSelect.innerHTML = '<option value="">Seleccione un conductor</option>';
+    $("conductor").innerHTML = '<option value="">Seleccione un conductor</option>';
     if (placa === "") { $("btnIngresar").disabled = true; return; }
     obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
         var op = document.createElement("option");
         op.value = i;
         op.textContent = item.nombre;
-        conductorSelect.appendChild(op);
+        $("conductor").appendChild(op);
     });
     $("btnIngresar").disabled = true;
 }
@@ -2235,15 +2120,12 @@ function cargarFiltroPlacasVisualizacion() {
 }
 
 
-// ============ EVENTOS SELECTS ============
+// -------- EVENTOS --------
 function onPlacaChange() {
-    var placaSelect = $("placa");
-    var conductorSelect = $("conductor");
-
     if (rolActual === 'admin') {
-        cargarConductoresPorPlaca(placaSelect.value);
-        conductorSelect.value = "";
-        $("btnIngresar").disabled = (placaSelect.value === "" || conductorSelect.value === "");
+        cargarConductoresPorPlaca($("placa").value);
+        $("conductor").value = "";
+        $("btnIngresar").disabled = ($("placa").value === "" || $("conductor").value === "");
         actualizarIdentificacion();
         ocultarCalendario();
         actualizarBotonBorrar();
@@ -2272,7 +2154,7 @@ function onMesChange() {
 }
 
 
-// ============ CARGAR VISUALIZACIÓN ============
+// -------- VISUALIZACIÓN --------
 async function cargarVisualizacion(forzarRecarga) {
     if (rolActual !== 'admin') return;
 
@@ -2281,17 +2163,14 @@ async function cargarVisualizacion(forzarRecarga) {
     var filtroMes = $('filtroMes').value;
 
     if (!forzarRecarga) {
-        var contenedor = $('contenedorVisualizacion');
-        contenedor.innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando datos...</p>';
+        $('contenedorVisualizacion').innerHTML = '<p style="text-align:center; color:#666; padding:30px;">⏳ Cargando...</p>';
     }
 
     try {
         var controller = new AbortController();
         var timeoutId = setTimeout(function() { controller.abort(); }, 12000);
 
-        var urlConCache = GOOGLE_SHEETS_URL + '?t=' + Date.now();
-
-        var response = await fetch(urlConCache, {
+        var response = await fetch(GOOGLE_SHEETS_URL + '?t=' + Date.now(), {
             signal: controller.signal,
             cache: 'no-store'
         });
@@ -2300,20 +2179,16 @@ async function cargarVisualizacion(forzarRecarga) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
 
         var data = await response.json();
-
         var registrosRemotos = {};
+
         if (Array.isArray(data)) {
             var filas = data.slice(1);
-
             filas.forEach(function(row) {
                 if (!row || row.length < 5) return;
-
                 var placa = String(row[0] || '').trim();
                 var conductor = String(row[1] || '').trim();
                 var mes = String(row[2] || '').trim();
-
-                if (!placa || !conductor) return;
-                if (placa.toUpperCase() === 'PLACA') return;
+                if (!placa || !conductor || placa.toUpperCase() === 'PLACA') return;
 
                 var d = String(row[3] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
                 var n = String(row[4] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
@@ -2332,8 +2207,7 @@ async function cargarVisualizacion(forzarRecarga) {
                 var claveR = claveRegistro(placa, conductor, mesNum);
                 if (_borradosRecientes.has(claveR)) return;
 
-                var clave = conductor + "_" + placa + "_" + mesNum;
-                registrosRemotos[clave] = {
+                registrosRemotos[conductor + "_" + placa + "_" + mesNum] = {
                     conductor: conductor, placa: placa, mes: mesNum,
                     diurno: d, noche: n, descanso: dsc, mantenimiento: mnt
                 };
@@ -2341,7 +2215,6 @@ async function cargarVisualizacion(forzarRecarga) {
         }
 
         var locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-
         var registrosFinales = {};
         for (var k in registrosRemotos) registrosFinales[k] = registrosRemotos[k];
         for (var k2 in locales) registrosFinales[k2] = locales[k2];
@@ -2355,20 +2228,16 @@ async function cargarVisualizacion(forzarRecarga) {
         renderizarTablaFiltrada(registrosFinales, filtroPlaca, filtroConductor, filtroMes);
 
     } catch (error) {
-        console.error('Error al cargar:', error);
-
+        console.error('Error:', error);
         var locales2 = JSON.parse(localStorage.getItem("disponibilidades")) || {};
         var filtrados = [];
         for (var kk in locales2) filtrados.push(locales2[kk]);
 
         if (filtrados.length > 0) {
-            var contenedor2 = $('contenedorVisualizacion');
-            var htmlFB = '<div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:12px 15px; border-radius:8px; margin-bottom:15px; font-size:13px;">' +
-                '⚠️ Sin conexión con Google Sheets. Mostrando datos locales (' + filtrados.length + ').</div>' +
+            var htmlFB = '<div style="background:#fff3cd; padding:12px; border-radius:8px; margin-bottom:15px;">⚠️ Sin conexión. Datos locales (' + filtrados.length + ')</div>' +
                 '<div class="contenedor-tabla"><table class="tabla-disponibilidad"><thead><tr>' +
-                '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th><th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
+                '<th>Placa</th><th>Conductor</th><th>Mes</th><th>Diurno</th><th>Noche</th><th>Desc.</th><th>Mant.</th><th>Total</th><th>Acciones</th>' +
                 '</tr></thead><tbody>';
-
             filtrados.forEach(function(r) {
                 if (String(r.mes) !== String(filtroMes)) return;
                 if (filtroPlaca && r.placa !== filtroPlaca) return;
@@ -2376,36 +2245,19 @@ async function cargarVisualizacion(forzarRecarga) {
                 if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) return;
                 htmlFB += construirFilaTabla(r);
             });
-
-            htmlFB += '</tbody></table></div>' +
-                '<div style="margin-top:15px; text-align:right;"><button class="btn-ver-detalle" onclick="cargarVisualizacion(true)" style="background:#2980b9; padding:10px 20px;">🔄 Reintentar</button></div>';
-
-            contenedor2.innerHTML = htmlFB;
+            htmlFB += '</tbody></table></div>';
+            $('contenedorVisualizacion').innerHTML = htmlFB;
         } else {
-            $('contenedorVisualizacion').innerHTML = '<div style="text-align:center; padding:40px; color:#e74c3c;">' +
-                '<h3>⚠️ Error al cargar los datos</h3><p>' + escapeHtml(error.message) + '</p></div>';
+            $('contenedorVisualizacion').innerHTML = '<div style="text-align:center; padding:40px; color:#e74c3c;"><h3>Error</h3><p>' + escapeHtml(error.message) + '</p></div>';
         }
     }
 }
 
-
-// ============ RENDERIZAR TABLA ============
 function construirFilaTabla(r) {
-    var dStr = r.diurno && r.diurno.length
-        ? agruparDias(r.diurno).split(', ').map(function(b) { return '<span class="bloque-dias">' + b + '</span>'; }).join('')
-        : '<span class="bloque-vacio">Ninguno</span>';
-
-    var nStr = r.noche && r.noche.length
-        ? agruparDias(r.noche).split(', ').map(function(b) { return '<span class="bloque-dias noche">' + b + '</span>'; }).join('')
-        : '<span class="bloque-vacio">Ninguno</span>';
-
-    var dscStr = r.descanso && r.descanso.length
-        ? agruparDias(r.descanso).split(', ').map(function(b) { return '<span class="bloque-dias descanso">' + b + '</span>'; }).join('')
-        : '<span class="bloque-vacio">—</span>';
-
-    var mntStr = r.mantenimiento && r.mantenimiento.length
-        ? agruparDias(r.mantenimiento).split(', ').map(function(b) { return '<span class="bloque-dias mantenimiento">' + b + '</span>'; }).join('')
-        : '<span class="bloque-vacio">—</span>';
+    var dStr = r.diurno && r.diurno.length ? agruparDias(r.diurno).split(', ').map(function(b) { return '<span class="bloque-dias">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
+    var nStr = r.noche && r.noche.length ? agruparDias(r.noche).split(', ').map(function(b) { return '<span class="bloque-dias noche">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
+    var dscStr = r.descanso && r.descanso.length ? agruparDias(r.descanso).split(', ').map(function(b) { return '<span class="bloque-dias descanso">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
+    var mntStr = r.mantenimiento && r.mantenimiento.length ? agruparDias(r.mantenimiento).split(', ').map(function(b) { return '<span class="bloque-dias mantenimiento">' + b + '</span>'; }).join('') : '<span class="bloque-vacio">—</span>';
 
     var total = (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0);
     var nombreMes = (MESES[String(r.mes)] || 'Mes ' + r.mes) + ' ' + AÑO;
@@ -2414,15 +2266,12 @@ function construirFilaTabla(r) {
         '<td><strong>' + escapeHtml(r.placa) + '</strong></td>' +
         '<td>' + escapeHtml(r.conductor) + '</td>' +
         '<td>' + escapeHtml(nombreMes) + '</td>' +
-        '<td>' + dStr + '</td>' +
-        '<td>' + nStr + '</td>' +
-        '<td>' + dscStr + '</td>' +
-        '<td>' + mntStr + '</td>' +
+        '<td>' + dStr + '</td><td>' + nStr + '</td><td>' + dscStr + '</td><td>' + mntStr + '</td>' +
         '<td><strong>' + total + '</strong></td>' +
         '<td><div class="acciones-celda">' +
-        '<button class="btn-ver-detalle" onclick="abrirDetalleConductor(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">📋 Ver</button>' +
-        '<button class="btn-editar" onclick="editarRegistroAdmin(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">✏️ Editar</button>' +
-        '<button class="btn-eliminar" onclick="borrarRegistroAdmin(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">🗑️ Borrar</button>' +
+        '<button class="btn-ver-detalle" onclick="abrirDetalleConductor(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">📋</button>' +
+        '<button class="btn-editar" onclick="editarRegistroAdmin(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">✏️</button>' +
+        '<button class="btn-eliminar" onclick="borrarRegistroAdmin(\'' + escapeHtml(r.placa) + '\',\'' + escapeHtml(r.conductor) + '\',\'' + escapeHtml(r.mes) + '\')">🗑️</button>' +
         '</div></td></tr>';
 }
 
@@ -2444,8 +2293,6 @@ function renderizarTablaDesdeCache() {
 }
 
 function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtroMes) {
-    var contenedor = $('contenedorVisualizacion');
-
     var filtrados = [];
     for (var k in registros) {
         var r = registros[k];
@@ -2462,9 +2309,7 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
     });
 
     if (filtrados.length === 0) {
-        contenedor.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">' +
-            '<h3>📭 No hay disponibilidades registradas</h3>' +
-            '<button class="btn-ver-detalle" onclick="cambiarTab(\'registrar\')" style="background-color:#27ae60; padding:12px 20px; margin-top:15px;">📝 Ir a Registrar</button></div>';
+        $('contenedorVisualizacion').innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><h3>📭 Sin registros</h3></div>';
         return;
     }
 
@@ -2472,29 +2317,19 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
         '<th>🚗 Placa</th><th>👤 Conductor</th><th>📅 Mes</th>' +
         '<th>☀️ Diurno</th><th>🌙 Noche</th><th>🛌 Desc.</th><th>🔧 Mant.</th><th>📊 Total</th><th>Acciones</th>' +
         '</tr></thead><tbody>';
-
     filtrados.forEach(function(r) { html += construirFilaTabla(r); });
-
     html += '</tbody></table></div>' +
-        '<div style="margin-top:15px; text-align:right; color:#666; font-size:14px;">Total registros: <strong>' + filtrados.length + '</strong></div>';
+        '<div style="margin-top:15px; text-align:right; color:#666;">Total: <strong>' + filtrados.length + '</strong></div>';
 
-    contenedor.innerHTML = html;
+    $('contenedorVisualizacion').innerHTML = html;
 }
 
 
-/* ============================================================
-   FUNCIONES PARTE 3 — Detalle, Calendario Mensual, Excel/PDF
-   ============================================================ */
-
+// -------- DETALLE --------
 function abrirDetalleConductor(placa, conductor, mes) {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var clave = conductor + "_" + placa + "_" + mes;
-    var registro = registros[clave];
-
-    if (!registro) {
-        mostrarToast("No se encontró disponibilidad", 'error');
-        return;
-    }
+    var registro = registros[conductor + "_" + placa + "_" + mes];
+    if (!registro) { mostrarToast("No se encontró", 'error'); return; }
 
     var diurnoArr = registro.diurno || [];
     var nocheArr = registro.noche || [];
@@ -2503,10 +2338,8 @@ function abrirDetalleConductor(placa, conductor, mes) {
 
     var mesNumero = parseInt(registro.mes);
     var nombreMes = (MESES[String(mesNumero)] || 'Mes ' + registro.mes) + ' ' + AÑO;
-
-    var diasMes = new Date(AÑO, mesNumero + 1, 0).getDate();
-    var primerDia = new Date(AÑO, mesNumero, 1);
-    var posIni = (primerDia.getDay() + 6) % 7;
+    var diasMes = diasDelMes(AÑO, mesNumero);
+    var posIni = posicionInicial(AÑO, mesNumero);
 
     var calHTML = '<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; max-width:520px; margin:15px auto;">';
     DIAS_SEMANA.forEach(function(d) {
@@ -2521,46 +2354,32 @@ function abrirDetalleConductor(placa, conductor, mes) {
 
     for (var dia = 1; dia <= diasMes; dia++) {
         var color = '', label = '';
-        if (setMnt.has(dia)) {
-            color = 'background:#fadbd8; border:2px solid #e74c3c;';
-            label = '🔧';
-        } else if (setDsc.has(dia)) {
-            color = 'background:#fce4d6; border:2px solid #f39c12;';
-            label = '🛌';
-        } else if (setD.has(dia) && setN.has(dia)) {
-            color = 'background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%); border:2px solid #1a7a3a;';
-            label = '☀️🌙';
-        } else if (setD.has(dia)) {
-            color = 'background:#d9ead3; border:2px solid #27ae60;';
-            label = '☀️';
-        } else if (setN.has(dia)) {
-            color = 'background:#d4e6f1; border:2px solid #2980b9;';
-            label = '🌙';
-        } else {
-            color = 'background:#f5f5f5; opacity:0.5;';
-        }
+        if (setMnt.has(dia)) { color = 'background:#fadbd8; border:2px solid #e74c3c;'; label = '🔧'; }
+        else if (setDsc.has(dia)) { color = 'background:#fce4d6; border:2px solid #f39c12;'; label = '🛌'; }
+        else if (setD.has(dia) && setN.has(dia)) { color = 'background:linear-gradient(135deg,#d9ead3 50%,#d4e6f1 50%); border:2px solid #1a7a3a;'; label = '☀️🌙'; }
+        else if (setD.has(dia)) { color = 'background:#d9ead3; border:2px solid #27ae60;'; label = '☀️'; }
+        else if (setN.has(dia)) { color = 'background:#d4e6f1; border:2px solid #2980b9;'; label = '🌙'; }
+        else { color = 'background:#f5f5f5; opacity:0.5;'; }
         calHTML += '<div style="padding:8px 4px; text-align:center; border-radius:6px; ' + color + ' font-weight:bold; font-size:13px;">' + dia + (label ? '<br><span style="font-size:10px;">' + label + '</span>' : '') + '</div>';
     }
     calHTML += '</div>';
 
-    function getColor(tipo) {
-        if (tipo === 'diurno') return '#1a7a3a';
-        if (tipo === 'noche') return '#1a5276';
-        if (tipo === 'descanso') return '#b85c00';
-        if (tipo === 'mantenimiento') return '#922b21';
+    function getColor(t) {
+        if (t === 'diurno') return '#1a7a3a';
+        if (t === 'noche') return '#1a5276';
+        if (t === 'descanso') return '#b85c00';
+        if (t === 'mantenimiento') return '#922b21';
         return '#333';
     }
-    function getBgColor(tipo) {
-        if (tipo === 'diurno') return '#d9ead3';
-        if (tipo === 'noche') return '#d4e6f1';
-        if (tipo === 'descanso') return '#fce4d6';
-        if (tipo === 'mantenimiento') return '#fadbd8';
+    function getBgColor(t) {
+        if (t === 'diurno') return '#d9ead3';
+        if (t === 'noche') return '#d4e6f1';
+        if (t === 'descanso') return '#fce4d6';
+        if (t === 'mantenimiento') return '#fadbd8';
         return '#eee';
     }
-
     function seccionHTML(titulo, icono, dias, tipo) {
-        var tiene = dias && dias.length > 0;
-        var bloquesHTML = tiene
+        var bloquesHTML = dias && dias.length
             ? agruparDias(dias).split(', ').map(function(b) {
                 return '<span style="display:inline-block; background:' + getBgColor(tipo) + '; color:' + getColor(tipo) + '; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px; margin:3px;">' + b + '</span>';
             }).join('')
@@ -2576,32 +2395,25 @@ function abrirDetalleConductor(placa, conductor, mes) {
     var totalTrabajo = diurnoArr.length + nocheArr.length;
     var totalNoTrabajo = descansoArr.length + mantenimientoArr.length;
 
-    var contenido = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
+    var contenido = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-        '<title>Detalle - ' + escapeHtml(conductor) + '</title>' +
-        '<style>' +
-        '*{box-sizing:border-box}' +
-        'body{font-family:Arial,sans-serif;background:#f2f4f7;margin:0;padding:15px}' +
-        '.header{background:linear-gradient(135deg,#17365d 0%,#1a4a7a 100%);color:white;padding:15px 25px;border-radius:12px;margin-bottom:15px;text-align:center}' +
-        '.header h1{margin:0;font-size:18px}' +
-        '.header p{margin:3px 0 0 0;font-size:12px;opacity:0.8}' +
+        '<title>Detalle - ' + escapeHtml(conductor) + '</title><style>' +
+        '*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f2f4f7;margin:0;padding:15px}' +
+        '.header{background:linear-gradient(135deg,#17365d,#1a4a7a);color:white;padding:15px 25px;border-radius:12px;margin-bottom:15px;text-align:center}' +
         '.tarjeta{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.08);max-width:600px;margin:0 auto}' +
         '.info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;background:#e8f0fa;padding:12px;border-radius:8px;margin-bottom:15px;text-align:center}' +
-        '.info .label{font-size:10px;color:#666;font-weight:bold;text-transform:uppercase}' +
-        '.info .valor{font-weight:bold;font-size:14px;color:#17365d;word-break:break-word}' +
+        '.label{font-size:10px;color:#666;font-weight:bold;text-transform:uppercase}' +
+        '.valor{font-weight:bold;font-size:14px;color:#17365d;word-break:break-word}' +
         '.total-box{background:#17365d;color:white;padding:15px;border-radius:10px;text-align:center;margin:15px 0}' +
         '.total-box .num{font-size:28px;font-weight:bold}' +
-        '.total-box .txt{font-size:12px;opacity:0.8}' +
-        '.calendario-titulo{text-align:center;font-weight:bold;margin:20px 0 5px 0;color:#17365d;font-size:15px}' +
         '.leyenda{display:flex;justify-content:center;gap:12px;margin:15px 0;font-size:11px;flex-wrap:wrap}' +
-        '.leyenda span{display:flex;align-items:center;gap:4px}' +
-        '.leyenda .c{display:inline-block;width:14px;height:14px;border-radius:3px}' +
+        '.leyenda span{display:flex;align-items:center;gap:4px}.leyenda .c{display:inline-block;width:14px;height:14px;border-radius:3px}' +
         '.btn-cerrar{padding:12px 25px;border:none;border-radius:8px;background:#e74c3c;color:white;font-weight:bold;cursor:pointer;font-size:14px;margin-top:15px;width:100%}' +
-        '@media(max-width:600px){.info{grid-template-columns:1fr;gap:6px}.header h1{font-size:15px}.tarjeta{padding:15px}}' +
+        '@media(max-width:600px){.info{grid-template-columns:1fr}}' +
         '</style></head><body>' +
-        '<div class="header"><h1>TRANSFERMATRI S.A.</h1><p>COMPAÑÍA DE TRANSPORTE DE CARGA PESADA</p></div>' +
+        '<div class="header"><h1 style="margin:0;font-size:18px;">TRANSFERMATRI S.A.</h1><p style="margin:3px 0 0 0;font-size:12px;opacity:0.8;">COMPAÑÍA DE TRANSPORTE DE CARGA PESADA</p></div>' +
         '<div class="tarjeta">' +
-        '<h2 style="text-align:center;margin-top:0;color:#17365d;font-size:17px;">📋 Detalle de Disponibilidad</h2>' +
+        '<h2 style="text-align:center;margin-top:0;color:#17365d;font-size:17px;">📋 Detalle</h2>' +
         '<div class="info">' +
         '<div><div class="label">🚗 Placa</div><div class="valor">' + escapeHtml(registro.placa) + '</div></div>' +
         '<div><div class="label">👤 Conductor</div><div class="valor">' + escapeHtml(registro.conductor) + '</div></div>' +
@@ -2611,12 +2423,10 @@ function abrirDetalleConductor(placa, conductor, mes) {
         seccionHTML('NOCHE', '🌙', nocheArr, 'noche') +
         seccionHTML('DESCANSO', '🛌', descansoArr, 'descanso') +
         seccionHTML('MANTENIMIENTO', '🔧', mantenimientoArr, 'mantenimiento') +
-        '<div class="total-box">' +
-        '<div class="num">' + totalTrabajo + ' días</div>' +
-        '<div class="txt">de trabajo</div>' +
-        (totalNoTrabajo > 0 ? '<div style="margin-top:5px;font-size:12px;opacity:0.9;">+ ' + totalNoTrabajo + ' días sin trabajo (descanso/mant.)</div>' : '') +
+        '<div class="total-box"><div class="num">' + totalTrabajo + ' días</div><div style="font-size:12px;opacity:0.8;">de trabajo</div>' +
+        (totalNoTrabajo > 0 ? '<div style="margin-top:5px;font-size:12px;opacity:0.9;">+ ' + totalNoTrabajo + ' días sin trabajo</div>' : '') +
         '</div>' +
-        '<div class="calendario-titulo">📅 Calendario del Mes</div>' +
+        '<div style="text-align:center;font-weight:bold;margin:20px 0 5px;color:#17365d;">📅 Calendario</div>' +
         calHTML +
         '<div class="leyenda">' +
         '<span><span class="c" style="background:#27ae60;"></span> Diurno</span>' +
@@ -2629,29 +2439,25 @@ function abrirDetalleConductor(placa, conductor, mes) {
 
     var blob = new Blob([contenido], { type: 'text/html;charset=utf-8' });
     var url = URL.createObjectURL(blob);
-    var nombreArchivo = 'Detalle_' + conductor.replace(/\s+/g, '_') + '_' + mes + '.html';
 
     if (IS_IOS) {
         var a = document.createElement('a');
-        a.href = url;
-        a.download = nombreArchivo;
+        a.href = url; a.download = 'Detalle_' + conductor.replace(/\s+/g, '_') + '.html';
         a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        mostrarToast('📄 Detalle descargado. Ábrelo desde Archivos.', 'success', 5000);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        mostrarToast('📄 Detalle descargado', 'success', 5000);
     } else {
         var ventana = window.open(url, '_blank');
         if (!ventana) {
-            mostrarToast('⚠️ Permita las ventanas emergentes', 'warning', 5000);
-            URL.revokeObjectURL(url);
-            return;
+            mostrarToast('⚠️ Permita popups', 'warning', 5000);
+            URL.revokeObjectURL(url); return;
         }
     }
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
 
+// -------- CALENDARIO MENSUAL --------
 function cargarCalendarioMensual() {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroPlaca = $('filtroPlaca').value;
@@ -2660,9 +2466,8 @@ function cargarCalendarioMensual() {
 
     var contenedor = $('contenedorCalendarioMensual');
     var mesNum = parseInt(filtroMes);
-    var diasMes = new Date(AÑO, mesNum + 1, 0).getDate();
-    var primerDia = new Date(AÑO, mesNum, 1);
-    var posIni = (primerDia.getDay() + 6) % 7;
+    var diasMes = diasDelMes(AÑO, mesNum);
+    var posIni = posicionInicial(AÑO, mesNum);
 
     var filtrados = [];
     for (var k in registros) {
@@ -2674,8 +2479,7 @@ function cargarCalendarioMensual() {
     }
 
     if (filtrados.length === 0) {
-        contenedor.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">' +
-            '<h3>📭 No hay disponibilidades registradas</h3></div>';
+        contenedor.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><h3>📭 Sin registros</h3></div>';
         return;
     }
 
@@ -2692,13 +2496,12 @@ function cargarCalendarioMensual() {
     });
 
     var html = '<div style="text-align:center; margin-bottom:15px;">' +
-        '<h3 style="color:#17365d;">📅 ' + MESES[String(mesNum)] + ' ' + AÑO + '</h3>' +
-        '<span style="font-size:13px; color:#888;">' + filtrados.length + ' conductores</span></div>' +
+        '<h3 style="color:#17365d;">📅 ' + MESES[String(mesNum)] + ' ' + AÑO + '</h3></div>' +
         '<div class="leyenda-calendario">' +
         '<span class="item"><span class="color diurno"></span> Diurno</span>' +
         '<span class="item"><span class="color noche"></span> Noche</span>' +
         '<span class="item"><span class="color descanso"></span> Descanso</span>' +
-        '<span class="item"><span class="color mantenimiento"></span> Mantenimiento</span>' +
+        '<span class="item"><span class="color mantenimiento"></span> Mant.</span>' +
         '</div><div class="calendario-mensual">';
 
     DIAS_SEMANA.forEach(function(d) { html += '<div class="header-dia">' + d + '</div>'; });
@@ -2706,21 +2509,19 @@ function cargarCalendarioMensual() {
 
     for (var dia = 1; dia <= diasMes; dia++) {
         var info = diasMap[dia];
-        var tieneD = info.diurno.length > 0;
-        var tieneN = info.noche.length > 0;
         var total = info.diurno.length + info.noche.length;
 
         var claseBarra = '';
-        if (tieneD && tieneN) claseBarra = 'ambos';
-        else if (tieneD) claseBarra = 'diurno';
-        else if (tieneN) claseBarra = 'noche';
+        if (info.diurno.length > 0 && info.noche.length > 0) claseBarra = 'ambos';
+        else if (info.diurno.length > 0) claseBarra = 'diurno';
+        else if (info.noche.length > 0) claseBarra = 'noche';
 
         var clickable = total > 0 ? 'con-conductores' : '';
         var onclick = total > 0 ? 'onclick="abrirPanelDetalleDia(' + dia + ')"' : '';
 
         var contHTML = '';
-        if (tieneD) contHTML += '<span class="contador diurno">☀️ ' + info.diurno.length + '</span>';
-        if (tieneN) contHTML += '<span class="contador noche">🌙 ' + info.noche.length + '</span>';
+        if (info.diurno.length > 0) contHTML += '<span class="contador diurno">☀️ ' + info.diurno.length + '</span>';
+        if (info.noche.length > 0) contHTML += '<span class="contador noche">🌙 ' + info.noche.length + '</span>';
         if (info.descanso.length > 0) contHTML += '<span class="contador descanso">🛌 ' + info.descanso.length + '</span>';
         if (info.mantenimiento.length > 0) contHTML += '<span class="contador mantenimiento">🔧 ' + info.mantenimiento.length + '</span>';
 
@@ -2732,50 +2533,36 @@ function cargarCalendarioMensual() {
 
     html += '</div>';
     contenedor.innerHTML = html;
-
     window._diasMapActual = diasMap;
     window._mesActualCalendario = mesNum;
 }
-
 
 function abrirPanelDetalleDia(dia) {
     var diasMap = window._diasMapActual || {};
     var mesNum = window._mesActualCalendario || 8;
     var info = diasMap[dia] || { diurno: [], noche: [], descanso: [], mantenimiento: [] };
 
-    var detalle = {
-        dia: dia,
-        diurno: info.diurno.slice().sort(),
-        noche: info.noche.slice().sort(),
-        descanso: info.descanso.slice().sort(),
-        mantenimiento: info.mantenimiento.slice().sort(),
-        mesNum: mesNum
-    };
-
-    var total = detalle.diurno.length + detalle.noche.length + detalle.descanso.length + detalle.mantenimiento.length;
+    var total = info.diurno.length + info.noche.length + info.descanso.length + info.mantenimiento.length;
 
     $('panelTitulo').textContent = '📅 ' + dia + ' de ' + MESES[String(mesNum)];
-    $('panelSubtitulo').textContent = MESES[String(mesNum)] + ' ' + AÑO + ' • ' + total + ' registro(s)';
+    $('panelSubtitulo').textContent = total + ' registro(s)';
 
     var body = $('panelDetalleBody');
     var html = '';
 
     function renderGrupo(titulo, icono, lista, clase) {
         if (lista.length === 0) return '';
-        var h = '<div class="grupo-turno ' + clase + '"><div class="titulo-grupo">' +
-            '<span>' + icono + ' ' + titulo + '</span>' +
-            '<span class="count">' + lista.length + '</span></div><ul>';
+        var h = '<div class="grupo-turno ' + clase + '"><div class="titulo-grupo"><span>' + icono + ' ' + titulo + '</span><span class="count">' + lista.length + '</span></div><ul>';
         lista.forEach(function(nombre) { h += '<li>' + escapeHtml(nombre) + '</li>'; });
-        h += '</ul></div>';
-        return h;
+        return h + '</ul></div>';
     }
 
-    html += renderGrupo('Diurno', '☀️', detalle.diurno, 'diurno');
-    html += renderGrupo('Noche', '🌙', detalle.noche, 'noche');
-    html += renderGrupo('Descanso', '🛌', detalle.descanso, 'descanso');
-    html += renderGrupo('Mantenimiento', '🔧', detalle.mantenimiento, 'mantenimiento');
+    html += renderGrupo('Diurno', '☀️', info.diurno, 'diurno');
+    html += renderGrupo('Noche', '🌙', info.noche, 'noche');
+    html += renderGrupo('Descanso', '🛌', info.descanso, 'descanso');
+    html += renderGrupo('Mantenimiento', '🔧', info.mantenimiento, 'mantenimiento');
 
-    if (html === '') html = '<div style="text-align:center;padding:30px;color:#999;font-style:italic;">Sin registros este día</div>';
+    if (html === '') html = '<div style="text-align:center;padding:30px;color:#999;">Sin registros</div>';
 
     body.innerHTML = html;
     $('panelBusqueda').value = '';
@@ -2785,8 +2572,7 @@ function abrirPanelDetalleDia(dia) {
 
 function filtrarPanelDetalle() {
     var query = $('panelBusqueda').value.toLowerCase().trim();
-    var items = document.querySelectorAll('#panelDetalleBody li');
-    items.forEach(function(li) {
+    document.querySelectorAll('#panelDetalleBody li').forEach(function(li) {
         var nombre = li.textContent.toLowerCase();
         li.style.display = (!query || nombre.indexOf(query) >= 0) ? '' : 'none';
     });
@@ -2802,61 +2588,37 @@ function cerrarPanelDetalle() {
 }
 
 
+// -------- EXPORTAR EXCEL --------
 function exportarExcel() {
-    mostrarToast('📊 Generando Excel...', 'info');
-
+    mostrarToast('📊 Generando...', 'info');
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroMes = $('filtroMes').value;
-
     var data = [];
-    var totalD = 0, totalN = 0, totalDsc = 0, totalMnt = 0;
 
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
-        var dc = r.diurno ? r.diurno.length : 0;
-        var nc = r.noche ? r.noche.length : 0;
-        var dsc = r.descanso ? r.descanso.length : 0;
-        var mnt = r.mantenimiento ? r.mantenimiento.length : 0;
-        totalD += dc; totalN += nc; totalDsc += dsc; totalMnt += mnt;
-
         data.push({
-            placa: r.placa,
-            conductor: r.conductor,
+            placa: r.placa, conductor: r.conductor,
             mes: MESES[String(r.mes)] + ' ' + AÑO,
-            diurno: agruparDias(r.diurno || []) || 'Ninguno',
-            noche: agruparDias(r.noche || []) || 'Ninguno',
+            diurno: agruparDias(r.diurno || []) || '—',
+            noche: agruparDias(r.noche || []) || '—',
             descanso: agruparDias(r.descanso || []) || '—',
             mantenimiento: agruparDias(r.mantenimiento || []) || '—',
-            total: dc + nc,
-            diasDsc: dsc,
-            diasMnt: mnt
+            total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)
         });
     }
 
-    if (data.length === 0) { mostrarToast('No hay datos para exportar', 'warning'); return; }
+    if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
 
     var wb = new ExcelJS.Workbook();
-    wb.creator = 'TRANSFERMATRI S.A.';
     var ws = wb.addWorksheet('Disponibilidad');
+    ws.addRow(['PLACA', 'CONDUCTOR', 'MES', 'DIURNO', 'NOCHE', 'DESCANSO', 'MANT.', 'TOTAL']);
+    ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getRow(1).eachCell(function(c) { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF17365D' } }; });
 
-    ws.addRow(['TRANSFERMATRI S.A.']).getCell(1).font = { bold: true, size: 16, color: { argb: 'FF17365D' } };
-    ws.mergeCells('A1:I1');
-    ws.getRow(1).alignment = { horizontal: 'center' };
-    ws.addRow([]);
-
-    var hr = ws.addRow(['PLACA', 'CONDUCTOR', 'MES', 'DIAS DIURNO', 'DIAS NOCHE', 'DESCANSO', 'MANTENIMIENTO', 'TOTAL TRABAJO', 'TOTAL DÍAS']);
-    hr.eachCell(function(cell) {
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF17365D' } };
-    });
-
-    data.forEach(function(item, idx) {
-        var row = ws.addRow([item.placa, item.conductor, item.mes, item.diurno, item.noche, item.descanso, item.mantenimiento, item.total, item.diasDsc + item.diasMnt]);
-        var fill = idx % 2 === 0 ? 'FFF5F7FA' : 'FFFFFFFF';
-        row.eachCell(function(cell) {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
-        });
+    data.forEach(function(item) {
+        ws.addRow([item.placa, item.conductor, item.mes, item.diurno, item.noche, item.descanso, item.mantenimiento, item.total]);
     });
 
     ws.getColumn(1).width = 12;
@@ -2866,32 +2628,19 @@ function exportarExcel() {
     ws.getColumn(5).width = 28;
     ws.getColumn(6).width = 28;
     ws.getColumn(7).width = 28;
-    ws.getColumn(8).width = 14;
-    ws.getColumn(9).width = 12;
+    ws.getColumn(8).width = 12;
 
-    ws.addRow([]);
-    ws.addRow(['RESUMEN DEL MES']).getCell(1).font = { bold: true, size: 14, color: { argb: 'FF17365D' } };
-    ws.addRow(['Total días diurno', totalD]);
-    ws.addRow(['Total días noche', totalN]);
-    ws.addRow(['Total días descanso', totalDsc]);
-    ws.addRow(['Total días mantenimiento', totalMnt]);
-    ws.addRow(['Total general', totalD + totalN]);
-
-    var nombre = 'Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.xlsx';
     wb.xlsx.writeBuffer().then(function(buffer) {
-        var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        saveAs(blob, nombre);
-        mostrarToast('✅ Excel descargado', 'success');
-    }).catch(function(err) {
-        console.error(err);
-        mostrarToast('Error al generar Excel', 'error');
+        saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+            'Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.xlsx');
+        mostrarToast('✅ Excel listo', 'success');
     });
 }
 
 
+// -------- EXPORTAR PDF --------
 function exportarPDF() {
-    mostrarToast('📄 Generando PDF...', 'info');
-
+    mostrarToast('📄 Generando...', 'info');
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF('landscape', 'mm', 'a4');
     var pageWidth = doc.internal.pageSize.getWidth();
@@ -2900,25 +2649,15 @@ function exportarPDF() {
     doc.setTextColor(23, 54, 93);
     doc.text('TRANSFERMATRI S.A.', pageWidth / 2, 15, { align: 'center' });
 
-    doc.setFontSize(11);
-    doc.setTextColor(80, 80, 80);
-    doc.text('COMPAÑÍA DE TRANSPORTE DE CARGA PESADA', pageWidth / 2, 22, { align: 'center' });
-
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroMes = $('filtroMes').value;
-    var mesTexto = MESES[String(filtroMes)] + ' ' + AÑO;
-
-    doc.setFontSize(13);
-    doc.setTextColor(23, 54, 93);
-    doc.text('Disponibilidad - ' + mesTexto, pageWidth / 2, 30, { align: 'center' });
-
     var data = [];
+
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
         data.push([
-            r.placa,
-            r.conductor,
+            r.placa, r.conductor,
             agruparDias(r.diurno || []) || '—',
             agruparDias(r.noche || []) || '—',
             agruparDias(r.descanso || []) || '—',
@@ -2927,34 +2666,26 @@ function exportarPDF() {
         ]);
     }
 
-    if (data.length === 0) { mostrarToast('No hay datos para exportar', 'warning'); return; }
+    if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
 
     doc.autoTable({
         head: [['PLACA', 'CONDUCTOR', 'DIURNO', 'NOCHE', 'DESCANSO', 'MANT.', 'TOTAL']],
         body: data,
-        startY: 40,
-        styles: { fontSize: 7, cellPadding: 2 },
-        headStyles: { fillColor: [23, 54, 93], textColor: [255, 255, 255] },
-        columnStyles: {
-            0: { cellWidth: 22 },
-            1: { cellWidth: 45 },
-            2: { cellWidth: 38 },
-            3: { cellWidth: 38 },
-            4: { cellWidth: 30 },
-            5: { cellWidth: 30 },
-            6: { cellWidth: 15 }
-        }
+        startY: 30,
+        styles: { fontSize: 7 },
+        headStyles: { fillColor: [23, 54, 93] }
     });
 
     doc.save('Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.pdf');
-    mostrarToast('✅ PDF descargado', 'success');
+    mostrarToast('✅ PDF listo', 'success');
 }
 
 
+// -------- SUBIR A SHEETS --------
 function subirAGoogleSheets(btn) {
     if (!btn) return;
     var textoOriginal = btn.innerHTML;
-    btn.innerHTML = '⏳ Subiendo...';
+    btn.innerHTML = '⏳...';
     btn.disabled = true;
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -2965,8 +2696,7 @@ function subirAGoogleSheets(btn) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
         lista.push({
-            placa: r.placa,
-            conductor: r.conductor,
+            placa: r.placa, conductor: r.conductor,
             mes: MESES[String(r.mes)] + ' ' + AÑO,
             diurno: (r.diurno || []).join(', '),
             noche: (r.noche || []).join(', '),
@@ -2976,42 +2706,29 @@ function subirAGoogleSheets(btn) {
         });
     }
 
-    if (lista.length === 0) {
-        btn.innerHTML = '📭 Sin datos';
-        setTimeout(function() { btn.innerHTML = textoOriginal; btn.disabled = false; }, 1500);
-        return;
-    }
+    if (lista.length === 0) { btn.innerHTML = '📭'; setTimeout(function() { btn.innerHTML = textoOriginal; btn.disabled = false; }, 1500); return; }
 
     var enviados = 0;
     lista.forEach(function(data) {
         enviarASheets(data).then(function() {
             enviados++;
             if (enviados === lista.length) {
-                btn.innerHTML = '✅ ¡SUBIDO!';
-                mostrarToast('✅ ' + enviados + ' registros subidos', 'success');
-                setTimeout(function() {
-                    btn.innerHTML = textoOriginal;
-                    btn.disabled = false;
-                }, 2000);
+                btn.innerHTML = '✅';
+                mostrarToast('✅ ' + enviados + ' subidos', 'success');
+                setTimeout(function() { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
             }
-        }).catch(function() {
-            btn.innerHTML = '❌ Error';
-            setTimeout(function() { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
         });
     });
 }
 
 
+// -------- CAMBIAR VISTA --------
 function cambiarVista(vista) {
     vistaActual = vista;
-
     document.querySelectorAll('.tab-vista-btn').forEach(function(btn) {
         btn.classList.toggle('activo', btn.dataset.vista === vista);
     });
-
-    document.querySelectorAll('.vista-contenido').forEach(function(el) {
-        el.style.display = 'none';
-    });
+    document.querySelectorAll('.vista-contenido').forEach(function(el) { el.style.display = 'none'; });
 
     if (vista === 'tabla') {
         $('vistaTabla').style.display = 'block';
@@ -3025,12 +2742,9 @@ function cambiarVista(vista) {
 }
 
 
-/* ============================================================
-   BOOT / EVENTOS
-   ============================================================ */
-
+// -------- INICIAR / EVENTOS --------
 function iniciar() {
-    console.log('[boot] Iniciando app v3.0...');
+    console.log('[boot] v3.1 iniciando...');
 
     mostrarFechaActual();
     cargarPlacas();
@@ -3042,70 +2756,89 @@ function iniciar() {
     $('btnGuardarYVer').disabled = true;
     $('btnBorrarRegistro').classList.remove('visible');
 
-    // Verificar URL admin
+    // URL admin
     try {
         var params = new URLSearchParams(window.location.search);
-        if (params.get('admin') === 'true') {
-            setTimeout(abrirModalAdmin, 500);
-        }
-    } catch (e) { console.error(e); }
+        if (params.get('admin') === 'true') setTimeout(abrirModalAdmin, 500);
+    } catch (e) {}
 
-    // Registrar eventos de botones de login
+    // BOTONES DE LOGIN
     var btnRolConductor = $('btnRolConductor');
     if (btnRolConductor) {
-        btnRolConductor.addEventListener('click', function(e) {
-            e.preventDefault();
-            abrirModalConductor();
-        });
+        btnRolConductor.addEventListener('click', function(e) { e.preventDefault(); abrirModalConductor(); });
     }
-
     var btnRolAdmin = $('btnRolAdmin');
     if (btnRolAdmin) {
-        btnRolAdmin.addEventListener('click', function(e) {
-            e.preventDefault();
-            abrirModalAdmin();
-        });
+        btnRolAdmin.addEventListener('click', function(e) { e.preventDefault(); abrirModalAdmin(); });
     }
 
-    // Eventos de selects
-    var placaSelect = $('placa');
-    var conductorSelect = $('conductor');
-    var mesSelect = $('mes');
+    // Selects
+    if ($('loginPlaca')) $('loginPlaca').addEventListener('change', cargarConductoresLogin);
+    if ($('btnLoginConductor')) $('btnLoginConductor').addEventListener('click', ingresarConductor);
+    if ($('btnCancelarConductor')) $('btnCancelarConductor').addEventListener('click', cerrarModalConductor);
+    if ($('btnIngresarAdmin')) $('btnIngresarAdmin').addEventListener('click', verificarClaveAdmin);
+    if ($('btnCancelarAdmin')) $('btnCancelarAdmin').addEventListener('click', cerrarModalAdmin);
+    if ($('claveAdmin')) $('claveAdmin').addEventListener('keypress', function(e) { if (e.key === 'Enter') verificarClaveAdmin(); });
 
-    if (placaSelect) {
-        ['change', 'input', 'blur'].forEach(function(evt) {
-            placaSelect.addEventListener(evt, onPlacaChange);
-        });
-    }
-    if (conductorSelect) {
-        ['change', 'input', 'blur'].forEach(function(evt) {
-            conductorSelect.addEventListener(evt, onConductorChange);
-        });
-    }
-    if (mesSelect) {
-        ['change', 'input', 'blur'].forEach(function(evt) {
-            mesSelect.addEventListener(evt, onMesChange);
-        });
-    }
+    if ($('placa')) ['change', 'input', 'blur'].forEach(function(evt) { $('placa').addEventListener(evt, onPlacaChange); });
+    if ($('conductor')) ['change', 'input', 'blur'].forEach(function(evt) { $('conductor').addEventListener(evt, onConductorChange); });
+    if ($('mes')) ['change', 'input', 'blur'].forEach(function(evt) { $('mes').addEventListener(evt, onMesChange); });
 
-    // Eventos del panel detalle
-    var panel = $('panelDetalleDia');
-    if (panel) {
-        panel.addEventListener('click', function(e) {
-            if (e.target === panel) cerrarPanelDetalle();
-        });
+    if ($('btnIngresar')) $('btnIngresar').addEventListener('click', ingresar);
+    if ($('btnGuardarYVer')) $('btnGuardarYVer').addEventListener('click', guardarYVer);
+    if ($('btnBorrarRegistro')) $('btnBorrarRegistro').addEventListener('click', borrarMiRegistro);
+
+    // Modal tipo días
+    if ($('btnTipoDescanso')) $('btnTipoDescanso').addEventListener('click', function() { elegirTipoDias('descanso'); });
+    if ($('btnTipoMantenimiento')) $('btnTipoMantenimiento').addEventListener('click', function() { elegirTipoDias('mantenimiento'); });
+    if ($('btnCancelarTipo')) $('btnCancelarTipo').addEventListener('click', cerrarModalTipoDias);
+
+    // Modal confirm
+    if ($('btnCancelarConfirm')) $('btnCancelarConfirm').addEventListener('click', function() { cerrarConfirm(false); });
+    if ($('btnAceptarConfirm')) $('btnAceptarConfirm').addEventListener('click', function() { cerrarConfirm(true); });
+
+    // Tabs principales
+    if ($('tabBtnRegistrar')) $('tabBtnRegistrar').addEventListener('click', function() { cambiarTab('registrar'); });
+    if ($('tabVisualizarBtn')) $('tabVisualizarBtn').addEventListener('click', function() { cambiarTab('visualizar'); });
+
+    // Calendarios (logos)
+    if ($('logoDiurnoContainer')) $('logoDiurnoContainer').addEventListener('click', function() { toggleCalendario('diurno'); });
+    if ($('logoNocheContainer')) $('logoNocheContainer').addEventListener('click', function() { toggleCalendario('noche'); });
+
+    // Tabs visualización
+    if ($('tabVistaTabla')) $('tabVistaTabla').addEventListener('click', function() { cambiarVista('tabla'); });
+    if ($('tabVistaCalendario')) $('tabVistaCalendario').addEventListener('click', function() { cambiarVista('calendario'); });
+    if ($('tabVistaReporte')) $('tabVistaReporte').addEventListener('click', function() { cambiarVista('reporte'); });
+
+    // Filtros
+    if ($('filtroPlaca')) $('filtroPlaca').addEventListener('change', function() { cargarVisualizacion(); });
+    if ($('filtroConductor')) $('filtroConductor').addEventListener('input', function() { cargarVisualizacion(); });
+    if ($('filtroMes')) $('filtroMes').addEventListener('change', function() { cargarVisualizacion(); });
+    if ($('btnActualizar')) $('btnActualizar').addEventListener('click', function() { cargarVisualizacion(true); });
+
+    // Exportar
+    if ($('btnExportarExcel')) $('btnExportarExcel').addEventListener('click', exportarExcel);
+    if ($('btnExportarPDF')) $('btnExportarPDF').addEventListener('click', exportarPDF);
+    if ($('btnSubirSheets')) $('btnSubirSheets').addEventListener('click', function() { subirAGoogleSheets(this); });
+
+    // Panel detalle
+    if ($('panelDetalleDia')) {
+        $('panelDetalleDia').addEventListener('click', function(e) { if (e.target === this) cerrarPanelDetalle(); });
     }
+    if ($('btnCerrarPanel')) $('btnCerrarPanel').addEventListener('click', cerrarPanelDetalle);
+    if ($('panelBusqueda')) $('panelBusqueda').addEventListener('input', filtrarPanelDetalle);
 
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            var p = $('panelDetalleDia');
-            if (p && p.classList.contains('active')) cerrarPanelDetalle();
-        }
+        if (e.key === 'Escape' && $('panelDetalleDia').classList.contains('active')) cerrarPanelDetalle();
+    });
+
+    // Botón salir
+    document.querySelectorAll('.btn-salir').forEach(function(btn) {
+        btn.addEventListener('click', cerrarSesion);
     });
 
     cambiarVista('tabla');
-
-    console.log('[boot] ✅ App v3.0 lista');
+    console.log('[boot] ✅ v3.1 lista');
 }
 
 
@@ -3116,11 +2849,7 @@ if (document.readyState === 'loading') {
 }
 
 
-/* ============================================================
-   EXPONER FUNCIONES AL SCOPE GLOBAL
-   (para que los onclick del HTML las encuentren)
-   ============================================================ */
-
+// -------- EXPONER FUNCIONES GLOBALES --------
 window.abrirModalConductor = abrirModalConductor;
 window.cerrarModalConductor = cerrarModalConductor;
 window.cargarConductoresLogin = cargarConductoresLogin;
@@ -3141,7 +2870,6 @@ window.cerrarConfirm = cerrarConfirm;
 window.elegirTipoDias = elegirTipoDias;
 window.cerrarModalTipoDias = cerrarModalTipoDias;
 window.abrirDetalleConductor = abrirDetalleConductor;
-window.cargarCalendarioMensual = cargarCalendarioMensual;
 window.abrirPanelDetalleDia = abrirPanelDetalleDia;
 window.filtrarPanelDetalle = filtrarPanelDetalle;
 window.cerrarPanelDetalle = cerrarPanelDetalle;
@@ -3149,6 +2877,8 @@ window.exportarExcel = exportarExcel;
 window.exportarPDF = exportarPDF;
 window.subirAGoogleSheets = subirAGoogleSheets;
 window.cambiarVista = cambiarVista;
+window.mostrarToast = mostrarToast;
+
 </script>
 
 </body>

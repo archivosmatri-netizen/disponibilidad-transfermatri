@@ -18,8 +18,8 @@
 <script>
 (function() {
     var params = new URLSearchParams(window.location.search);
-    if (params.get('v') !== '3.4') {
-        params.set('v', '3.4');
+    if (params.get('v') !== '3.5') {
+        params.set('v', '3.5');
         window.location.replace(window.location.pathname + '?' + params.toString());
     }
 })();
@@ -34,7 +34,7 @@
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background-color: #f2f4f7; margin: 0; -webkit-text-size-adjust: 100%; }
     input, select, textarea { font-size: 16px; }
-    button, .dia, .logo-operativo-container, .tab-vista-btn, .tab-btn, .btn-rol, .celda-dia {
+    button, .dia, .logo-operativo-container, .tab-vista-btn, .tab-btn, .btn-rol, .celda-dia, .mini-dia {
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
     }
@@ -149,23 +149,119 @@
 
     .modal-conductor .modal-content, .modal-admin .modal-content,
     .modal-confirm-content, .modal-tipo-dias-content {
-        background: white; padding: 30px; border-radius: 16px;
-        max-width: 440px; width: 100%; text-align: center;
+        background: white; padding: 25px; border-radius: 16px;
+        max-width: 480px; width: 100%; text-align: center;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        max-height: 90vh; overflow-y: auto;
+        max-height: 92vh; overflow-y: auto;
     }
 
-    .modal-tipo-dias-content .dias-lista { background: #fff3cd; color: #856404; padding: 12px 15px; border-radius: 8px; font-weight: bold; margin: 15px 0; word-break: break-word; line-height: 1.5; max-height: 130px; overflow-y: auto; font-size: 14px; text-align: left; }
-    .modal-tipo-dias-content .sub-texto-tipo { color: #666; font-size: 14px; margin: 12px 0 15px 0; line-height: 1.4; }
-    .btn-tipo { display: flex; align-items: center; gap: 15px; width: 100%; padding: 14px 18px; border: 2px solid #e8e8e8; border-radius: 10px; background: white; cursor: pointer; text-align: left; font-size: 15px; margin-bottom: 10px; font-family: inherit; }
-    .btn-tipo .btn-tipo-icono { font-size: 28px; flex-shrink: 0; }
-    .btn-tipo .btn-tipo-titulo { font-weight: bold; font-size: 16px; color: #17365d; display: block; }
-    .btn-tipo .btn-tipo-desc { font-size: 12px; color: #888; margin-top: 2px; font-weight: normal; display: block; }
-    .btn-tipo.descanso:hover { border-color: #f39c12; background: #fef5e7; }
-    .btn-tipo.mantenimiento:hover { border-color: #e74c3c; background: #fdedec; }
-    .btn-cancelar-tipo { margin-top: 10px; padding: 12px 20px; border: none; border-radius: 8px; background: #ecf0f1; color: #555; cursor: pointer; font-size: 14px; font-weight: bold; width: 100%; font-family: inherit; min-height: 44px; }
+    /* Modal tipo días - NUEVO */
+    .modal-tipo-dias-content h3 { color: #17365d; margin: 0 0 8px 0; font-size: 18px; }
+    .modal-tipo-dias-content .sub-texto-tipo { color: #666; font-size: 13px; margin: 0 0 15px 0; line-height: 1.4; }
+
+    .modo-selector {
+        display: flex; gap: 8px; margin-bottom: 12px;
+        background: #f0f4f9; padding: 5px; border-radius: 10px;
+    }
+    .modo-btn {
+        flex: 1; padding: 12px 10px; border: 2px solid transparent;
+        border-radius: 8px; background: transparent;
+        font-family: inherit; font-size: 14px; font-weight: bold;
+        cursor: pointer; transition: all 0.2s ease;
+        color: #555;
+    }
+    .modo-btn.activo[data-modo="descanso"] {
+        background: #fce4d6; border-color: #f39c12; color: #b85c00;
+    }
+    .modo-btn.activo[data-modo="mantenimiento"] {
+        background: #fadbd8; border-color: #e74c3c; color: #922b21;
+    }
+    .modo-btn:hover { background: rgba(0,0,0,0.03); }
+
+    .quick-actions {
+        display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .quick-btn {
+        flex: 1; min-width: 100px;
+        padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px;
+        background: white; cursor: pointer; font-family: inherit;
+        font-size: 11px; font-weight: bold; color: #555;
+    }
+    .quick-btn:hover { background: #f5f5f5; }
+
+    .mini-calendario {
+        display: grid; grid-template-columns: repeat(7, 1fr);
+        gap: 3px; margin: 12px 0;
+        max-width: 100%;
+    }
+    .mini-dia-header {
+        text-align: center; font-weight: bold; padding: 4px 2px;
+        color: #666; font-size: 10px;
+    }
+    .mini-dia {
+        aspect-ratio: 1 / 1; min-height: 0;
+        border: 1px dashed #ddd; border-radius: 5px;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        cursor: pointer; background: white;
+        font-size: 11px; font-weight: bold;
+        color: #999; position: relative; overflow: hidden;
+        padding: 2px;
+        transition: all 0.15s ease;
+    }
+    .mini-dia:hover { border-color: #17365d; }
+    .mini-dia.bloqueado {
+        background: #f5f5f5; cursor: not-allowed;
+        border-style: solid; border-color: #e0e0e0;
+        color: #bbb;
+    }
+    .mini-dia.bloqueado:hover { border-color: #e0e0e0; }
+    .mini-dia.ocupado {
+        background: #fce4e4; cursor: not-allowed;
+        border-style: solid; border-color: #e8c4c4;
+        color: #c08787;
+    }
+    .mini-dia.descanso {
+        background: #fce4d6; border: 2px solid #f39c12; color: #b85c00;
+    }
+    .mini-dia.mantenimiento {
+        background: #fadbd8; border: 2px solid #e74c3c; color: #922b21;
+    }
+    .mini-dia .mini-icon { font-size: 9px; line-height: 1; }
+    .mini-dia.vacio { visibility: hidden; }
+
+    .contadores-modal {
+        display: flex; justify-content: center; gap: 8px;
+        margin: 15px 0; flex-wrap: wrap;
+    }
+    .contador-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 6px 12px; border-radius: 15px;
+        font-size: 12px; font-weight: bold;
+    }
+    .contador-chip.descanso { background: #fce4d6; color: #b85c00; }
+    .contador-chip.mantenimiento { background: #fadbd8; color: #922b21; }
+    .contador-chip.pendiente { background: #fff3cd; color: #856404; }
+    .contador-chip.completo { background: #d9ead3; color: #1a7a3a; }
+
+    .btn-confirmar-tipo {
+        width: 100%; padding: 14px; border: none; border-radius: 8px;
+        background: #27ae60; color: white; font-weight: bold;
+        font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 5px; min-height: 48px;
+    }
+    .btn-confirmar-tipo:disabled {
+        background: #ccc; cursor: not-allowed;
+    }
+    .btn-cancelar-tipo {
+        width: 100%; padding: 12px; border: none; border-radius: 8px;
+        background: #ecf0f1; color: #555; font-weight: bold;
+        font-size: 14px; cursor: pointer; font-family: inherit;
+        margin-top: 8px; min-height: 44px;
+    }
 
     .modal-conductor .modal-content .sub-texto { color: #666; font-size: 14px; margin-bottom: 20px; }
+    .modal-conductor .modal-content h3 { color: #17365d; margin: 0 0 8px 0; }
     .modal-conductor .modal-content .grupo-placa { margin-bottom: 15px; }
     .modal-conductor .modal-content .grupo-placa label { display: block; text-align: left; font-weight: bold; margin-bottom: 5px; color: #333; }
     .modal-conductor .modal-content .grupo-placa select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
@@ -173,6 +269,7 @@
     .modal-conductor .modal-content .btn-ingresar-conductor:disabled { background: #ccc; cursor: not-allowed; }
     .modal-conductor .modal-content .btn-cancelar-conductor { padding: 10px 20px; border: none; border-radius: 8px; background: #e74c3c; color: white; cursor: pointer; font-size: 14px; margin-top: 10px; width: 100%; font-family: inherit; }
 
+    .modal-admin .modal-content h3 { color: #17365d; margin: 0 0 10px 0; }
     .modal-admin .modal-content p { color: #666; font-size: 14px; margin-bottom: 20px; }
     .modal-admin .modal-content .input-clave { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center; letter-spacing: 4px; margin-bottom: 15px; }
     .modal-admin .modal-content .btn-ingresar-admin { padding: 12px 40px; border: none; border-radius: 8px; background: #17365d; color: white; font-weight: bold; cursor: pointer; font-size: 16px; width: 100%; font-family: inherit; }
@@ -180,6 +277,7 @@
     .modal-admin .modal-content .error-clave { color: #e74c3c; font-size: 13px; margin-bottom: 10px; display: none; }
     .modal-admin .modal-content .error-clave.visible { display: block; }
 
+    .modal-confirm-content h3 { color: #17365d; margin: 0 0 12px 0; font-size: 18px; }
     .modal-confirm-content p { color: #555; font-size: 15px; margin: 0 0 20px 0; line-height: 1.4; }
     .modal-confirm-content .confirm-botones { display: flex; gap: 10px; }
     .modal-confirm-content .confirm-botones button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; min-height: 44px; font-family: inherit; }
@@ -233,10 +331,13 @@
     .calendario-mensual .celda-dia { min-height: 80px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; font-size: 12px; overflow: hidden; display: flex; flex-direction: column; }
     .calendario-mensual .celda-dia.vacia { background: #fafafa; border-color: #f0f0f0; }
     .calendario-mensual .celda-dia.con-conductores { cursor: pointer; }
+    .calendario-mensual .celda-dia.con-conductores:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .calendario-mensual .celda-dia .barra-turno { height: 5px; background: #e8e8e8; border-radius: 8px 8px 0 0; }
     .calendario-mensual .celda-dia .barra-turno.diurno { background: linear-gradient(90deg, #27ae60, #52c07a); }
     .calendario-mensual .celda-dia .barra-turno.noche { background: linear-gradient(90deg, #2980b9, #4fa8dd); }
     .calendario-mensual .celda-dia .barra-turno.ambos { background: linear-gradient(90deg, #27ae60 0%, #27ae60 50%, #2980b9 50%, #2980b9 100%); }
+    .calendario-mensual .celda-dia .barra-turno.descanso { background: linear-gradient(90deg, #f39c12, #f5b041); }
+    .calendario-mensual .celda-dia .barra-turno.mantenimiento { background: linear-gradient(90deg, #e74c3c, #ec7063); }
     .calendario-mensual .celda-dia .contenido-dia { padding: 5px 7px; display: flex; flex-direction: column; flex: 1; gap: 3px; }
     .calendario-mensual .celda-dia .numero { font-weight: bold; font-size: 15px; color: #17365d; line-height: 1; }
     .calendario-mensual .celda-dia .contadores { display: flex; flex-direction: column; gap: 2px; margin-top: auto; }
@@ -325,7 +426,10 @@
         .ocupado-texto { font-size: 7px; bottom: 3px; }
         .pantalla-login { min-height: 100dvh; padding: 15px; }
         .login-container { padding: 25px 20px; }
-        .modal-conductor .modal-content, .modal-admin .modal-content, .modal-tipo-dias-content { padding: 20px; }
+        .modal-conductor .modal-content, .modal-admin .modal-content, .modal-tipo-dias-content { padding: 18px; }
+        .modal-tipo-dias-content { max-width: 100%; }
+        .mini-dia { font-size: 10px; }
+        .mini-dia-header { font-size: 9px; }
         .barra-rol { flex-direction: column; text-align: center; }
         .barra-rol .btn-salir { width: 100%; padding: 12px; }
         .contenedor-tabla { overflow-x: auto; max-height: 60vh; }
@@ -362,7 +466,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v3.4</div>
+        <div class="version">Sistema de Disponibilidad v3.5</div>
     </div>
 </header>
 
@@ -430,18 +534,29 @@
 
 <div class="modal-tipo-dias" id="modalTipoDias">
     <div class="modal-tipo-dias-content">
-        <h3>⚠️ DÍAS SIN MARCAR</h3>
-        <p class="sub-texto-tipo">Tienes los siguientes días sin disponibilidad:</p>
-        <div class="dias-lista" id="diasSinMarcarLista"></div>
-        <p class="sub-texto-tipo"><strong>Debes indicar qué representan:</strong></p>
-        <button class="btn-tipo descanso" id="btnTipoDescanso">
-            <span class="btn-tipo-icono">🛌</span>
-            <div><span class="btn-tipo-titulo">DESCANSO</span><span class="btn-tipo-desc">Días libres normales</span></div>
-        </button>
-        <button class="btn-tipo mantenimiento" id="btnTipoMantenimiento">
-            <span class="btn-tipo-icono">🔧</span>
-            <div><span class="btn-tipo-titulo">MANTENIMIENTO</span><span class="btn-tipo-desc">Unidad en taller</span></div>
-        </button>
+        <h3>📅 CLASIFICAR DÍAS</h3>
+        <p class="sub-texto-tipo">Toca cada día para marcarlo como <strong>Descanso</strong> o <strong>Mantenimiento</strong>:</p>
+
+        <div class="modo-selector">
+            <button class="modo-btn activo" data-modo="descanso" id="modoDescanso">🛌 DESCANSO</button>
+            <button class="modo-btn" data-modo="mantenimiento" id="modoMantenimiento">🔧 MANTENIMIENTO</button>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" id="btnMarcarTodosDescanso">Marcar todos 🛌</button>
+            <button class="quick-btn" id="btnMarcarTodosMant">Marcar todos 🔧</button>
+            <button class="quick-btn" id="btnLimpiarMarcas">🧹 Limpiar</button>
+        </div>
+
+        <div class="mini-calendario" id="miniCalendario"></div>
+
+        <div class="contadores-modal">
+            <span class="contador-chip descanso" id="chipDescanso">🛌 0</span>
+            <span class="contador-chip mantenimiento" id="chipMant">🔧 0</span>
+            <span class="contador-chip pendiente" id="chipPendiente">⚠️ 0 pendientes</span>
+        </div>
+
+        <button class="btn-confirmar-tipo" id="btnConfirmarTipo" disabled>✅ CONFIRMAR Y GUARDAR</button>
         <button class="btn-cancelar-tipo" id="btnCancelarTipo">❌ CANCELAR</button>
     </div>
 </div>
@@ -585,7 +700,7 @@
 
 <script>
 /* ============================================================
-   v3.4 - FIX CRÍTICO en guardarYVer / elegirTipoDias / _guardarRegistro
+   v3.5 - FIX exportación + modal con calendario interactivo
    ============================================================ */
 
 window.addEventListener('error', function(e) {
@@ -664,8 +779,12 @@ var _guardandoEnProgreso = false;
 var _confirmCallback = null;
 var _registrosCache = {};
 var _borradosRecientes = new Set();
-var _diasPendientes = [];
+
+// Estado del modal de clasificación
 var _registroPendiente = null;
+var _clasificacionDias = {}; // { dia: 'descanso' | 'mantenimiento' }
+var _modoModalTipo = 'descanso';
+var _diasBlancosPendientes = [];
 
 function $(id) { return document.getElementById(id); }
 
@@ -762,7 +881,67 @@ function mostrarFechaActual() {
 }
 
 /* ============================================================
-   ACTUALIZAR IDENTIFICACIÓN (blindada)
+   ✅ NUEVO: obtener registros para exportar (caché + local + fetch si vacío)
+   ============================================================ */
+async function obtenerRegistrosCombinados() {
+    var registros = {};
+
+    // 1. Del caché
+    for (var k in _registrosCache) {
+        if (_borradosRecientes.has(k)) continue;
+        registros[k] = _registrosCache[k];
+    }
+
+    // 2. Del localStorage (prioridad — sobreescribe)
+    var locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+    for (var k2 in locales) {
+        registros[k2] = locales[k2];
+    }
+
+    // 3. Si está vacío, fetch a Sheets
+    if (Object.keys(registros).length === 0) {
+        try {
+            var response = await fetch(GOOGLE_SHEETS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+            var data = await response.json();
+            if (Array.isArray(data)) {
+                data.slice(1).forEach(function(row) {
+                    if (!row || row.length < 5) return;
+                    var placa = String(row[0] || '').trim();
+                    var conductor = String(row[1] || '').trim();
+                    var mes = String(row[2] || '').trim();
+                    if (!placa || !conductor || placa.toUpperCase() === 'PLACA') return;
+
+                    var d = String(row[3] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+                    var n = String(row[4] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+                    var dsc = String(row[5] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+                    var mnt = String(row[6] || '').split(',').map(function(s) { return parseInt(s.trim()); }).filter(function(n) { return !isNaN(n); });
+
+                    var total = (row[7] !== undefined) ? Number(row[7]) : (d.length + n.length);
+                    if (total === 0 && d.length === 0 && n.length === 0 && dsc.length === 0 && mnt.length === 0) return;
+
+                    var mesNum = "8";
+                    if (mes.indexOf('Septiembre') >= 0) mesNum = "8";
+                    else if (mes.indexOf('Octubre') >= 0) mesNum = "9";
+                    else if (mes.indexOf('Noviembre') >= 0) mesNum = "10";
+                    else if (mes.indexOf('Diciembre') >= 0) mesNum = "11";
+
+                    var clave = conductor + "_" + placa + "_" + mesNum;
+                    registros[clave] = {
+                        conductor: conductor, placa: placa, mes: mesNum,
+                        diurno: d, noche: n, descanso: dsc, mantenimiento: mnt
+                    };
+                });
+            }
+        } catch (e) {
+            console.warn('No se pudo cargar de Sheets para exportar:', e);
+        }
+    }
+
+    return registros;
+}
+
+/* ============================================================
+   ACTUALIZAR IDENTIFICACIÓN
    ============================================================ */
 function actualizarIdentificacion() {
     var id = $('identificacion');
@@ -1157,8 +1336,9 @@ function actualizarResumen() {
 }
 
 /* ============================================================
-   ✅ v3.4: GUARDAR (fix crítico)
+   ✅ NUEVO MODAL: clasificar días con calendario interactivo
    ============================================================ */
+
 function guardarYVer() {
     if ($("placa").value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if ($("conductor").value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
@@ -1168,12 +1348,9 @@ function guardarYVer() {
     var diasBlancos = [];
     for (var d = 1; d <= cantDias; d++) if (!diurno.has(d) && !noche.has(d)) diasBlancos.push(d);
 
-    _diasPendientes = diasBlancos.slice();
-
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var idx = parseInt($("conductor").value);
 
-    // ✅ FIX: validar índice
     if (isNaN(idx) || !lista[idx]) {
         mostrarToast("Conductor no válido", 'error');
         return;
@@ -1181,7 +1358,7 @@ function guardarYVer() {
 
     var nombreConductor = lista[idx].nombre;
 
-    var nuevoRegistro = {
+    _registroPendiente = {
         conductor: nombreConductor,
         placa: $("placa").value,
         mes: $("mes").value,
@@ -1191,57 +1368,214 @@ function guardarYVer() {
         mantenimiento: []
     };
 
-    _registroPendiente = nuevoRegistro;
-
+    // Si no hay días blancos → guardar directo
     if (diasBlancos.length === 0) {
-        // ✅ FIX: pasar copia profunda
-        var copia = JSON.parse(JSON.stringify(nuevoRegistro));
+        var copia = JSON.parse(JSON.stringify(_registroPendiente));
         _guardarRegistro(copia);
         return;
     }
 
-    $('diasSinMarcarLista').textContent = '📅 ' + agruparDias(diasBlancos);
+    // Resetear estado del modal
+    _diasBlancosPendientes = diasBlancos.slice();
+    _clasificacionDias = {};
+    _modoModalTipo = 'descanso';
+
+    // Actualizar UI del modal
+    $('modoDescanso').classList.add('activo');
+    $('modoMantenimiento').classList.remove('activo');
+
+    renderMiniCalendario();
+    actualizarContadoresModal();
+
+    // Bloquear botón confirmar hasta que estén todos
+    $('btnConfirmarTipo').disabled = true;
+
     $('modalTipoDias').classList.add('active');
 }
 
-function elegirTipoDias(tipo) {
-    // ✅ FIX: verificar antes de usar
-    if (!_registroPendiente) {
-        console.error('elegirTipoDias: _registroPendiente es null');
-        cerrarModalTipoDias();
+function renderMiniCalendario() {
+    var cont = $('miniCalendario');
+    cont.innerHTML = '';
+
+    // Headers de días
+    DIAS_SEMANA.forEach(function(d) {
+        var h = document.createElement('div');
+        h.className = 'mini-dia-header';
+        h.textContent = d.substring(0, 3);
+        cont.appendChild(h);
+    });
+
+    var mesNum = Number(_registroPendiente.mes);
+    var cantDias = diasDelMes(AÑO, mesNum);
+    var posIni = posicionInicial(AÑO, mesNum);
+
+    // Celda vacía inicial
+    for (var i = 0; i < posIni; i++) {
+        var vacio = document.createElement('div');
+        vacio.className = 'mini-dia vacio';
+        cont.appendChild(vacio);
+    }
+
+    // Días del mes
+    for (var dia = 1; dia <= cantDias; dia++) {
+        var celda = document.createElement('div');
+        celda.className = 'mini-dia';
+
+        // Determinar estado del día
+        var esDiurno = _registroPendiente.diurno.indexOf(dia) >= 0;
+        var esNoche = _registroPendiente.noche.indexOf(dia) >= 0;
+        var esBlanco = _diasBlancosPendientes.indexOf(dia) >= 0;
+        var clasificacion = _clasificacionDias[dia];
+
+        // Verificar si otro conductor lo tiene ocupado
+        var ocupadoPorOtro = false;
+        var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+        for (var k in registros) {
+            var r = registros[k];
+            if (r && r.placa === _registroPendiente.placa &&
+                String(r.mes) === String(_registroPendiente.mes) &&
+                r.conductor !== _registroPendiente.conductor) {
+                var diasD = r.diurno || [];
+                var diasN = r.noche || [];
+                if (diasD.indexOf(dia) >= 0 || diasN.indexOf(dia) >= 0) {
+                    ocupadoPorOtro = true;
+                    break;
+                }
+            }
+        }
+
+        if (esDiurno || esNoche) {
+            // Ya tiene turno asignado → bloqueado
+            celda.classList.add('bloqueado');
+            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">' +
+                (esDiurno && esNoche ? '☀️🌙' : esDiurno ? '☀️' : '🌙') + '</span>';
+        } else if (ocupadoPorOtro) {
+            celda.classList.add('ocupado');
+            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🚫</span>';
+        } else if (clasificacion === 'descanso') {
+            celda.classList.add('descanso');
+            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🛌</span>';
+            celda.addEventListener('click', function() { toggleDiaMini(dia); });
+        } else if (clasificacion === 'mantenimiento') {
+            celda.classList.add('mantenimiento');
+            celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🔧</span>';
+            celda.addEventListener('click', function() { toggleDiaMini(dia); });
+        } else if (esBlanco) {
+            // Día pendiente por clasificar
+            celda.innerHTML = '<span>' + dia + '</span>';
+            celda.addEventListener('click', function() { toggleDiaMini(dia); });
+        } else {
+            // No debería pasar, pero por las dudas
+            celda.classList.add('bloqueado');
+            celda.innerHTML = '<span>' + dia + '</span>';
+        }
+
+        cont.appendChild(celda);
+    }
+}
+
+function toggleDiaMini(dia) {
+    if (_diasBlancosPendientes.indexOf(dia) < 0) return; // No es día blanco
+
+    if (_clasificacionDias[dia] === _modoModalTipo) {
+        // Ya estaba en este modo → quitar
+        delete _clasificacionDias[dia];
+    } else {
+        // Asignar el modo actual
+        _clasificacionDias[dia] = _modoModalTipo;
+    }
+
+    renderMiniCalendario();
+    actualizarContadoresModal();
+}
+
+function cambiarModoModal(modo) {
+    _modoModalTipo = modo;
+    if (modo === 'descanso') {
+        $('modoDescanso').classList.add('activo');
+        $('modoMantenimiento').classList.remove('activo');
+    } else {
+        $('modoMantenimiento').classList.add('activo');
+        $('modoDescanso').classList.remove('activo');
+    }
+}
+
+function marcarTodosCon(modo) {
+    _diasBlancosPendientes.forEach(function(d) {
+        _clasificacionDias[d] = modo;
+    });
+    renderMiniCalendario();
+    actualizarContadoresModal();
+}
+
+function limpiarMarcas() {
+    _clasificacionDias = {};
+    renderMiniCalendario();
+    actualizarContadoresModal();
+}
+
+function actualizarContadoresModal() {
+    var cDesc = 0, cMant = 0;
+    for (var d in _clasificacionDias) {
+        if (_clasificacionDias[d] === 'descanso') cDesc++;
+        else if (_clasificacionDias[d] === 'mantenimiento') cMant++;
+    }
+    var pendientes = _diasBlancosPendientes.length - (cDesc + cMant);
+
+    $('chipDescanso').textContent = '🛌 ' + cDesc;
+    $('chipMant').textContent = '🔧 ' + cMant;
+
+    var chipPend = $('chipPendiente');
+    if (pendientes === 0) {
+        chipPend.textContent = '✅ Todos clasificados';
+        chipPend.className = 'contador-chip completo';
+        $('btnConfirmarTipo').disabled = false;
+    } else {
+        chipPend.textContent = '⚠️ Faltan ' + pendientes;
+        chipPend.className = 'contador-chip pendiente';
+        $('btnConfirmarTipo').disabled = true;
+    }
+}
+
+function confirmarClasificacion() {
+    if (!_registroPendiente) return;
+
+    var pendientes = _diasBlancosPendientes.length - Object.keys(_clasificacionDias).length;
+    if (pendientes > 0) {
+        mostrarToast('Debes clasificar todos los días', 'warning');
         return;
     }
 
-    // ✅ FIX: copiar ANTES de limpiar
-    var registroACopiar = JSON.parse(JSON.stringify(_registroPendiente));
-
-    if (tipo === 'descanso') {
-        registroACopiar.descanso = _diasPendientes.slice();
-        registroACopiar.mantenimiento = [];
-    } else if (tipo === 'mantenimiento') {
-        registroACopiar.mantenimiento = _diasPendientes.slice();
-        registroACopiar.descanso = [];
+    // Construir arrays de descanso y mantenimiento
+    var descanso = [];
+    var mantenimiento = [];
+    for (var d in _clasificacionDias) {
+        var diaNum = parseInt(d);
+        if (_clasificacionDias[d] === 'descanso') descanso.push(diaNum);
+        else if (_clasificacionDias[d] === 'mantenimiento') mantenimiento.push(diaNum);
     }
 
-    // Cerrar modal (pone _registroPendiente = null)
-    $('modalTipoDias').classList.remove('active');
-    _registroPendiente = null;
-    _diasPendientes = [];
+    var registroFinal = JSON.parse(JSON.stringify(_registroPendiente));
+    registroFinal.descanso = descanso.sort(function(a,b) { return a - b; });
+    registroFinal.mantenimiento = mantenimiento.sort(function(a,b) { return a - b; });
 
-    // ✅ FIX: usar la copia
-    _guardarRegistro(registroACopiar);
+    // Limpiar
+    cerrarModalTipoDias();
+
+    _guardarRegistro(registroFinal);
 }
 
 function cerrarModalTipoDias() {
     $('modalTipoDias').classList.remove('active');
     _registroPendiente = null;
-    _diasPendientes = [];
+    _clasificacionDias = {};
+    _diasBlancosPendientes = [];
+    _modoModalTipo = 'descanso';
 }
 
 function _guardarRegistro(registro) {
-    // ✅ FIX: verificar que el registro no sea null
     if (!registro) {
-        console.error('_guardarRegistro: registro es null');
+        console.error('_guardarRegistro: registro null');
         mostrarToast('Error: no hay datos para guardar', 'error');
         return;
     }
@@ -1252,10 +1586,7 @@ function _guardarRegistro(registro) {
         return;
     }
 
-    if (_guardandoEnProgreso) {
-        mostrarToast('⏳ Guardando...', 'info');
-        return;
-    }
+    if (_guardandoEnProgreso) { mostrarToast('⏳ Guardando...', 'info'); return; }
     _guardandoEnProgreso = true;
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -1266,8 +1597,7 @@ function _guardarRegistro(registro) {
     _borradosRecientes.delete(claveRegistro(registro.placa, registro.conductor, registro.mes));
 
     var data = {
-        placa: registro.placa,
-        conductor: registro.conductor,
+        placa: registro.placa, conductor: registro.conductor,
         mes: MESES[String(registro.mes)] + ' ' + AÑO,
         diurno: (registro.diurno || []).join(', '),
         noche: (registro.noche || []).join(', '),
@@ -1297,11 +1627,8 @@ function _guardarRegistro(registro) {
         btn.style.backgroundColor = '#27ae60';
         setTimeout(restaurar, 2000);
         setTimeout(function() {
-            try {
-                abrirDetalleConductor(registro.placa, registro.conductor, registro.mes);
-            } catch (e) {
-                console.error('Error al abrir detalle:', e);
-            }
+            try { abrirDetalleConductor(registro.placa, registro.conductor, registro.mes); }
+            catch (e) { console.error('Error detalle:', e); }
         }, 400);
     })
     .catch(function(error) {
@@ -1750,9 +2077,9 @@ function abrirDetalleConductor(placa, conductor, mes) {
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
-/* CALENDARIO MENSUAL */
-function cargarCalendarioMensual() {
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+/* CALENDARIO MENSUAL - FIX: ahora muestra también días con descanso/mant */
+async function cargarCalendarioMensual() {
+    var registros = await obtenerRegistrosCombinados();
     var filtroPlaca = $('filtroPlaca').value;
     var filtroConductor = $('filtroConductor').value;
     var filtroMes = $('filtroMes').value;
@@ -1768,6 +2095,7 @@ function cargarCalendarioMensual() {
         if (String(r.mes) !== String(filtroMes)) continue;
         if (filtroPlaca && r.placa !== filtroPlaca) continue;
         if (filtroConductor && r.conductor.toUpperCase().indexOf(filtroConductor.toUpperCase()) < 0) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         filtrados.push(r);
     }
 
@@ -1799,12 +2127,17 @@ function cargarCalendarioMensual() {
 
     for (var dia = 1; dia <= diasMes; dia++) {
         var info = diasMap[dia];
-        var total = info.diurno.length + info.noche.length;
+        // ✅ FIX: ahora cuenta TODOS los tipos
+        var total = info.diurno.length + info.noche.length + info.descanso.length + info.mantenimiento.length;
+        var tieneTrabajo = info.diurno.length > 0 || info.noche.length > 0;
         var claseBarra = '';
         if (info.diurno.length > 0 && info.noche.length > 0) claseBarra = 'ambos';
         else if (info.diurno.length > 0) claseBarra = 'diurno';
         else if (info.noche.length > 0) claseBarra = 'noche';
+        else if (info.descanso.length > 0) claseBarra = 'descanso';
+        else if (info.mantenimiento.length > 0) claseBarra = 'mantenimiento';
 
+        // ✅ FIX: clickeable si tiene CUALQUIER registro
         var clickable = total > 0 ? 'con-conductores' : '';
         var onclick = total > 0 ? 'onclick="abrirPanelDetalleDia(' + dia + ')"' : '';
 
@@ -1874,16 +2207,21 @@ function cerrarPanelDetalle() {
     document.body.style.overflow = '';
 }
 
-/* EXPORTAR */
-function exportarExcel() {
-    mostrarToast('📊 Generando...', 'info');
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+/* ============================================================
+   ✅ EXPORTAR - AHORA LEEN DEL CACHÉ COMBINADO
+   ============================================================ */
+
+async function exportarExcel() {
+    mostrarToast('📊 Generando Excel...', 'info');
+
+    var registros = await obtenerRegistrosCombinados();
     var filtroMes = $('filtroMes').value;
     var data = [];
 
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         data.push({
             placa: r.placa, conductor: r.conductor,
             mes: MESES[String(r.mes)] + ' ' + AÑO,
@@ -1895,7 +2233,7 @@ function exportarExcel() {
         });
     }
 
-    if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
+    if (data.length === 0) { mostrarToast('Sin datos para este mes', 'warning'); return; }
 
     var wb = new ExcelJS.Workbook();
     var ws = wb.addWorksheet('Disponibilidad');
@@ -1914,53 +2252,61 @@ function exportarExcel() {
     wb.xlsx.writeBuffer().then(function(buffer) {
         saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
             'Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.xlsx');
-        mostrarToast('✅ Excel listo', 'success');
+        mostrarToast('✅ Excel listo (' + data.length + ' registros)', 'success');
     });
 }
 
-function exportarPDF() {
-    mostrarToast('📄 Generando...', 'info');
+async function exportarPDF() {
+    mostrarToast('📄 Generando PDF...', 'info');
+
+    var registros = await obtenerRegistrosCombinados();
+    var filtroMes = $('filtroMes').value;
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF('landscape', 'mm', 'a4');
     var pageWidth = doc.internal.pageSize.getWidth();
     doc.setFontSize(20); doc.setTextColor(23, 54, 93);
     doc.text('TRANSFERMATRI S.A.', pageWidth / 2, 15, { align: 'center' });
 
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    var filtroMes = $('filtroMes').value;
     var data = [];
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         data.push([r.placa, r.conductor, agruparDias(r.diurno || []) || '—', agruparDias(r.noche || []) || '—',
             agruparDias(r.descanso || []) || '—', agruparDias(r.mantenimiento || []) || '—',
             (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)]);
     }
-    if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
+
+    if (data.length === 0) { mostrarToast('Sin datos para este mes', 'warning'); return; }
 
     doc.autoTable({
         head: [['PLACA', 'CONDUCTOR', 'DIURNO', 'NOCHE', 'DESCANSO', 'MANT.', 'TOTAL']],
         body: data, startY: 30, styles: { fontSize: 7 }, headStyles: { fillColor: [23, 54, 93] }
     });
     doc.save('Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.pdf');
-    mostrarToast('✅ PDF listo', 'success');
+    mostrarToast('✅ PDF listo (' + data.length + ' registros)', 'success');
 }
 
-function subirAGoogleSheets(btn) {
+async function subirAGoogleSheets(btn) {
     if (!btn) return;
     var t = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
-    var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
+
+    var registros = await obtenerRegistrosCombinados();
     var filtroMes = $('filtroMes').value;
     var lista = [];
+
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
+        if (_borradosRecientes.has(claveRegistro(r.placa, r.conductor, r.mes))) continue;
         lista.push({ placa: r.placa, conductor: r.conductor, mes: MESES[String(r.mes)] + ' ' + AÑO,
             diurno: (r.diurno || []).join(', '), noche: (r.noche || []).join(', '),
             descanso: (r.descanso || []).join(', '), mantenimiento: (r.mantenimiento || []).join(', '),
             total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0) });
     }
+
     if (lista.length === 0) { btn.innerHTML = '📭'; setTimeout(function() { btn.innerHTML = t; btn.disabled = false; }, 1500); return; }
+
     var e = 0;
     lista.forEach(function(data) {
         enviarASheets(data).then(function() {
@@ -1992,7 +2338,7 @@ function cambiarVista(vista) {
 
 /* INICIAR */
 function iniciar() {
-    console.log('[boot] v3.4');
+    console.log('[boot] v3.5');
 
     var faltantes = [];
     ['fechaActual', 'pantallaLogin', 'placa', 'conductor', 'mes', 'btnIngresar'].forEach(function(id) {
@@ -2037,8 +2383,13 @@ function iniciar() {
     if ($('btnGuardarYVer')) $('btnGuardarYVer').addEventListener('click', guardarYVer);
     if ($('btnBorrarRegistro')) $('btnBorrarRegistro').addEventListener('click', borrarMiRegistro);
 
-    if ($('btnTipoDescanso')) $('btnTipoDescanso').addEventListener('click', function() { elegirTipoDias('descanso'); });
-    if ($('btnTipoMantenimiento')) $('btnTipoMantenimiento').addEventListener('click', function() { elegirTipoDias('mantenimiento'); });
+    // Modal clasificación
+    if ($('modoDescanso')) $('modoDescanso').addEventListener('click', function() { cambiarModoModal('descanso'); });
+    if ($('modoMantenimiento')) $('modoMantenimiento').addEventListener('click', function() { cambiarModoModal('mantenimiento'); });
+    if ($('btnMarcarTodosDescanso')) $('btnMarcarTodosDescanso').addEventListener('click', function() { marcarTodosCon('descanso'); });
+    if ($('btnMarcarTodosMant')) $('btnMarcarTodosMant').addEventListener('click', function() { marcarTodosCon('mantenimiento'); });
+    if ($('btnLimpiarMarcas')) $('btnLimpiarMarcas').addEventListener('click', limpiarMarcas);
+    if ($('btnConfirmarTipo')) $('btnConfirmarTipo').addEventListener('click', confirmarClasificacion);
     if ($('btnCancelarTipo')) $('btnCancelarTipo').addEventListener('click', cerrarModalTipoDias);
 
     if ($('btnCancelarConfirm')) $('btnCancelarConfirm').addEventListener('click', function() { cerrarConfirm(false); });
@@ -2074,7 +2425,7 @@ function iniciar() {
     });
 
     cambiarVista('tabla');
-    console.log('[boot] ✅ v3.4 lista');
+    console.log('[boot] ✅ v3.5 lista');
 }
 
 if (document.readyState === 'loading') {
@@ -2101,8 +2452,6 @@ window.borrarRegistroAdmin = borrarRegistroAdmin;
 window.editarRegistroAdmin = editarRegistroAdmin;
 window.cargarVisualizacion = cargarVisualizacion;
 window.cerrarConfirm = cerrarConfirm;
-window.elegirTipoDias = elegirTipoDias;
-window.cerrarModalTipoDias = cerrarModalTipoDias;
 window.abrirDetalleConductor = abrirDetalleConductor;
 window.abrirPanelDetalleDia = abrirPanelDetalleDia;
 window.filtrarPanelDetalle = filtrarPanelDetalle;
@@ -2112,6 +2461,8 @@ window.exportarPDF = exportarPDF;
 window.subirAGoogleSheets = subirAGoogleSheets;
 window.cambiarVista = cambiarVista;
 window.mostrarToast = mostrarToast;
+window.cerrarModalTipoDias = cerrarModalTipoDias;
+window.confirmarClasificacion = confirmarClasificacion;
 </script>
 
 </body>

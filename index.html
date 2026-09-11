@@ -18,8 +18,8 @@
 <script>
 (function() {
     var params = new URLSearchParams(window.location.search);
-    if (params.get('v') !== '3.2') {
-        params.set('v', '3.2');
+    if (params.get('v') !== '3.3') {
+        params.set('v', '3.3');
         window.location.replace(window.location.pathname + '?' + params.toString());
     }
 })();
@@ -62,7 +62,6 @@
     label { font-weight: bold; display: block; margin-bottom: 7px; }
     select, input { width: 100%; padding: 12px; border-radius: 7px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
     .btn-ingresar { padding: 12px 30px; border: none; border-radius: 7px; background-color: #548235; color: white; font-weight: bold; cursor: pointer; font-size: 15px; white-space: nowrap; }
-    .btn-ingresar:hover { background-color: #3d6a28; }
     .btn-ingresar:disabled { background-color: #ccc; cursor: not-allowed; }
 
     .identificacion { margin-top: 20px; padding: 12px; background-color: #e8f0fa; color: #17365d; border-radius: 7px; font-weight: bold; font-size: 16px; }
@@ -97,12 +96,10 @@
         aspect-ratio: 1 / 1; min-height: 0; max-height: 100px;
         border: 1px solid #ddd; border-radius: 8px; padding: 6px;
         cursor: pointer; background-color: white; box-sizing: border-box;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
         position: relative; overflow: hidden;
-        display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+        display: flex; flex-direction: column;
         min-width: 0;
     }
-    .dia:hover { border-color: #17365d; background-color: #f5f8fc; }
     .dia.seleccionado { background-color: #d9ead3; border: 2px solid #548235; }
     .dia.seleccionado-noche { background-color: #d4e6f1; border: 2px solid #2980b9; }
     .dia.ocupado { background-color: #fce4e4; border: 2px solid #c0392b; cursor: not-allowed; opacity: 0.7; }
@@ -300,8 +297,9 @@
     .toast.warning { background: #f39c12; }
     .toast.info { background: #2980b9; }
 
-    #errorPanel { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #c0392b; color: white; padding: 12px; font-size: 12px; font-family: monospace; z-index: 999999; max-height: 40vh; overflow-y: auto; }
+    #errorPanel { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #c0392b; color: white; padding: 12px; font-size: 11px; font-family: monospace; z-index: 999999; max-height: 50vh; overflow-y: auto; }
     #errorPanel.visible { display: block; }
+    #errorPanel pre { white-space: pre-wrap; word-break: break-all; margin: 5px 0; }
 
     @media(max-width: 700px) {
         header { flex-direction: column; text-align: center; padding: 12px 15px; gap: 10px; }
@@ -364,7 +362,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v3.2</div>
+        <div class="version">Sistema de Disponibilidad v3.3</div>
     </div>
 </header>
 
@@ -585,10 +583,9 @@
     </div>
 </div>
 
-
 <script>
 /* ============================================================
-   v3.2 - FIX: protección contra null en crearCalendario
+   v3.3 - FIX: actualizarIdentificacion blindada
    ============================================================ */
 
 window.addEventListener('error', function(e) {
@@ -713,7 +710,7 @@ function enviarASheets(data) {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
-    }).catch(function(err) { console.warn('POST warning:', err); });
+    }).catch(function(err) { console.warn('POST:', err); });
 }
 
 function agruparDias(dias) {
@@ -765,8 +762,62 @@ function mostrarFechaActual() {
 }
 
 /* ============================================================
-   LOGIN
+   ✅ FIX CRÍTICO: actualizarIdentificacion BLINDADA
    ============================================================ */
+function actualizarIdentificacion() {
+    var id = $('identificacion');
+    if (!id) return;
+
+    // Protección si no hay elementos
+    if (!$("placa") || !$("conductor") || !$("mes")) {
+        id.textContent = "👋 Seleccione una placa y un conductor";
+        id.classList.remove('con-registro');
+        return;
+    }
+
+    if (rolActual !== 'usuario') {
+        id.textContent = "👋 Seleccione una placa y un conductor";
+        id.classList.remove('con-registro');
+        return;
+    }
+
+    if (!$("placa").value || $("conductor").value === '') {
+        id.textContent = "👋 Seleccione una placa y un conductor";
+        id.classList.remove('con-registro');
+        return;
+    }
+
+    var lista = obtenerConductoresPorPlaca($("placa").value);
+    var idx = parseInt($("conductor").value);
+
+    // ✅ PROTECCIÓN: verificar idx válido
+    if (isNaN(idx) || idx < 0 || idx >= lista.length) {
+        id.textContent = "👋 Seleccione una placa y un conductor";
+        id.classList.remove('con-registro');
+        return;
+    }
+
+    var conductorObj = lista[idx];
+    if (!conductorObj || !conductorObj.nombre) {
+        id.textContent = "👋 Seleccione una placa y un conductor";
+        id.classList.remove('con-registro');
+        return;
+    }
+
+    var conductor = conductorObj.nombre;
+    var registro = obtenerRegistroLocal($("placa").value, conductor, $("mes").value);
+
+    if (registro) {
+        var totalDias = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
+        id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 📋 Registrado (' + totalDias + ' días)';
+        id.classList.add('con-registro');
+    } else {
+        id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 🆕 Sin registro';
+        id.classList.remove('con-registro');
+    }
+}
+
+/* LOGIN */
 function cargarPlacasLogin() {
     var s = $('loginPlaca');
     s.innerHTML = '<option value="">-- Seleccione una placa --</option>';
@@ -828,6 +879,7 @@ function verificarClaveAdmin() {
     else { $('errorClave').classList.add('visible'); $('claveAdmin').value = ''; $('claveAdmin').focus(); }
 }
 
+/* ✅ FIX: iniciarSesionUsuario con protección */
 function iniciarSesionUsuario(nombre, placa) {
     rolActual = 'usuario';
     mostrarContenidoPrincipal();
@@ -838,24 +890,42 @@ function iniciarSesionUsuario(nombre, placa) {
     $("conductor").disabled = true;
 
     $("conductor").innerHTML = '';
-    obtenerConductoresPorPlaca(placa).forEach(function(item, i) {
-        var op = document.createElement("option"); op.value = i; op.textContent = item.nombre;
+    var lista = obtenerConductoresPorPlaca(placa);
+    lista.forEach(function(item, i) {
+        var op = document.createElement("option");
+        op.value = i;
+        op.textContent = item.nombre;
         $("conductor").appendChild(op);
         if (item.nombre === nombre) $("conductor").value = i;
     });
 
+    // ✅ FIX: si quedó vacío, seleccionar el primero
+    if ($("conductor").value === "" && lista.length > 0) {
+        $("conductor").value = 0;
+    }
+
     $("btnIngresar").disabled = false;
     $("btnGuardarYVer").disabled = false;
 
-    actualizarIdentificacion();
+    // ✅ FIX: llamar con try/catch
+    try {
+        actualizarIdentificacion();
+    } catch (e) {
+        console.warn('Error en actualizarIdentificacion:', e);
+    }
+
     $('tabVisualizarBtn').style.display = 'none';
     cambiarTab('registrar');
 
     setTimeout(function() {
-        var registro = obtenerRegistroLocal(placa, nombre, $("mes").value);
-        if (registro) {
-            ingresar();
-            mostrarToast('👋 Ya tienes un registro guardado.', 'info', 4000);
+        try {
+            var registro = obtenerRegistroLocal(placa, nombre, $("mes").value);
+            if (registro) {
+                ingresar();
+                mostrarToast('👋 Ya tienes un registro guardado.', 'info', 4000);
+            }
+        } catch (e) {
+            console.warn('Error al auto-ingresar:', e);
         }
     }, 300);
 }
@@ -900,26 +970,6 @@ function actualizarBarraRol(nombre, placa) {
     }
 }
 
-function actualizarIdentificacion() {
-    var id = $('identificacion');
-    if (rolActual !== 'usuario' || !$("placa").value || $("conductor").value === '') {
-        id.textContent = "👋 Seleccione una placa y un conductor";
-        id.classList.remove('con-registro');
-        return;
-    }
-    var lista = obtenerConductoresPorPlaca($("placa").value);
-    var conductor = lista[parseInt($("conductor").value)] ? lista[parseInt($("conductor").value)].nombre : '';
-    var registro = obtenerRegistroLocal($("placa").value, conductor, $("mes").value);
-    if (registro) {
-        var totalDias = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
-        id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 📋 Registrado (' + totalDias + ' días)';
-        id.classList.add('con-registro');
-    } else {
-        id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 🆕 Sin registro';
-        id.classList.remove('con-registro');
-    }
-}
-
 function cerrarSesion() {
     mostrarConfirm('¿Cerrar sesión?', function(ok) {
         if (!ok) return;
@@ -939,9 +989,7 @@ function cerrarSesion() {
     }, 'Cerrar Sesión');
 }
 
-/* ============================================================
-   ✅ INGRESAR - con protección extra
-   ============================================================ */
+/* INGRESAR */
 function ingresar() {
     try {
         if (rolActual === 'usuario' && conductorLogueado) {
@@ -957,11 +1005,10 @@ function ingresar() {
             }
         }
 
-        // ✅ FIX CRÍTICO: Verificar que el conductor realmente exista
         var listaVerif = obtenerConductoresPorPlaca($("placa").value);
         var conductorVerif = listaVerif[parseInt($("conductor").value)];
         if (!conductorVerif) {
-            mostrarToast("Conductor no válido. Vuelva a seleccionar.", 'error');
+            mostrarToast("Conductor no válido", 'error');
             return;
         }
 
@@ -1008,9 +1055,7 @@ function cargarDisponibilidadGuardada() {
     }
 }
 
-/* ============================================================
-   ✅ CALENDARIO - con protección null
-   ============================================================ */
+/* CALENDARIO */
 function toggleCalendario(tipo) {
     if (!calendarioVisible) return;
     var w = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
@@ -1027,11 +1072,7 @@ function toggleCalendario(tipo) {
 }
 
 function crearCalendario(elemento, seleccionados, tipo) {
-    if (!elemento) {
-        console.warn('crearCalendario: elemento nulo');
-        return;
-    }
-
+    if (!elemento) return;
     elemento.innerHTML = "";
 
     DIAS_SEMANA.forEach(function(nombre) {
@@ -1045,22 +1086,15 @@ function crearCalendario(elemento, seleccionados, tipo) {
     var cantDias = diasDelMes(AÑO, mesNum);
     var posIni = posicionInicial(AÑO, mesNum);
 
-    for (var i = 0; i < posIni; i++) {
-        elemento.appendChild(document.createElement("div"));
-    }
+    for (var i = 0; i < posIni; i++) elemento.appendChild(document.createElement("div"));
 
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var placaActual = $("placa").value;
-
-    // ✅ FIX: protección cuando no hay placa o conductor
-    if (!placaActual) {
-        console.warn('crearCalendario: no hay placa');
-        return;
-    }
+    if (!placaActual) return;
 
     var lista = obtenerConductoresPorPlaca(placaActual);
-    var idxConductor = parseInt($("conductor").value);
-    var conductor = (!isNaN(idxConductor) && lista[idxConductor]) ? lista[idxConductor] : null;
+    var idx = parseInt($("conductor").value);
+    var conductor = (!isNaN(idx) && lista[idx]) ? lista[idx] : null;
     var nombreActual = conductor ? conductor.nombre : '';
 
     for (var dia = 1; dia <= cantDias; dia++) {
@@ -1071,7 +1105,6 @@ function crearCalendario(elemento, seleccionados, tipo) {
             var ocupadoPor = null;
             for (var k in registros) {
                 var r = registros[k];
-                // ✅ FIX: proteger contra r null
                 if (r && r.placa === placaActual &&
                     String(r.mes) === String($("mes").value) &&
                     r.conductor !== nombreActual) {
@@ -1081,14 +1114,12 @@ function crearCalendario(elemento, seleccionados, tipo) {
             }
 
             if (ocupadoPor) { celda.classList.add("ocupado"); celda.title = "Ocupado por: " + ocupadoPor; }
-
             if (seleccionados.has(dia)) {
                 if (tipo === 'diurno') celda.classList.add("seleccionado");
                 else celda.classList.add("seleccionado-noche");
             }
 
             var claseLabel = tipo === 'diurno' ? 'disponible' : 'disponible-noche';
-
             celda.innerHTML = '<div class="numero">' + dia + '</div>' +
                 (seleccionados.has(dia) ? '<div class="' + claseLabel + '">✓</div>' : '') +
                 (ocupadoPor ? '<div class="ocupado-texto">🚫</div>' : '');
@@ -1111,7 +1142,6 @@ function crearCalendario(elemento, seleccionados, tipo) {
 }
 
 function crearCalendarios() {
-    // ✅ FIX: no crear si no hay placa/conductor
     if (!$("placa").value) return;
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var idx = parseInt($("conductor").value);
@@ -1130,9 +1160,7 @@ function actualizarResumen() {
     } catch (e) { console.error('Error resumen:', e); }
 }
 
-/* ============================================================
-   GUARDAR
-   ============================================================ */
+/* GUARDAR */
 function guardarYVer() {
     if ($("placa").value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if ($("conductor").value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
@@ -1140,9 +1168,7 @@ function guardarYVer() {
     var mesNum = Number($("mes").value);
     var cantDias = diasDelMes(AÑO, mesNum);
     var diasBlancos = [];
-    for (var d = 1; d <= cantDias; d++) {
-        if (!diurno.has(d) && !noche.has(d)) diasBlancos.push(d);
-    }
+    for (var d = 1; d <= cantDias; d++) if (!diurno.has(d) && !noche.has(d)) diasBlancos.push(d);
 
     _diasPendientes = diasBlancos;
 
@@ -1212,7 +1238,7 @@ function _guardarRegistro(registro) {
         btn.style.backgroundColor = '';
         btn.disabled = false;
         _guardandoEnProgreso = false;
-        actualizarIdentificacion();
+        try { actualizarIdentificacion(); } catch(e) {}
         actualizarBotonBorrar();
     };
 
@@ -1231,12 +1257,10 @@ function _guardarRegistro(registro) {
     });
 }
 
-/* ============================================================
-   BORRAR
-   ============================================================ */
+/* BORRAR */
 function borrarMiRegistro() {
     if ($("placa").value === "" || $("conductor").value === "") {
-        mostrarToast("No hay registro seleccionado", 'warning'); return;
+        mostrarToast("No hay registro", 'warning'); return;
     }
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var nombreConductor = lista[parseInt($("conductor").value)].nombre;
@@ -1261,6 +1285,7 @@ function borrarMiRegistro() {
 
 function actualizarBotonBorrar() {
     var btn = $("btnBorrarRegistro");
+    if (!btn) return;
     if (rolActual !== 'usuario') { btn.classList.remove('visible'); return; }
     if ($("placa").value === "" || $("conductor").value === "") { btn.classList.remove('visible'); return; }
     var lista = obtenerConductoresPorPlaca($("placa").value);
@@ -1305,9 +1330,7 @@ function editarRegistroAdmin(placa, conductor, mes) {
     setTimeout(function() { ingresar(); mostrarToast('✏️ Editando...', 'info', 4000); }, 200);
 }
 
-/* ============================================================
-   TABS
-   ============================================================ */
+/* TABS */
 function cambiarTab(tab) {
     document.querySelectorAll('.tab-contenido').forEach(function(el) { el.classList.remove('activo'); });
     document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('activo'); });
@@ -1328,11 +1351,15 @@ function cambiarTab(tab) {
 
 function ocultarCalendario() {
     calendarioVisible = false;
-    $("contenedorCalendario").classList.remove("visible");
-    $("contenedorCalendario").style.display = "none";
-    $("contenedorResumen").classList.remove("visible");
-    $("contenedorResumen").style.display = "none";
-    $("btnBorrarRegistro").classList.remove('visible');
+    if ($("contenedorCalendario")) {
+        $("contenedorCalendario").classList.remove("visible");
+        $("contenedorCalendario").style.display = "none";
+    }
+    if ($("contenedorResumen")) {
+        $("contenedorResumen").classList.remove("visible");
+        $("contenedorResumen").style.display = "none";
+    }
+    if ($("btnBorrarRegistro")) $("btnBorrarRegistro").classList.remove('visible');
     ['diurno', 'noche'].forEach(function(tipo) {
         var w = $('calendario' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Wrapper');
         if (w) { w.classList.remove('abierto'); w.classList.add('cerrado'); }
@@ -1395,9 +1422,7 @@ function onMesChange() {
     }
 }
 
-/* ============================================================
-   VISUALIZACIÓN
-   ============================================================ */
+/* VISUALIZACIÓN */
 async function cargarVisualizacion(forzarRecarga) {
     if (rolActual !== 'admin') return;
     var filtroPlaca = $('filtroPlaca').value;
@@ -1545,9 +1570,7 @@ function renderizarTablaFiltrada(registros, filtroPlaca, filtroConductor, filtro
     $('contenedorVisualizacion').innerHTML = html;
 }
 
-/* ============================================================
-   DETALLE
-   ============================================================ */
+/* DETALLE */
 function abrirDetalleConductor(placa, conductor, mes) {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var registro = registros[conductor + "_" + placa + "_" + mes];
@@ -1673,9 +1696,7 @@ function abrirDetalleConductor(placa, conductor, mes) {
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
-/* ============================================================
-   CALENDARIO MENSUAL
-   ============================================================ */
+/* CALENDARIO MENSUAL */
 function cargarCalendarioMensual() {
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
     var filtroPlaca = $('filtroPlaca').value;
@@ -1799,9 +1820,7 @@ function cerrarPanelDetalle() {
     document.body.style.overflow = '';
 }
 
-/* ============================================================
-   EXPORTAR
-   ============================================================ */
+/* EXPORTAR */
 function exportarExcel() {
     mostrarToast('📊 Generando...', 'info');
     var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
@@ -1917,11 +1936,19 @@ function cambiarVista(vista) {
     }
 }
 
-/* ============================================================
-   INICIAR
-   ============================================================ */
+/* INICIAR */
 function iniciar() {
-    console.log('[boot] v3.2');
+    console.log('[boot] v3.3');
+
+    // Verificar elementos críticos
+    var faltantes = [];
+    ['fechaActual', 'pantallaLogin', 'placa', 'conductor', 'mes', 'btnIngresar'].forEach(function(id) {
+        if (!document.getElementById(id)) faltantes.push(id);
+    });
+    if (faltantes.length > 0) {
+        console.error('Elementos faltantes:', faltantes);
+        return;
+    }
 
     mostrarFechaActual();
     cargarPlacas();
@@ -2008,7 +2035,7 @@ function iniciar() {
     });
 
     cambiarVista('tabla');
-    console.log('[boot] ✅ v3.2 lista');
+    console.log('[boot] ✅ v3.3 lista');
 }
 
 if (document.readyState === 'loading') {

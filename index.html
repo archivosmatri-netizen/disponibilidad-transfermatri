@@ -18,8 +18,8 @@
 <script>
 (function() {
     var params = new URLSearchParams(window.location.search);
-    if (params.get('v') !== '3.5') {
-        params.set('v', '3.5');
+    if (params.get('v') !== '3.6') {
+        params.set('v', '3.6');
         window.location.replace(window.location.pathname + '?' + params.toString());
     }
 })();
@@ -102,10 +102,11 @@
     }
     .dia.seleccionado { background-color: #d9ead3; border: 2px solid #548235; }
     .dia.seleccionado-noche { background-color: #d4e6f1; border: 2px solid #2980b9; }
+    .dia.seleccionado-ambos { background: linear-gradient(135deg, #d9ead3 50%, #d4e6f1 50%); border: 2px solid #1a7a3a; }
     .dia.ocupado { background-color: #fce4e4; border: 2px solid #c0392b; cursor: not-allowed; opacity: 0.7; }
     .numero { font-weight: bold; font-size: 16px; line-height: 1; color: #17365d; }
 
-    .disponible, .disponible-noche, .ocupado-texto {
+    .disponible, .disponible-noche, .disponible-ambos, .ocupado-texto {
         position: absolute; bottom: 4px; left: 0; right: 0;
         text-align: center; font-size: 9px; font-weight: bold;
         padding: 0 2px; line-height: 1.1;
@@ -113,6 +114,7 @@
     }
     .disponible { color: #38761d; }
     .disponible-noche { color: #1a5276; }
+    .disponible-ambos { color: #1a7a3a; }
     .ocupado-texto { color: #c0392b; font-size: 8px; }
 
     .resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -155,7 +157,6 @@
         max-height: 92vh; overflow-y: auto;
     }
 
-    /* Modal tipo días - NUEVO */
     .modal-tipo-dias-content h3 { color: #17365d; margin: 0 0 8px 0; font-size: 18px; }
     .modal-tipo-dias-content .sub-texto-tipo { color: #666; font-size: 13px; margin: 0 0 15px 0; line-height: 1.4; }
 
@@ -170,34 +171,19 @@
         cursor: pointer; transition: all 0.2s ease;
         color: #555;
     }
-    .modo-btn.activo[data-modo="descanso"] {
-        background: #fce4d6; border-color: #f39c12; color: #b85c00;
-    }
-    .modo-btn.activo[data-modo="mantenimiento"] {
-        background: #fadbd8; border-color: #e74c3c; color: #922b21;
-    }
-    .modo-btn:hover { background: rgba(0,0,0,0.03); }
+    .modo-btn.activo[data-modo="descanso"] { background: #fce4d6; border-color: #f39c12; color: #b85c00; }
+    .modo-btn.activo[data-modo="mantenimiento"] { background: #fadbd8; border-color: #e74c3c; color: #922b21; }
 
-    .quick-actions {
-        display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
-    }
+    .quick-actions { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
     .quick-btn {
         flex: 1; min-width: 100px;
         padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px;
         background: white; cursor: pointer; font-family: inherit;
         font-size: 11px; font-weight: bold; color: #555;
     }
-    .quick-btn:hover { background: #f5f5f5; }
 
-    .mini-calendario {
-        display: grid; grid-template-columns: repeat(7, 1fr);
-        gap: 3px; margin: 12px 0;
-        max-width: 100%;
-    }
-    .mini-dia-header {
-        text-align: center; font-weight: bold; padding: 4px 2px;
-        color: #666; font-size: 10px;
-    }
+    .mini-calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: 12px 0; max-width: 100%; }
+    .mini-dia-header { text-align: center; font-weight: bold; padding: 4px 2px; color: #666; font-size: 10px; }
     .mini-dia {
         aspect-ratio: 1 / 1; min-height: 0;
         border: 1px dashed #ddd; border-radius: 5px;
@@ -206,59 +192,25 @@
         cursor: pointer; background: white;
         font-size: 11px; font-weight: bold;
         color: #999; position: relative; overflow: hidden;
-        padding: 2px;
-        transition: all 0.15s ease;
+        padding: 2px; transition: all 0.15s ease;
     }
-    .mini-dia:hover { border-color: #17365d; }
-    .mini-dia.bloqueado {
-        background: #f5f5f5; cursor: not-allowed;
-        border-style: solid; border-color: #e0e0e0;
-        color: #bbb;
-    }
-    .mini-dia.bloqueado:hover { border-color: #e0e0e0; }
-    .mini-dia.ocupado {
-        background: #fce4e4; cursor: not-allowed;
-        border-style: solid; border-color: #e8c4c4;
-        color: #c08787;
-    }
-    .mini-dia.descanso {
-        background: #fce4d6; border: 2px solid #f39c12; color: #b85c00;
-    }
-    .mini-dia.mantenimiento {
-        background: #fadbd8; border: 2px solid #e74c3c; color: #922b21;
-    }
+    .mini-dia.bloqueado { background: #f5f5f5; cursor: not-allowed; border-style: solid; border-color: #e0e0e0; color: #bbb; }
+    .mini-dia.ocupado { background: #fce4e4; cursor: not-allowed; border-style: solid; border-color: #e8c4c4; color: #c08787; }
+    .mini-dia.descanso { background: #fce4d6; border: 2px solid #f39c12; color: #b85c00; }
+    .mini-dia.mantenimiento { background: #fadbd8; border: 2px solid #e74c3c; color: #922b21; }
     .mini-dia .mini-icon { font-size: 9px; line-height: 1; }
     .mini-dia.vacio { visibility: hidden; }
 
-    .contadores-modal {
-        display: flex; justify-content: center; gap: 8px;
-        margin: 15px 0; flex-wrap: wrap;
-    }
-    .contador-chip {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 6px 12px; border-radius: 15px;
-        font-size: 12px; font-weight: bold;
-    }
+    .contadores-modal { display: flex; justify-content: center; gap: 8px; margin: 15px 0; flex-wrap: wrap; }
+    .contador-chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; }
     .contador-chip.descanso { background: #fce4d6; color: #b85c00; }
     .contador-chip.mantenimiento { background: #fadbd8; color: #922b21; }
     .contador-chip.pendiente { background: #fff3cd; color: #856404; }
     .contador-chip.completo { background: #d9ead3; color: #1a7a3a; }
 
-    .btn-confirmar-tipo {
-        width: 100%; padding: 14px; border: none; border-radius: 8px;
-        background: #27ae60; color: white; font-weight: bold;
-        font-size: 15px; cursor: pointer; font-family: inherit;
-        margin-top: 5px; min-height: 48px;
-    }
-    .btn-confirmar-tipo:disabled {
-        background: #ccc; cursor: not-allowed;
-    }
-    .btn-cancelar-tipo {
-        width: 100%; padding: 12px; border: none; border-radius: 8px;
-        background: #ecf0f1; color: #555; font-weight: bold;
-        font-size: 14px; cursor: pointer; font-family: inherit;
-        margin-top: 8px; min-height: 44px;
-    }
+    .btn-confirmar-tipo { width: 100%; padding: 14px; border: none; border-radius: 8px; background: #27ae60; color: white; font-weight: bold; font-size: 15px; cursor: pointer; font-family: inherit; margin-top: 5px; min-height: 48px; }
+    .btn-confirmar-tipo:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-cancelar-tipo { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #ecf0f1; color: #555; font-weight: bold; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 8px; min-height: 44px; }
 
     .modal-conductor .modal-content .sub-texto { color: #666; font-size: 14px; margin-bottom: 20px; }
     .modal-conductor .modal-content h3 { color: #17365d; margin: 0 0 8px 0; }
@@ -422,7 +374,7 @@
         .nombre-dia { font-size: 11px; padding: 5px 2px; }
         .dia { max-height: 70px; padding: 4px; border-radius: 6px; }
         .dia .numero { font-size: 14px; }
-        .disponible, .disponible-noche { font-size: 8px; bottom: 3px; }
+        .disponible, .disponible-noche, .disponible-ambos { font-size: 8px; bottom: 3px; }
         .ocupado-texto { font-size: 7px; bottom: 3px; }
         .pantalla-login { min-height: 100dvh; padding: 15px; }
         .login-container { padding: 25px 20px; }
@@ -466,7 +418,7 @@
     </div>
     <div class="header-derecha">
         <div class="fecha-actual" id="fechaActual"></div>
-        <div class="version">Sistema de Disponibilidad v3.5</div>
+        <div class="version">Sistema de Disponibilidad v3.6</div>
     </div>
 </header>
 
@@ -700,7 +652,7 @@
 
 <script>
 /* ============================================================
-   v3.5 - FIX exportación + modal con calendario interactivo
+   v3.6 - FIX: un día puede estar en Diurno Y Noche a la vez
    ============================================================ */
 
 window.addEventListener('error', function(e) {
@@ -779,10 +731,8 @@ var _guardandoEnProgreso = false;
 var _confirmCallback = null;
 var _registrosCache = {};
 var _borradosRecientes = new Set();
-
-// Estado del modal de clasificación
 var _registroPendiente = null;
-var _clasificacionDias = {}; // { dia: 'descanso' | 'mantenimiento' }
+var _clasificacionDias = {};
 var _modoModalTipo = 'descanso';
 var _diasBlancosPendientes = [];
 
@@ -880,25 +830,16 @@ function mostrarFechaActual() {
     $('fechaActual').textContent = ahora.toLocaleDateString('es-ES', opciones);
 }
 
-/* ============================================================
-   ✅ NUEVO: obtener registros para exportar (caché + local + fetch si vacío)
-   ============================================================ */
+/* Obtener registros combinados para exportación */
 async function obtenerRegistrosCombinados() {
     var registros = {};
-
-    // 1. Del caché
     for (var k in _registrosCache) {
         if (_borradosRecientes.has(k)) continue;
         registros[k] = _registrosCache[k];
     }
-
-    // 2. Del localStorage (prioridad — sobreescribe)
     var locales = JSON.parse(localStorage.getItem("disponibilidades")) || {};
-    for (var k2 in locales) {
-        registros[k2] = locales[k2];
-    }
+    for (var k2 in locales) registros[k2] = locales[k2];
 
-    // 3. Si está vacío, fetch a Sheets
     if (Object.keys(registros).length === 0) {
         try {
             var response = await fetch(GOOGLE_SHEETS_URL + '?t=' + Date.now(), { cache: 'no-store' });
@@ -925,65 +866,51 @@ async function obtenerRegistrosCombinados() {
                     else if (mes.indexOf('Noviembre') >= 0) mesNum = "10";
                     else if (mes.indexOf('Diciembre') >= 0) mesNum = "11";
 
-                    var clave = conductor + "_" + placa + "_" + mesNum;
-                    registros[clave] = {
+                    registros[conductor + "_" + placa + "_" + mesNum] = {
                         conductor: conductor, placa: placa, mes: mesNum,
                         diurno: d, noche: n, descanso: dsc, mantenimiento: mnt
                     };
                 });
             }
-        } catch (e) {
-            console.warn('No se pudo cargar de Sheets para exportar:', e);
-        }
+        } catch (e) { console.warn('Error fetch:', e); }
     }
-
     return registros;
 }
 
-/* ============================================================
-   ACTUALIZAR IDENTIFICACIÓN
-   ============================================================ */
+/* ACTUALIZAR IDENTIFICACIÓN */
 function actualizarIdentificacion() {
     var id = $('identificacion');
     if (!id) return;
-
     if (!$("placa") || !$("conductor") || !$("mes")) {
         id.textContent = "👋 Seleccione una placa y un conductor";
         id.classList.remove('con-registro');
         return;
     }
-
     if (rolActual !== 'usuario') {
         id.textContent = "👋 Seleccione una placa y un conductor";
         id.classList.remove('con-registro');
         return;
     }
-
     if (!$("placa").value || $("conductor").value === '') {
         id.textContent = "👋 Seleccione una placa y un conductor";
         id.classList.remove('con-registro');
         return;
     }
-
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var idx = parseInt($("conductor").value);
-
     if (isNaN(idx) || idx < 0 || idx >= lista.length) {
         id.textContent = "👋 Seleccione una placa y un conductor";
         id.classList.remove('con-registro');
         return;
     }
-
     var conductorObj = lista[idx];
     if (!conductorObj || !conductorObj.nombre) {
         id.textContent = "👋 Seleccione una placa y un conductor";
         id.classList.remove('con-registro');
         return;
     }
-
     var conductor = conductorObj.nombre;
     var registro = obtenerRegistroLocal($("placa").value, conductor, $("mes").value);
-
     if (registro) {
         var totalDias = (registro.diurno ? registro.diurno.length : 0) + (registro.noche ? registro.noche.length : 0);
         id.textContent = '🚗 ' + $("placa").value + ' — 👤 ' + conductor + ' — 📋 Registrado (' + totalDias + ' días)';
@@ -1075,9 +1002,7 @@ function iniciarSesionUsuario(nombre, placa) {
         if (item.nombre === nombre) $("conductor").value = i;
     });
 
-    if ($("conductor").value === "" && lista.length > 0) {
-        $("conductor").value = 0;
-    }
+    if ($("conductor").value === "" && lista.length > 0) $("conductor").value = 0;
 
     $("btnIngresar").disabled = false;
     $("btnGuardarYVer").disabled = false;
@@ -1175,24 +1100,18 @@ function ingresar() {
 
         var listaVerif = obtenerConductoresPorPlaca($("placa").value);
         var conductorVerif = listaVerif[parseInt($("conductor").value)];
-        if (!conductorVerif) {
-            mostrarToast("Conductor no válido", 'error');
-            return;
-        }
+        if (!conductorVerif) { mostrarToast("Conductor no válido", 'error'); return; }
 
         var contCal = $("contenedorCalendario");
         var contRes = $("contenedorResumen");
-        var msgInst = $("mensajeInstruccion");
-
-        if (!contCal) { console.error('FALTA: contenedorCalendario'); return; }
-        if (!contRes) { console.error('FALTA: contenedorResumen'); return; }
+        if (!contCal || !contRes) { console.error('Faltan contenedores'); return; }
 
         calendarioVisible = true;
         contCal.style.display = "block";
         contCal.classList.add("visible");
         contRes.style.display = "block";
         contRes.classList.add("visible");
-        if (msgInst) msgInst.textContent = "👆 Haga clic en la imagen del turno para ver su calendario.";
+        if ($("mensajeInstruccion")) $("mensajeInstruccion").textContent = "👆 Haga clic en la imagen del turno para ver su calendario.";
 
         diurno.clear();
         noche.clear();
@@ -1213,7 +1132,7 @@ function ingresar() {
         catch (e) { contCal.scrollIntoView(true); }
 
     } catch (err) {
-        console.error('Error en ingresar():', err);
+        console.error('Error ingresar:', err);
         mostrarToast('Error: ' + err.message, 'error', 5000);
     }
 }
@@ -1289,24 +1208,43 @@ function crearCalendario(elemento, seleccionados, tipo) {
             }
 
             if (ocupadoPor) { celda.classList.add("ocupado"); celda.title = "Ocupado por: " + ocupadoPor; }
-            if (seleccionados.has(dia)) {
-                if (tipo === 'diurno') celda.classList.add("seleccionado");
-                else celda.classList.add("seleccionado-noche");
+
+            // ✅ FIX: puede estar en ambos
+            var esDiurno = diurno.has(dia);
+            var esNoche = noche.has(dia);
+
+            if (esDiurno && esNoche) {
+                celda.classList.add("seleccionado-ambos");
+            } else if (tipo === 'diurno' && esDiurno) {
+                celda.classList.add("seleccionado");
+            } else if (tipo === 'noche' && esNoche) {
+                celda.classList.add("seleccionado-noche");
             }
 
-            var claseLabel = tipo === 'diurno' ? 'disponible' : 'disponible-noche';
+            // Mostrar indicador visual según lo que esté marcado
+            var labelHTML = '';
+            if (esDiurno && esNoche) {
+                labelHTML = '<div class="disponible-ambos">☀️🌙 Ambos</div>';
+            } else if (esDiurno) {
+                labelHTML = '<div class="disponible">✓ Disponible</div>';
+            } else if (esNoche) {
+                labelHTML = '<div class="disponible-noche">✓ Disponible</div>';
+            }
+
             celda.innerHTML = '<div class="numero">' + dia + '</div>' +
-                (seleccionados.has(dia) ? '<div class="' + claseLabel + '">✓</div>' : '') +
-                (ocupadoPor ? '<div class="ocupado-texto">🚫</div>' : '');
+                labelHTML +
+                (ocupadoPor ? '<div class="ocupado-texto">🚫 Ocupado</div>' : '');
 
             celda.addEventListener("click", function() {
                 if (ocupadoPor) { mostrarToast("Día ocupado por: " + ocupadoPor, 'warning'); return; }
-                if (seleccionados.has(dia)) { seleccionados.delete(dia); }
-                else {
-                    if (tipo === 'diurno' && noche.has(dia)) noche.delete(dia);
-                    else if (tipo === 'noche' && diurno.has(dia)) diurno.delete(dia);
+
+                // ✅ FIX: solo alterna el turno actual, sin tocar el otro
+                if (seleccionados.has(dia)) {
+                    seleccionados.delete(dia);
+                } else {
                     seleccionados.add(dia);
                 }
+
                 crearCalendarios();
                 actualizarResumen();
             });
@@ -1335,10 +1273,7 @@ function actualizarResumen() {
     } catch (e) { console.error('Error resumen:', e); }
 }
 
-/* ============================================================
-   ✅ NUEVO MODAL: clasificar días con calendario interactivo
-   ============================================================ */
-
+/* GUARDAR */
 function guardarYVer() {
     if ($("placa").value === "") { mostrarToast("⚠️ Seleccione una placa", 'warning'); return; }
     if ($("conductor").value === "") { mostrarToast("⚠️ Seleccione un conductor", 'warning'); return; }
@@ -1350,44 +1285,32 @@ function guardarYVer() {
 
     var lista = obtenerConductoresPorPlaca($("placa").value);
     var idx = parseInt($("conductor").value);
-
-    if (isNaN(idx) || !lista[idx]) {
-        mostrarToast("Conductor no válido", 'error');
-        return;
-    }
+    if (isNaN(idx) || !lista[idx]) { mostrarToast("Conductor no válido", 'error'); return; }
 
     var nombreConductor = lista[idx].nombre;
 
     _registroPendiente = {
-        conductor: nombreConductor,
-        placa: $("placa").value,
-        mes: $("mes").value,
+        conductor: nombreConductor, placa: $("placa").value, mes: $("mes").value,
         diurno: Array.from(diurno).sort(function(a,b) { return a - b; }),
         noche: Array.from(noche).sort(function(a,b) { return a - b; }),
-        descanso: [],
-        mantenimiento: []
+        descanso: [], mantenimiento: []
     };
 
-    // Si no hay días blancos → guardar directo
     if (diasBlancos.length === 0) {
         var copia = JSON.parse(JSON.stringify(_registroPendiente));
         _guardarRegistro(copia);
         return;
     }
 
-    // Resetear estado del modal
     _diasBlancosPendientes = diasBlancos.slice();
     _clasificacionDias = {};
     _modoModalTipo = 'descanso';
 
-    // Actualizar UI del modal
     $('modoDescanso').classList.add('activo');
     $('modoMantenimiento').classList.remove('activo');
 
     renderMiniCalendario();
     actualizarContadoresModal();
-
-    // Bloquear botón confirmar hasta que estén todos
     $('btnConfirmarTipo').disabled = true;
 
     $('modalTipoDias').classList.add('active');
@@ -1397,7 +1320,6 @@ function renderMiniCalendario() {
     var cont = $('miniCalendario');
     cont.innerHTML = '';
 
-    // Headers de días
     DIAS_SEMANA.forEach(function(d) {
         var h = document.createElement('div');
         h.className = 'mini-dia-header';
@@ -1409,25 +1331,21 @@ function renderMiniCalendario() {
     var cantDias = diasDelMes(AÑO, mesNum);
     var posIni = posicionInicial(AÑO, mesNum);
 
-    // Celda vacía inicial
     for (var i = 0; i < posIni; i++) {
         var vacio = document.createElement('div');
         vacio.className = 'mini-dia vacio';
         cont.appendChild(vacio);
     }
 
-    // Días del mes
     for (var dia = 1; dia <= cantDias; dia++) {
         var celda = document.createElement('div');
         celda.className = 'mini-dia';
 
-        // Determinar estado del día
         var esDiurno = _registroPendiente.diurno.indexOf(dia) >= 0;
         var esNoche = _registroPendiente.noche.indexOf(dia) >= 0;
         var esBlanco = _diasBlancosPendientes.indexOf(dia) >= 0;
         var clasificacion = _clasificacionDias[dia];
 
-        // Verificar si otro conductor lo tiene ocupado
         var ocupadoPorOtro = false;
         var registros = JSON.parse(localStorage.getItem("disponibilidades")) || {};
         for (var k in registros) {
@@ -1445,7 +1363,6 @@ function renderMiniCalendario() {
         }
 
         if (esDiurno || esNoche) {
-            // Ya tiene turno asignado → bloqueado
             celda.classList.add('bloqueado');
             celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">' +
                 (esDiurno && esNoche ? '☀️🌙' : esDiurno ? '☀️' : '🌙') + '</span>';
@@ -1461,11 +1378,9 @@ function renderMiniCalendario() {
             celda.innerHTML = '<span>' + dia + '</span><span class="mini-icon">🔧</span>';
             celda.addEventListener('click', function() { toggleDiaMini(dia); });
         } else if (esBlanco) {
-            // Día pendiente por clasificar
             celda.innerHTML = '<span>' + dia + '</span>';
             celda.addEventListener('click', function() { toggleDiaMini(dia); });
         } else {
-            // No debería pasar, pero por las dudas
             celda.classList.add('bloqueado');
             celda.innerHTML = '<span>' + dia + '</span>';
         }
@@ -1475,16 +1390,9 @@ function renderMiniCalendario() {
 }
 
 function toggleDiaMini(dia) {
-    if (_diasBlancosPendientes.indexOf(dia) < 0) return; // No es día blanco
-
-    if (_clasificacionDias[dia] === _modoModalTipo) {
-        // Ya estaba en este modo → quitar
-        delete _clasificacionDias[dia];
-    } else {
-        // Asignar el modo actual
-        _clasificacionDias[dia] = _modoModalTipo;
-    }
-
+    if (_diasBlancosPendientes.indexOf(dia) < 0) return;
+    if (_clasificacionDias[dia] === _modoModalTipo) delete _clasificacionDias[dia];
+    else _clasificacionDias[dia] = _modoModalTipo;
     renderMiniCalendario();
     actualizarContadoresModal();
 }
@@ -1501,9 +1409,7 @@ function cambiarModoModal(modo) {
 }
 
 function marcarTodosCon(modo) {
-    _diasBlancosPendientes.forEach(function(d) {
-        _clasificacionDias[d] = modo;
-    });
+    _diasBlancosPendientes.forEach(function(d) { _clasificacionDias[d] = modo; });
     renderMiniCalendario();
     actualizarContadoresModal();
 }
@@ -1541,12 +1447,8 @@ function confirmarClasificacion() {
     if (!_registroPendiente) return;
 
     var pendientes = _diasBlancosPendientes.length - Object.keys(_clasificacionDias).length;
-    if (pendientes > 0) {
-        mostrarToast('Debes clasificar todos los días', 'warning');
-        return;
-    }
+    if (pendientes > 0) { mostrarToast('Debes clasificar todos los días', 'warning'); return; }
 
-    // Construir arrays de descanso y mantenimiento
     var descanso = [];
     var mantenimiento = [];
     for (var d in _clasificacionDias) {
@@ -1559,9 +1461,7 @@ function confirmarClasificacion() {
     registroFinal.descanso = descanso.sort(function(a,b) { return a - b; });
     registroFinal.mantenimiento = mantenimiento.sort(function(a,b) { return a - b; });
 
-    // Limpiar
     cerrarModalTipoDias();
-
     _guardarRegistro(registroFinal);
 }
 
@@ -1574,18 +1474,11 @@ function cerrarModalTipoDias() {
 }
 
 function _guardarRegistro(registro) {
-    if (!registro) {
-        console.error('_guardarRegistro: registro null');
-        mostrarToast('Error: no hay datos para guardar', 'error');
-        return;
-    }
-
+    if (!registro) { mostrarToast('Error: no hay datos', 'error'); return; }
     if (!registro.conductor || !registro.placa || !registro.mes) {
-        console.error('_guardarRegistro: faltan campos', registro);
         mostrarToast('Error: datos incompletos', 'error');
         return;
     }
-
     if (_guardandoEnProgreso) { mostrarToast('⏳ Guardando...', 'info'); return; }
     _guardandoEnProgreso = true;
 
@@ -2077,7 +1970,7 @@ function abrirDetalleConductor(placa, conductor, mes) {
     setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
 }
 
-/* CALENDARIO MENSUAL - FIX: ahora muestra también días con descanso/mant */
+/* CALENDARIO MENSUAL */
 async function cargarCalendarioMensual() {
     var registros = await obtenerRegistrosCombinados();
     var filtroPlaca = $('filtroPlaca').value;
@@ -2127,9 +2020,7 @@ async function cargarCalendarioMensual() {
 
     for (var dia = 1; dia <= diasMes; dia++) {
         var info = diasMap[dia];
-        // ✅ FIX: ahora cuenta TODOS los tipos
         var total = info.diurno.length + info.noche.length + info.descanso.length + info.mantenimiento.length;
-        var tieneTrabajo = info.diurno.length > 0 || info.noche.length > 0;
         var claseBarra = '';
         if (info.diurno.length > 0 && info.noche.length > 0) claseBarra = 'ambos';
         else if (info.diurno.length > 0) claseBarra = 'diurno';
@@ -2137,7 +2028,6 @@ async function cargarCalendarioMensual() {
         else if (info.descanso.length > 0) claseBarra = 'descanso';
         else if (info.mantenimiento.length > 0) claseBarra = 'mantenimiento';
 
-        // ✅ FIX: clickeable si tiene CUALQUIER registro
         var clickable = total > 0 ? 'con-conductores' : '';
         var onclick = total > 0 ? 'onclick="abrirPanelDetalleDia(' + dia + ')"' : '';
 
@@ -2207,13 +2097,9 @@ function cerrarPanelDetalle() {
     document.body.style.overflow = '';
 }
 
-/* ============================================================
-   ✅ EXPORTAR - AHORA LEEN DEL CACHÉ COMBINADO
-   ============================================================ */
-
+/* EXPORTAR */
 async function exportarExcel() {
     mostrarToast('📊 Generando Excel...', 'info');
-
     var registros = await obtenerRegistrosCombinados();
     var filtroMes = $('filtroMes').value;
     var data = [];
@@ -2233,7 +2119,7 @@ async function exportarExcel() {
         });
     }
 
-    if (data.length === 0) { mostrarToast('Sin datos para este mes', 'warning'); return; }
+    if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
 
     var wb = new ExcelJS.Workbook();
     var ws = wb.addWorksheet('Disponibilidad');
@@ -2252,13 +2138,12 @@ async function exportarExcel() {
     wb.xlsx.writeBuffer().then(function(buffer) {
         saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
             'Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.xlsx');
-        mostrarToast('✅ Excel listo (' + data.length + ' registros)', 'success');
+        mostrarToast('✅ Excel listo (' + data.length + ')', 'success');
     });
 }
 
 async function exportarPDF() {
     mostrarToast('📄 Generando PDF...', 'info');
-
     var registros = await obtenerRegistrosCombinados();
     var filtroMes = $('filtroMes').value;
     var jsPDF = window.jspdf.jsPDF;
@@ -2276,25 +2161,22 @@ async function exportarPDF() {
             agruparDias(r.descanso || []) || '—', agruparDias(r.mantenimiento || []) || '—',
             (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0)]);
     }
-
-    if (data.length === 0) { mostrarToast('Sin datos para este mes', 'warning'); return; }
+    if (data.length === 0) { mostrarToast('Sin datos', 'warning'); return; }
 
     doc.autoTable({
         head: [['PLACA', 'CONDUCTOR', 'DIURNO', 'NOCHE', 'DESCANSO', 'MANT.', 'TOTAL']],
         body: data, startY: 30, styles: { fontSize: 7 }, headStyles: { fillColor: [23, 54, 93] }
     });
     doc.save('Disponibilidad_' + MESES[String(filtroMes)] + '_' + AÑO + '.pdf');
-    mostrarToast('✅ PDF listo (' + data.length + ' registros)', 'success');
+    mostrarToast('✅ PDF listo (' + data.length + ')', 'success');
 }
 
 async function subirAGoogleSheets(btn) {
     if (!btn) return;
     var t = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
-
     var registros = await obtenerRegistrosCombinados();
     var filtroMes = $('filtroMes').value;
     var lista = [];
-
     for (var k in registros) {
         var r = registros[k];
         if (String(r.mes) !== String(filtroMes)) continue;
@@ -2304,9 +2186,7 @@ async function subirAGoogleSheets(btn) {
             descanso: (r.descanso || []).join(', '), mantenimiento: (r.mantenimiento || []).join(', '),
             total: (r.diurno ? r.diurno.length : 0) + (r.noche ? r.noche.length : 0) });
     }
-
     if (lista.length === 0) { btn.innerHTML = '📭'; setTimeout(function() { btn.innerHTML = t; btn.disabled = false; }, 1500); return; }
-
     var e = 0;
     lista.forEach(function(data) {
         enviarASheets(data).then(function() {
@@ -2338,16 +2218,13 @@ function cambiarVista(vista) {
 
 /* INICIAR */
 function iniciar() {
-    console.log('[boot] v3.5');
+    console.log('[boot] v3.6');
 
     var faltantes = [];
     ['fechaActual', 'pantallaLogin', 'placa', 'conductor', 'mes', 'btnIngresar'].forEach(function(id) {
         if (!document.getElementById(id)) faltantes.push(id);
     });
-    if (faltantes.length > 0) {
-        console.error('Elementos faltantes:', faltantes);
-        return;
-    }
+    if (faltantes.length > 0) { console.error('Faltan:', faltantes); return; }
 
     mostrarFechaActual();
     cargarPlacas();
@@ -2383,7 +2260,6 @@ function iniciar() {
     if ($('btnGuardarYVer')) $('btnGuardarYVer').addEventListener('click', guardarYVer);
     if ($('btnBorrarRegistro')) $('btnBorrarRegistro').addEventListener('click', borrarMiRegistro);
 
-    // Modal clasificación
     if ($('modoDescanso')) $('modoDescanso').addEventListener('click', function() { cambiarModoModal('descanso'); });
     if ($('modoMantenimiento')) $('modoMantenimiento').addEventListener('click', function() { cambiarModoModal('mantenimiento'); });
     if ($('btnMarcarTodosDescanso')) $('btnMarcarTodosDescanso').addEventListener('click', function() { marcarTodosCon('descanso'); });
@@ -2425,7 +2301,7 @@ function iniciar() {
     });
 
     cambiarVista('tabla');
-    console.log('[boot] ✅ v3.5 lista');
+    console.log('[boot] ✅ v3.6 lista');
 }
 
 if (document.readyState === 'loading') {
@@ -2434,7 +2310,6 @@ if (document.readyState === 'loading') {
     iniciar();
 }
 
-// Exponer globales
 window.abrirModalConductor = abrirModalConductor;
 window.cerrarModalConductor = cerrarModalConductor;
 window.cargarConductoresLogin = cargarConductoresLogin;
